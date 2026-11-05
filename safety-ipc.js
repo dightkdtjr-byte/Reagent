@@ -7,7 +7,7 @@ const LOOKUPS={
  pubchem:{url:q=>'https://pubchem.ncbi.nlm.nih.gov/#query='+encodeURIComponent(q),copy:false},
  echa:{url:q=>'https://echa.europa.eu/search-for-chemicals?p_p_id=disssimplesearch_WAR_disssearchportlet&p_p_lifecycle=0&_disssimplesearch_WAR_disssearchportlet_searchOccurred=true&_disssimplesearch_WAR_disssearchportlet_sskeywordKey='+encodeURIComponent(q),copy:false}
 };
-function registerSafetyHandlers({ipcMain,shell,clipboard,store,documentPath}){
+function registerSafetyHandlers({ipcMain,shell,clipboard,store,documentPath,kosha}){
  function trusted(event){try{const frame=event.senderFrame;if(frame&&event.sender?.mainFrame&&frame!==event.sender.mainFrame)return false;return path.resolve(fileURLToPath(frame?.url||event.sender?.getURL?.()))===path.resolve(documentPath);}catch{return false;}}
  function handle(name,fn){ipcMain.handle('inventory-safety:'+name,async(event,...args)=>{if(!trusted(event))return {ok:false,error:'허용되지 않은 안전자료 요청입니다.'};try{return await fn(...args);}catch(e){const diagnostic=errorInfo(e);return {ok:false,error:diagnostic.message,diagnostic,record:e.diagnosticRecord||null,historyWarning:e.historyWarning||null};}});}
  handle('catalog',()=>({ok:true,catalog:store.catalog()}));
@@ -22,6 +22,8 @@ function registerSafetyHandlers({ipcMain,shell,clipboard,store,documentPath}){
   let copied=false;if(def.copy&&clipboard?.writeText){clipboard.writeText(q);copied=true;}
   await shell.openExternal(def.url(q));return {ok:true,copied};
  });
+ handle('kosha-search',async query=>{if(!kosha)throw new Error('KOSHA 검색 모듈이 없습니다.');return kosha.search(query);});
+ handle('kosha-receive',async(chemId,meta)=>{if(!kosha)throw new Error('KOSHA 검색 모듈이 없습니다.');const m=meta&&typeof meta==='object'?{name:String(meta.name||'').slice(0,100),casNo:String(meta.casNo||'').slice(0,20),revisedAt:String(meta.revisedAt||'').slice(0,10)}:{};return kosha.receive(chemId,m);});
  handle('source',async id=>{const s=store.getSource(id);await shell.openExternal(s.pdfURL);return {ok:true};});
 }
 module.exports={registerSafetyHandlers};

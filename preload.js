@@ -58,5 +58,7 @@ contextBridge.exposeInMainWorld('inventorySafety', {
  receive:(id)=>ipcRenderer.invoke('inventory-safety:receive',id),
  icons:(codes)=>ipcRenderer.invoke('inventory-safety:icons',codes),
  source:(id)=>ipcRenderer.invoke('inventory-safety:source',id),
- lookup:(kind,query)=>ipcRenderer.invoke('inventory-safety:lookup',kind,query)
+ lookup:(kind,query)=>ipcRenderer.invoke('inventory-safety:lookup',kind,query),
+ koshaSearch:(query)=>ipcRenderer.invoke('inventory-safety:kosha-search',query),
+ koshaReceive:(chemId,meta)=>ipcRenderer.invoke('inventory-safety:kosha-receive',chemId,meta)
 });

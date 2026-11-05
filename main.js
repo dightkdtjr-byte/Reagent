@@ -14,7 +14,8 @@ const {createMSDSStore} = require('./msds-store');
 const msds = createMSDSStore(dataDir);
 require('./msds-ipc').registerMSDSHandlers({ipcMain, dialog, shell, BrowserWindow, store: msds, documentPath: path.join(__dirname, 'reagent-inventory.html')});
 const safetyStore = require('./safety-store').createSafetyStore({dataDir,msds,catalog:require('./safety-catalog.json'),fetchBytes:require('./safety-network').createDownloader(()=>net)});
-require('./safety-ipc').registerSafetyHandlers({ipcMain,shell,clipboard,store:safetyStore,documentPath:path.join(__dirname,'reagent-inventory.html')});
+const kosha = require('./kosha-msds').createKoshaClient({net:()=>net, BrowserWindow, msds, extract:require('./ghs-extract').extract});
+require('./safety-ipc').registerSafetyHandlers({ipcMain,shell,clipboard,store:safetyStore,documentPath:path.join(__dirname,'reagent-inventory.html'),kosha});
 const backups = createBackupStore(dataDir, {msdsStore: msds});
 const backupSourceTokens = new Map();
 function backupDir(){ return backups.dir(); }

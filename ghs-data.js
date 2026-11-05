@@ -199,7 +199,10 @@
     for(const raw of codes||[]){for(const c of normalizeCode(raw).split('+')){const row=H.get(c);if(!row)continue;if(row.pictogram&&!pictos.includes(row.pictogram))pictos.push(row.pictogram);if(row.signal==='Danger')danger=true;else if(row.signal==='Warning')warning=true;}}
     // GHS 우선순위: 해골(GHS06)이 있으면 느낌표(GHS07)는 생략, 부식성(GHS05)이 있으면 피부·눈 자극용 느낌표 생략 규칙은 자극 코드에만 해당하므로 단순화해 GHS06만 적용.
     const order=Object.keys(PICTOGRAMS);
-    const filtered=pictos.filter(p=>!(p==='GHS07'&&pictos.includes('GHS06'))).sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+    // 느낌표(GHS07)는 해골(GHS06)이 있으면 생략하고, 부식성(GHS05)이 있을 때 피부·눈 자극(H315/H319/H320)만으로 붙은 경우도 생략한다.
+    const all=(codes||[]).flatMap(c=>normalizeCode(c).split('+'));
+    const irritationOnly=all.filter(c=>H.get(c)?.pictogram==='GHS07').every(c=>['H315','H319','H320'].includes(c));
+    const filtered=pictos.filter(p=>!(p==='GHS07'&&(pictos.includes('GHS06')||(pictos.includes('GHS05')&&irritationOnly)))).sort((a,b)=>order.indexOf(a)-order.indexOf(b));
     return {pictograms:filtered,signalWord:danger?'Danger':warning?'Warning':(codes&&codes.length?'None':'')};
   }
   function normalizeGHS(v){
