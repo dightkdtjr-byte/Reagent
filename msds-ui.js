@@ -44,11 +44,14 @@
           if ((result.documents || []).length) {
             if (!await commit([...before, ...additions])) return;
             toast(additions.length ? `MSDS ${additions.length}개를 연결하고 저장했습니다.` : '이미 연결된 문서입니다. 저장된 파일을 다시 확인했습니다.');
+            const picked = additions.length ? additions : (result.documents || []);
+            if (picked.length) setTimeout(() => { try { window.GHSUI?.onDocumentsAttached?.(itemId, picked); } catch (e) { console.error(e); } }, 50);
           }
           if (errors.length) toast(`첨부하지 못한 파일 ${errors.length}개 — ${errors.slice(0, 2).join(' / ')}`, true);
         });
       }
       async function open(doc) { await action(async () => { const r = await window.inventoryMSDS.open(doc); if (!r?.ok) throw new Error(r?.error || 'PDF 열기 실패'); }); }
+      async function preview(doc) { await action(async () => { if (!window.inventoryMSDS.preview) throw new Error('미리보기는 설치형 앱에서 사용할 수 있습니다.'); const r = await window.inventoryMSDS.preview(doc); if (!r?.ok) throw new Error(r?.error || 'PDF 미리보기 실패'); }); }
       async function exportDoc(doc) { await action(async () => { const role=window.InventorySafetyCommon?.linkRole(getItem(itemId),doc); const fileName=role==='reference'||role==='stale'?'REFERENCE_'+doc.fileName.replace(/^REFERENCE_/, ''):doc.fileName; const r = await window.inventoryMSDS.export({...doc,fileName}); if (!r?.ok) throw new Error(r?.error || 'PDF 저장 실패'); if (!r.canceled) toast('MSDS PDF 사본을 저장했습니다.'); }); }
       async function unlink(doc) {
         if (busy || !confirm(`이 품목에서 아래 MSDS 연결을 해제할까요?\n\n${doc.fileName}\n\n다른 품목의 연결과 기존 백업은 바뀌지 않습니다.\n복원에 대비해 데이터 폴더의 PDF 파일은 남겨둡니다.`)) return;
@@ -65,7 +68,7 @@
         const folder = button('문서 폴더', () => action(async () => { const r = await window.inventoryMSDS.folder(); if (!r?.ok) throw new Error(r?.error || '폴더 열기 실패'); })); folder.id = 'msds-folder';
         tools.append(add, folder); heading.append(title, tools); element.append(heading);
         const note = document.createElement('p'); note.className = 'hint msds-note';
-        note.textContent = '위에서 받은 MSDS와 직접 첨부한 PDF를 함께 관리합니다. 파일당 25 MB, 품목당 20개까지 지원합니다. 첨부·연결 해제는 즉시 저장됩니다.'; element.append(note);
+        note.textContent = '공급자에게 받은 MSDS PDF를 첨부해 두면 프로그램 안에서 바로 열어볼 수 있습니다. 파일당 25 MB, 품목당 20개까지 지원하며 첨부·연결 해제는 즉시 저장됩니다. MSDS 작성·개정일과 검토일은 위 GHS 분류 영역에서 기록합니다.'; element.append(note);
         if (!window.inventoryMSDS) { note.textContent = 'MSDS 첨부는 Windows 설치형 앱에서 사용할 수 있습니다.'; add.disabled = folder.disabled = true; return; }
         const list = document.createElement('div'); list.className = 'msds-list'; list.setAttribute('aria-live', 'polite'); element.append(list);
         if (!docs.length) { const empty = document.createElement('p'); empty.className = 'hint'; empty.textContent = '첨부된 MSDS가 없습니다.'; list.append(empty); return; }
@@ -86,16 +89,18 @@
             const badge=document.createElement('p');badge.className='hint';badge.dataset.msdsRole=role||'manual';
             badge.textContent=({reference:'동일 물질 참고 MSDS · 다른 제품의 자료 · 실제 제품 확정 아님',product:'제품번호 일치 자료 · 실제 공급자 확인 필요',stale:'식별정보 변경 또는 이전 참고자료 · 적용 대상 재확인 필요',unverified:'제조사 문서 · 해당 품목 적용 여부 미확인',manual:'직접 첨부 · 제품 일치 여부 자동 검증 안 함'})[role||'manual'];info.append(badge);
             const actions = document.createElement('div'); actions.className = 'msds-actions';
-            const view = button('열기', () => open(doc)); view.dataset.msdsAction = 'open';
+            const look = button('미리보기', () => preview(doc), 'primary'); look.dataset.msdsAction = 'preview';
+            const view = button('외부 프로그램으로 열기', () => open(doc)); view.dataset.msdsAction = 'open';
             const copy = button('다른 이름으로 저장', () => exportDoc(doc)); copy.dataset.msdsAction = 'export';
             const remove = button('연결 해제', () => unlink(doc)); remove.dataset.msdsAction = 'unlink';
-            for (const b of [view, copy]) { b.dataset.unavailable = doc.available ? '0' : '1'; b.disabled = !doc.available; }
-            actions.append(view, copy, remove); row.append(info, actions); list.append(row);
+            for (const b of [look, view, copy]) { b.dataset.unavailable = doc.available ? '0' : '1'; b.disabled = !doc.available; }
+            actions.append(look, view, copy, remove); row.append(info, actions); list.append(row);
           }
           if (busy) lock(true);
         } catch (e) { if (alive() && request === token) { list.textContent = '목록 확인 실패: ' + String(e.message || e); } }
       }
       draw();
+      window.MSDSUI.current = {itemId, attach};
     }
   };
 })();

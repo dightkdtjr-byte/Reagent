@@ -5,7 +5,6 @@ directories:
 files:
   - "**/*"
   - "!dist/**"
-  - "!node_modules/**"
   - "!electron-builder.yml"
   - "!.gitignore"
 win:

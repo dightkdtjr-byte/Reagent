@@ -11,6 +11,8 @@
 <script src="./msds-ui.js"></script>
 <script src="./safety-common.js"></script>
 <script src="./safety-ui.js"></script>
+<script src="./ghs-data.js"></script>
+<script src="./ghs-ui.js"></script>
 <style>
   :root{
     --bg:#F5F7FA;
@@ -1055,6 +1057,56 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 .assist-search-options{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:9px 0;font-size:12px}.assist-search-options button{font-size:11px;padding:6px 10px}
 #assist-tools-backdrop{z-index:301}#assist-tools-box{width:820px;max-width:calc(100vw - 36px);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--ui-card);color:var(--ui-text);box-sizing:border-box}#assist-tools-content{overflow:auto;min-height:100px;flex:1;margin:12px 0;font-size:13px}#assist-summary-options{font-size:12px}.assist-report{white-space:pre-wrap;font:inherit;line-height:1.8;overflow-wrap:anywhere;margin:0}.assist-check-row{padding:10px 0;border-bottom:1px solid var(--ui-border)}.assist-check-row button{display:block;text-align:left;font-size:12px;max-width:100%;white-space:normal;overflow-wrap:anywhere}.assist-check-row span{display:block;line-height:1.6;font-size:12px;margin:6px 0;overflow-wrap:anywhere}#registration-assist button{font-size:11px;margin:3px;max-width:100%;white-space:normal;text-align:left}#registration-assist p{margin:3px 0 7px}
 </style>
+<style id="ghs-styles">
+.ghs-cell{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.ghs-icons{display:inline-flex;gap:2px;align-items:center}
+.ghs-ico{display:inline-block;vertical-align:middle;border-radius:3px}
+.ghs-ico-code{font-size:10px;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:1px 4px}
+.ghs-none{font-size:11px;color:var(--ink-soft);opacity:.75}
+.ghs-signal{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#e9edf2;color:#334}
+.ghs-signal.danger{background:var(--red-tint);color:var(--red)}
+.ghs-signal.warning{background:var(--amber-tint);color:var(--amber)}
+.ghs-signal.small{padding:1px 6px;font-size:10px}
+.ghs-msds{display:inline-block;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid var(--line);color:var(--ink-soft);white-space:nowrap}
+.ghs-msds.ok{background:var(--teal-tint);color:var(--teal-dark);border-color:transparent}
+.ghs-msds.warn{background:var(--amber-tint);color:var(--amber);border-color:transparent}
+.ghs-msds.bad{background:var(--red-tint);color:var(--red);border-color:transparent}
+.ghs-inline{margin:10px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ghs-inline-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ghs-inline-class{font-size:12px;color:var(--ink-soft)}
+.ghs-inline-h{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:12px;color:var(--ink-soft)}
+.ghs-section-title{margin:8px 0 6px;font-size:12px;font-weight:700;color:var(--ink-soft)}
+.ghs-picto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.ghs-picto{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:2px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--ink)}
+.ghs-picto.on{border-color:var(--red);background:var(--red-tint);box-shadow:0 0 0 2px rgba(229,72,77,.15)}
+.ghs-picto img{opacity:.5}.ghs-picto.on img{opacity:1}
+.ghs-picto span{font-size:11px;font-weight:700}.ghs-picto small{font-size:10.5px;color:var(--ink-soft)}
+.ghs-field-grid{margin-top:10px}
+.ghs-field-grid input,.ghs-field-grid select,.ghs-field-grid textarea{width:100%;box-sizing:border-box}
+.ghs-date-row{display:flex;gap:6px;align-items:center}.ghs-date-row input{flex:1}.ghs-date-row button{padding:6px 10px;font-size:12px;white-space:nowrap}
+.ghs-picker{margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:10px}
+.ghs-picker-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.ghs-picker-head button{margin-left:auto;font-size:12px;padding:5px 9px}
+.ghs-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ghs-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 6px 4px 8px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:12px;max-width:100%}
+.ghs-chip b{font-family:var(--mono)}.ghs-chip span{color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:360px}
+.ghs-chip-x{border:0;background:transparent;font-size:14px;line-height:1;padding:0 2px;cursor:pointer;color:var(--ink-soft)}
+.ghs-picker-row{display:flex;gap:6px}.ghs-picker-row input{flex:1;min-width:0}
+.ghs-picker-results{display:flex;flex-direction:column;gap:2px;margin-top:4px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:4px}
+.ghs-picker-hit{text-align:left;font-size:12px;padding:6px 8px;border:0;background:transparent;border-radius:6px;cursor:pointer;color:var(--ink)}.ghs-picker-hit:hover{background:var(--teal-tint)}.ghs-picker-hit:disabled{opacity:.4}
+.ghs-actions{margin-top:12px}
+.ghs-view-head{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.ghs-view-meta{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.ghs-classes{color:var(--ink-soft)}
+.ghs-msds-info{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px}
+.ghs-td{white-space:normal}
+.ghs-extract-box{margin:4px 0 10px;padding:10px 12px;border:1px solid var(--teal-dark);border-radius:10px;background:var(--teal-tint)}.ghs-extract-box.empty{border-color:var(--amber);background:var(--amber-tint)}.ghs-extract-box p{margin:4px 0 0}
+.ghs-doc-select{max-width:220px;font-size:12px;padding:5px 8px}
+.stat-chips .chip.clickable{cursor:pointer}.stat-chips .chip.clickable:hover{border-color:var(--teal-dark)}
+#ghs-filter{max-width:190px}
+html[data-theme="dark"] .ghs-picto,html[data-theme="dark"] .ghs-chip,html[data-theme="dark"] .ghs-inline{background:#17212d;border-color:#29394b}
+html[data-theme="dark"] .ghs-picto.on{background:#3a1d20;border-color:#e5484d}
+html[data-theme="dark"] .ghs-signal{background:#2a3442;color:#dbe4f0}
+</style>
 <style id="msds-styles">
 /* v3.9.8: PDF attachment area inside the existing detail dialog only. */
 .msds-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
@@ -1143,7 +1195,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.9.9</div>
+        <div class="work-version">v3.10.0</div>
       </div>
 </aside>
   </div>
@@ -1193,6 +1245,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         </div>
         <div class="toolbar-primary">
           <button class="ghost compact-action" id="hide-expired-btn" title="만료 및 재고없음 항목 숨기기/보이기">만료·재고없음 숨김</button>
+          <select id="ghs-filter" class="toolbar-select" title="GHS·MSDS 필터"></select>
           <select id="sort-select" class="toolbar-select" title="정렬"><option value="id">QR코드순</option><option value="name">이름순</option><option value="expiry">유효기간순</option><option value="stock">재고적은순</option><option value="received">최근입고순</option></select>
           <div class="more-wrap">
             <button class="icon-action" id="more-actions-btn" title="더보기" aria-label="더보기" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
@@ -1214,7 +1267,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       <table id="inventory-table">
         <thead>
           <tr>
-            <th style="width:24px;"><input type="checkbox" id="select-all-checkbox"></th><th style="width:70px;">QR코드ID</th><th style="width:80px;">최근입고일</th><th style="width:92px;">유효기간</th><th id="th-name" style="width:19%;">시약명</th><th style="width:13%;">규격</th><th style="width:13%;">제조사</th><th style="width:74px;">재고</th><th style="width:78px;">상태</th><th style="width:28px;"></th>
+            <th style="width:24px;"><input type="checkbox" id="select-all-checkbox"></th><th style="width:70px;">QR코드ID</th><th style="width:80px;">최근입고일</th><th style="width:92px;">유효기간</th><th id="th-name" style="width:19%;">시약명</th><th style="width:13%;">규격</th><th style="width:13%;">제조사</th><th style="width:122px;">GHS · MSDS</th><th style="width:74px;">재고</th><th style="width:78px;">상태</th><th style="width:28px;"></th>
           </tr>
         </thead>
         <tbody id="inventory-tbody"></tbody>
@@ -1435,6 +1488,23 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         </div>
       </div>
 
+      <div class="settings-card full" id="ghs-settings-card">
+        <h3>GHS 분류 · MSDS 비치 관리</h3>
+        <div class="settings-desc">품목별 GHS 분류(그림문자·신호어·H/P 문구)는 각 품목 상세 화면에서 입력합니다. 입력한 분류는 재고 목록, 입출고 확인창, QR 라벨에 표시됩니다.</div>
+        <div class="setting-row">
+          <div class="setting-copy"><div class="setting-title">MSDS 검토 주기</div><div class="setting-sub">MSDS 검토일(없으면 작성·개정일)을 기준으로 다음 검토 예정일을 계산해 목록과 재고현황에 표시합니다.</div></div>
+          <div class="setting-control"><select id="settings-msds-review"><option value="0">관리 안 함</option><option value="6">6개월</option><option value="12">12개월</option><option value="24">24개월</option><option value="36">36개월</option></select></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-copy"><div class="setting-title">QR 라벨에 GHS 그림문자·신호어 인쇄</div><div class="setting-sub">라벨 아래쪽 ID 옆에 그림문자(최대 5개)와 신호어를 함께 인쇄합니다.</div></div>
+          <div class="setting-control"><label class="setting-switch"><input type="checkbox" id="settings-label-ghs"><span class="setting-slider"></span></label></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-copy"><div class="setting-title">현황</div><div class="setting-sub" id="ghs-settings-summary">확인 중</div></div>
+          <div class="setting-control"><button class="ghost" id="settings-ghs-export">GHS·MSDS 현황 엑셀 저장</button></div>
+        </div>
+        <p class="hint">한국어 H·P 문구는 읽기용 요약입니다. 공급자 MSDS와 법정 경고표지를 대체하지 않으며, 분류는 반드시 해당 제품의 MSDS로 확인하세요.</p>
+      </div>
       <div class="settings-card full safety-widget" id="safety-settings-card"></div>
       <div class="settings-card full" id="assist-settings-card">
         <h3>데이터 점검·요약</h3>
@@ -1446,7 +1516,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · 등록 보조·데이터 점검</div></div>
-          <div class="setting-control settings-version">v3.9.9<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.10.0<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1519,11 +1589,11 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.9.9';
+  const APP_VERSION = '3.10.0';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
-    return { theme:'system', accent:'blue', expiryWarningDays:30, defaultSort:'id', hideExpiredOrOutDefault:false, showArchivedDefault:false, defaultStartTab:'dashboard', autoBackup:true, backupRetention:30, printerName:'', labelWidthMm:62, labelHeightMm:29, customFormTemplates:[] };
+    return { theme:'system', accent:'blue', expiryWarningDays:30, defaultSort:'id', hideExpiredOrOutDefault:false, showArchivedDefault:false, defaultStartTab:'dashboard', autoBackup:true, backupRetention:30, printerName:'', labelWidthMm:62, labelHeightMm:29, customFormTemplates:[], msdsReviewMonths:12, labelShowGhs:true };
   }
   function normalizeSettings(v){
     const d=defaultSettings(), x=Object.assign({},d,v||{});
@@ -1533,7 +1603,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!['id','name','expiry','stock','received'].includes(x.defaultSort)) x.defaultSort=d.defaultSort;
     if(!['dashboard','register'].includes(x.defaultStartTab)) x.defaultStartTab='dashboard';
     if(![7,30,60,90].includes(Number(x.backupRetention))) x.backupRetention=d.backupRetention; else x.backupRetention=Number(x.backupRetention);
-    delete x.seasonEffects; x.hideExpiredOrOutDefault=!!x.hideExpiredOrOutDefault; x.showArchivedDefault=!!x.showArchivedDefault; x.autoBackup=x.autoBackup!==false; x.printerName=String(x.printerName||''); const lw=Number(x.labelWidthMm),lh=Number(x.labelHeightMm); x.labelWidthMm=Number.isFinite(lw)?Math.max(15,Math.min(200,Math.round(lw*10)/10)):62; x.labelHeightMm=Number.isFinite(lh)?Math.max(15,Math.min(200,Math.round(lh*10)/10)):29;
+    delete x.seasonEffects; x.hideExpiredOrOutDefault=!!x.hideExpiredOrOutDefault; x.showArchivedDefault=!!x.showArchivedDefault; x.autoBackup=x.autoBackup!==false; x.printerName=String(x.printerName||''); const lw=Number(x.labelWidthMm),lh=Number(x.labelHeightMm); x.labelWidthMm=Number.isFinite(lw)?Math.max(15,Math.min(200,Math.round(lw*10)/10)):62; x.labelHeightMm=Number.isFinite(lh)?Math.max(15,Math.min(200,Math.round(lh*10)/10)):29; x.msdsReviewMonths=[0,6,12,24,36].includes(Number(x.msdsReviewMonths))?Number(x.msdsReviewMonths):12; x.labelShowGhs=x.labelShowGhs!==false;
     x.customFormTemplates=Array.isArray(x.customFormTemplates)?x.customFormTemplates.slice(0,20).map((t,ti)=>({id:String(t?.id||('custom-'+Date.now()+'-'+ti)),title:String(t?.title||'사용자 서식').slice(0,30),fields:(Array.isArray(t?.fields)?t.fields:[]).slice(0,6).map((f,fi)=>({key:String(f?.key||('f'+(fi+1))),label:String(f?.label||('항목 '+(fi+1))).slice(0,30)}))})).filter(t=>t.fields.length):[];
     return x;
   }
@@ -2353,6 +2423,35 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     frameOuterBorder(wsLog, HEADER_ROW, logLastRow, 1, logLastCol);
     setupPrint(wsLog, logLastColLetter);
 
+    // ---------- 시트3: GHS·MSDS 현황 ----------
+    const wsGhs = wb.addWorksheet('GHS·MSDS현황', { views:[{state:'frozen', ySplit:HEADER_ROW}], properties:{ tabColor:{argb:AMBER} } });
+    const ghsData = window.GHSUI.excelRows(sortedReagents, settings());
+    const ghsCols = ghsData.header.length, ghsLastLetter = colLetter(ghsCols);
+    [12,9,22,18,13,14,8,24,28,44,44,24,9,14,10,13,13,18,26].forEach((w,i)=>{ if(i<ghsCols) ws_setColWidth(wsGhs, i+1, w); });
+    addTitleBar(wsGhs, imageId, `${catLabel()} 재고관리 — GHS 분류 · MSDS 비치 현황`, ghsLastLetter);
+    const gcount = window.GHSUI.counts(sortedReagents, settings());
+    addKpiRow(wsGhs, ghsCols, [
+      { label:'GHS 미입력', value:`${gcount.ghsMissing}건`, color:AMBER, tint:AMBER_TINT },
+      { label:'MSDS 미첨부', value:`${gcount.msdsMissing}건`, color:RED, tint:RED_TINT },
+      { label:'MSDS 검토 필요', value:`${gcount.msdsReview}건`, color:NAVY, tint:NAVY_TINT },
+    ]);
+    const ghsHeaderRow = wsGhs.getRow(HEADER_ROW);
+    ghsData.header.forEach((h,i)=>{ ghsHeaderRow.getCell(i+1).value = h; });
+    styleHeaderRow(ghsHeaderRow);
+    wsGhs.autoFilter = { from:`A${HEADER_ROW}`, to:`${ghsLastLetter}${HEADER_ROW}` };
+    ghsData.rows.forEach((vals,i)=>{
+      const row = wsGhs.getRow(DATA_START_ROW + i);
+      row.values = vals;
+      row.eachCell({includeEmpty:true}, cell=>{ cell.font = BODY_FONT; cell.border = BORDER_ALL; cell.alignment = { vertical:'top', wrapText:true }; });
+      if(i % 2 === 1) row.eachCell({includeEmpty:true}, cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:ZEBRA_TINT} }; });
+      const stCell = row.getCell(18), stText = String(stCell.value||'');
+      if(/경과/.test(stText)) stCell.font = { ...BODY_FONT, color:{argb:RED}, bold:true };
+      else if(/미첨부|미입력|D-/.test(stText)) stCell.font = { ...BODY_FONT, color:{argb:AMBER}, bold:true };
+    });
+    const ghsLastRow = ghsData.rows.length ? DATA_START_ROW + ghsData.rows.length - 1 : HEADER_ROW;
+    frameOuterBorder(wsGhs, HEADER_ROW, ghsLastRow, 1, ghsCols);
+    setupPrint(wsGhs, ghsLastLetter);
+
     const buf = await wb.xlsx.writeBuffer();
     const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     const url = URL.createObjectURL(blob);
@@ -2775,13 +2874,18 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const catItems = DB.reagents.filter(r=>(r.category||'reagent')===currentCategory && !r.archivedAt);
     const total=catItems.length, low=catItems.filter(r=>r.minStock>0&&usableStock(r)>0&&usableStock(r)<=r.minStock).length, out=catItems.filter(r=>r.stock<=0).length;
     const expired=catItems.filter(r=>expiryInfo(r).fullyExpired).length, soon=catItems.filter(r=>expiryInfo(r).cls==='exp-soon').length;
-    document.getElementById('stat-chips').innerHTML = `<div class="chip">총 ${catLabel()} <b>${total}</b></div><div class="chip warn">재고 부족 <b>${low}</b></div><div class="chip bad">재고 없음 <b>${out}</b></div><div class="chip bad">만료 <b>${expired}</b></div><div class="chip warn">D-${settings().expiryWarningDays} <b>${soon}</b></div>`;
+    const gc=window.GHSUI.counts(catItems,settings());
+    document.getElementById('stat-chips').innerHTML = `<div class="chip">총 ${catLabel()} <b>${total}</b></div><div class="chip warn">재고 부족 <b>${low}</b></div><div class="chip bad">재고 없음 <b>${out}</b></div><div class="chip bad">만료 <b>${expired}</b></div><div class="chip warn">D-${settings().expiryWarningDays} <b>${soon}</b></div><div class="chip clickable ${gc.ghsMissing?'warn':''}" data-ghs-filter="ghs-missing" title="GHS 분류가 입력되지 않은 품목 보기">GHS 미입력 <b>${gc.ghsMissing}</b></div><div class="chip clickable ${gc.msdsMissing?'warn':''}" data-ghs-filter="msds-missing" title="MSDS PDF가 첨부되지 않은 품목 보기">MSDS 미첨부 <b>${gc.msdsMissing}</b></div><div class="chip clickable ${gc.msdsReview?'bad':''}" data-ghs-filter="msds-review" title="MSDS 검토기한이 지났거나 임박한 품목 보기">MSDS 검토 필요 <b>${gc.msdsReview}</b></div>`;
+    document.querySelectorAll('#stat-chips .chip[data-ghs-filter]').forEach(ch=>ch.onclick=()=>setGhsFilter(ghsFilter===ch.dataset.ghsFilter?'all':ch.dataset.ghsFilter));
     renderHomeDashboard();
   }
 
   // ---------- render: dashboard table ----------
   let hideExpiredOrOut = false;
   let showArchived = false;
+  let ghsFilter = 'all';
+  (function(){const sel=document.getElementById('ghs-filter');if(!sel)return;for(const [v,t] of window.GHSUI.FILTERS){const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o);}sel.onchange=()=>{ghsFilter=sel.value;renderInventory();};})();
+  function setGhsFilter(v){ghsFilter=v;const sel=document.getElementById('ghs-filter');if(sel)sel.value=v;renderInventory();}
 
   function renderInventory(){
     const q=(document.getElementById('search-input').value||'').trim().toLowerCase();
@@ -2789,9 +2893,10 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const catItems=catAll.filter(r=>showArchived ? true : !r.archivedAt);
     let list=catItems.filter(r=>{
       if(hideExpiredOrOut && !r.archivedAt && (expiryInfo(r).fullyExpired||Number(r.stock)<=0)) return false;
+      if(!window.GHSUI.matchesFilter(r,ghsFilter,settings())) return false;
       if(!q) return true;
       const batchText=(r.batches||[]).map(b=>`${batchQrCode(r,b)} ${b.batchId} ${b.lotNo||''} ${b.receivedDate||''} ${b.expiryDate||''}`).join(' ');
-      return [r.name,r.id,r.serialNo,r.maker,r.nameEn,r.casNo,r.spec,r.concentration,r.storage,batchText].some(v=>norm(v).includes(q));
+      return [r.name,r.id,r.serialNo,r.maker,r.nameEn,r.casNo,r.spec,r.concentration,r.storage,batchText,window.GHSUI.searchText(r)].some(v=>norm(v).includes(q));
     });
     const sort=document.getElementById('sort-select')?.value||'id';
     const sorter={name:(a,b)=>norm(a.name).localeCompare(norm(b.name)), expiry:(a,b)=>(effectiveExpiry(a)||'9999').localeCompare(effectiveExpiry(b)||'9999'), stock:(a,b)=>(a.stock||0)-(b.stock||0), received:(a,b)=>(effectiveReceived(b)||'').localeCompare(effectiveReceived(a)||''), id:(a,b)=>a.id.localeCompare(b.id)}[sort];
@@ -2801,7 +2906,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     empty.style.display='none';
     const visibleIds=new Set(list.map(r=>r.id)); Array.from(selectedPrintIds).forEach(id=>{if(!visibleIds.has(id))selectedPrintIds.delete(id);});
     tbody.innerHTML=list.map(r=>{ const st=r.archivedAt?{cls:'archived',label:'폐기'}:statusOf(r); const exp=expiryInfo(r); const checked=selectedPrintIds.has(r.id)?'checked':'';
-      return `<tr data-id="${r.id}" class="${r.id===selectedId?'selected':''} ${r.archivedAt?'archived-row':''}"><td onclick="event.stopPropagation()"><input type="checkbox" class="row-select-checkbox" data-id="${r.id}" ${checked}></td><td class="id-cell">${r.id}</td><td style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(effectiveReceived(r)||'-')}</td><td class="${exp.cls}" style="font-size:11.5px;">${escapeHtml(exp.text)}</td><td class="truncate" title="${escapeHtml(r.name)}"><span style="display:block;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.name)}</span>${r.nameEn?`<span style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink-soft);">${escapeHtml(r.nameEn)}</span>`:''}</td><td class="truncate">${escapeHtml(r.spec||'-')}${r.concentration?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">${escapeHtml(r.concentration)}</span>`:''}</td><td class="truncate">${escapeHtml(r.maker||'-')}</td><td class="stock-cell">${r.stock} ${escapeHtml(r.unit||'')}${expiredStock(r)>0?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">사용가능 ${usableStock(r)}</span>`:''}</td><td>${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''}</td><td onclick="event.stopPropagation()"><button class="row-delete-btn" data-id="${r.id}" title="${r.archivedAt?'복원':'폐기'}">${r.archivedAt?'↩':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</button></td></tr>`;
+      return `<tr data-id="${r.id}" class="${r.id===selectedId?'selected':''} ${r.archivedAt?'archived-row':''}"><td onclick="event.stopPropagation()"><input type="checkbox" class="row-select-checkbox" data-id="${r.id}" ${checked}></td><td class="id-cell">${r.id}</td><td style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(effectiveReceived(r)||'-')}</td><td class="${exp.cls}" style="font-size:11.5px;">${escapeHtml(exp.text)}</td><td class="truncate" title="${escapeHtml(r.name)}"><span style="display:block;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.name)}</span>${r.nameEn?`<span style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink-soft);">${escapeHtml(r.nameEn)}</span>`:''}</td><td class="truncate">${escapeHtml(r.spec||'-')}${r.concentration?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">${escapeHtml(r.concentration)}</span>`:''}</td><td class="truncate">${escapeHtml(r.maker||'-')}</td><td class="ghs-td">${window.GHSUI.cellHtml(r,settings())}</td><td class="stock-cell">${r.stock} ${escapeHtml(r.unit||'')}${expiredStock(r)>0?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">사용가능 ${usableStock(r)}</span>`:''}</td><td>${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''}</td><td onclick="event.stopPropagation()"><button class="row-delete-btn" data-id="${r.id}" title="${r.archivedAt?'복원':'폐기'}">${r.archivedAt?'↩':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</button></td></tr>`;
     }).join('');
     tbody.querySelectorAll('tr').forEach(tr=>tr.addEventListener('click',()=>{selectedId=tr.dataset.id;renderInventory();renderDetail();}));
     tbody.querySelectorAll('.row-select-checkbox').forEach(cb=>cb.addEventListener('change',()=>{if(cb.checked)selectedPrintIds.add(cb.dataset.id);else selectedPrintIds.delete(cb.dataset.id);updateSelectAllCheckbox(list);}));
@@ -2945,6 +3050,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="full"><label>보관방법</label><input type="text" id="d-storage" value="${escapeHtml(r.storage||'')}"></div>
         <div><label>최근 수정</label><input type="text" value="${fmtDate(r.updatedAt)}" disabled></div>
       </div>
+      <div class="log-list" id="ghs-panel"></div>
       <div class="log-list safety-widget" id="safety-panel"></div>
       <div class="log-list" id="msds-panel"></div>
       <div class="log-list">
@@ -2960,6 +3066,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <button class="danger" id="detail-delete-btn">${r.archivedAt ? '↩ 복원' : '🗑 폐기/비활성'}</button>
       </div>
     `);
+    window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm});
     window.InventorySafetyUI.mountDetail({element:document.getElementById('safety-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
@@ -3071,11 +3178,11 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       const enClass=enLen>=26?' en-sm':'';
       const idLen=Array.from(String(r.id||'')).length;
       const idClass=idLen>=18?' id-sm':'';
-      return `<section class="label${compact?' compact':''}"><div class="qr">${qr?`<img src="${qr}" alt="QR">`:`<div class="qr-fail">QR</div>`}</div><div class="text"><div class="name${nameClass}">${escapeHtml(r.name)}</div>${r.nameEn?`<div class="en${enClass}">${escapeHtml(r.nameEn)}</div>`:''}<div class="meta">${metaHtml}</div><div class="id${idClass}">${escapeHtml(r.id)}</div></div></section>`;
+      return `<section class="label${compact?' compact':''}"><div class="qr">${qr?`<img src="${qr}" alt="QR">`:`<div class="qr-fail">QR</div>`}</div><div class="text"><div class="name${nameClass}">${escapeHtml(r.name)}</div>${r.nameEn?`<div class="en${enClass}">${escapeHtml(r.nameEn)}</div>`:''}<div class="meta">${metaHtml}</div><div class="id-row"><div class="id${idClass}">${escapeHtml(r.id)}</div>${settings().labelShowGhs!==false?window.GHSUI.labelHtml(r,compact?Math.max(3,3.3*m.scale):Math.max(3.4,4*m.scale)):''}</div></div></section>`;
     }).join('');
     const dir=m.horizontal?'row':'column',textH=m.horizontal?(m.h-m.pad*2):(m.h-m.pad*2-m.q-m.gap);
     const n=9.6*m.scale,en=5.25*m.scale,meta=4.7*m.scale,id=6.1*m.scale;
-    return `<!doctype html><html><head><meta charset="utf-8"><title>QR Label</title><style>@page{size:${m.w}mm ${m.h}mm;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;width:${m.w}mm;height:${m.h}mm;background:#fff;color:#000;font-family:'Malgun Gothic','맑은 고딕',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-rendering:geometricPrecision}.label{width:${m.w}mm;height:${m.h}mm;padding:${m.pad}mm;display:flex;flex-direction:${dir};align-items:center;justify-content:center;gap:${m.gap}mm;overflow:hidden;page-break-after:always;break-after:page;background:#fff}.label:last-child{page-break-after:auto;break-after:auto}.qr{width:${m.q}mm;height:${m.q}mm;flex:0 0 ${m.q}mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.qr img{display:block;width:${m.q}mm;height:${m.q}mm;object-fit:contain;image-rendering:pixelated}.qr-fail{width:${m.q}mm;height:${m.q}mm;border:.2mm solid #333;display:flex;align-items:center;justify-content:center}.text{flex:1;min-width:0;max-width:100%;height:${Math.max(5,textH)}mm;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:.22mm 0 .05mm;transform:translateY(.18mm)}.name{font-size:${Math.max(5.7,Math.min(14.6,n))}pt;font-weight:900;line-height:1.06;letter-spacing:-.18px;color:#000;margin:0 0 .20mm;display:block;max-height:3.05em;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}.name.name-sm{font-size:${Math.max(5.4,Math.min(12.5,n*.84))}pt}.name.name-xs{font-size:${Math.max(5.0,Math.min(10.8,n*.73))}pt}.name.name-xxs{font-size:${Math.max(4.7,Math.min(9.5,n*.64))}pt}.name.name-xxxs{font-size:${Math.max(4.3,Math.min(8.7,n*.58))}pt}.en{font-size:${Math.max(4.1,Math.min(7.5,en))}pt;font-weight:600;line-height:1.06;color:#000;white-space:normal;overflow:hidden;max-height:1.95em;word-break:break-word;margin-bottom:.18mm}.en.en-sm{font-size:${Math.max(3.8,Math.min(6.7,en*.90))}pt}.meta{display:grid;grid-template-columns:1fr 1fr;column-gap:.55mm;row-gap:.08mm;min-width:0}.label.compact .meta{grid-template-columns:1fr}.meta-item{display:flex;align-items:baseline;gap:.22mm;min-width:0;font-size:${Math.max(3.9,Math.min(6.5,meta))}pt;font-weight:600;line-height:1.06;white-space:nowrap;overflow:hidden}.meta-item.wide{grid-column:1/-1}.meta-item.date{font-size:${Math.max(4.2,Math.min(6.8,meta*1.06))}pt}.meta-item.date .mv{font-weight:800;letter-spacing:-.06px}.mk{flex:none;font-weight:800}.mv{min-width:0;overflow:hidden;text-overflow:clip}.id{font-family:Consolas,'Courier New',monospace;font-size:${Math.max(4.4,Math.min(7.9,id))}pt;font-weight:900;line-height:1.04;margin-top:.18mm;white-space:nowrap;overflow:hidden;text-overflow:clip}.id.id-sm{font-size:${Math.max(4.1,Math.min(7.1,id*.9))}pt}</style></head><body>${labels}</body></html>`;
+    return `<!doctype html><html><head><meta charset="utf-8"><title>QR Label</title><style>@page{size:${m.w}mm ${m.h}mm;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;width:${m.w}mm;height:${m.h}mm;background:#fff;color:#000;font-family:'Malgun Gothic','맑은 고딕',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-rendering:geometricPrecision}.label{width:${m.w}mm;height:${m.h}mm;padding:${m.pad}mm;display:flex;flex-direction:${dir};align-items:center;justify-content:center;gap:${m.gap}mm;overflow:hidden;page-break-after:always;break-after:page;background:#fff}.label:last-child{page-break-after:auto;break-after:auto}.qr{width:${m.q}mm;height:${m.q}mm;flex:0 0 ${m.q}mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.qr img{display:block;width:${m.q}mm;height:${m.q}mm;object-fit:contain;image-rendering:pixelated}.qr-fail{width:${m.q}mm;height:${m.q}mm;border:.2mm solid #333;display:flex;align-items:center;justify-content:center}.text{flex:1;min-width:0;max-width:100%;height:${Math.max(5,textH)}mm;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:.22mm 0 .05mm;transform:translateY(.18mm)}.name{font-size:${Math.max(5.7,Math.min(14.6,n))}pt;font-weight:900;line-height:1.06;letter-spacing:-.18px;color:#000;margin:0 0 .20mm;display:block;max-height:3.05em;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}.name.name-sm{font-size:${Math.max(5.4,Math.min(12.5,n*.84))}pt}.name.name-xs{font-size:${Math.max(5.0,Math.min(10.8,n*.73))}pt}.name.name-xxs{font-size:${Math.max(4.7,Math.min(9.5,n*.64))}pt}.name.name-xxxs{font-size:${Math.max(4.3,Math.min(8.7,n*.58))}pt}.en{font-size:${Math.max(4.1,Math.min(7.5,en))}pt;font-weight:600;line-height:1.06;color:#000;white-space:normal;overflow:hidden;max-height:1.95em;word-break:break-word;margin-bottom:.18mm}.en.en-sm{font-size:${Math.max(3.8,Math.min(6.7,en*.90))}pt}.meta{display:grid;grid-template-columns:1fr 1fr;column-gap:.55mm;row-gap:.08mm;min-width:0}.label.compact .meta{grid-template-columns:1fr}.meta-item{display:flex;align-items:baseline;gap:.22mm;min-width:0;font-size:${Math.max(3.9,Math.min(6.5,meta))}pt;font-weight:600;line-height:1.06;white-space:nowrap;overflow:hidden}.meta-item.wide{grid-column:1/-1}.meta-item.date{font-size:${Math.max(4.2,Math.min(6.8,meta*1.06))}pt}.meta-item.date .mv{font-weight:800;letter-spacing:-.06px}.mk{flex:none;font-weight:800}.mv{min-width:0;overflow:hidden;text-overflow:clip}.id-row{display:flex;align-items:center;justify-content:space-between;gap:.5mm;min-width:0;max-width:100%}.id-row .id{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.id-row .ghs img{image-rendering:auto}.id{font-family:Consolas,'Courier New',monospace;font-size:${Math.max(4.4,Math.min(7.9,id))}pt;font-weight:900;line-height:1.04;margin-top:.18mm;white-space:nowrap;overflow:hidden;text-overflow:clip}.id.id-sm{font-size:${Math.max(4.1,Math.min(7.1,id*.9))}pt}</style></head><body>${labels}</body></html>`;
   }
   function previewMetaHtml(r){
     const line1=[r.maker,r.spec].filter(Boolean).map(escapeHtml).join(' · ');
@@ -3277,7 +3384,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(expValue) infoRows.push(['유효기간',expValue]);
     if(r.storage) infoRows.push(['보관방법',r.storage]);
     const infoHtml=infoRows.length?`<div class="confirm-box" style="margin:12px 0 14px;">${infoRows.map(([k,v])=>`<div class="confirm-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div>`:'';
-    showScanModal(`<div class="scan-result"><h3>${escapeHtml(r.name)} ${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''} <span class="badge" style="background:var(--teal-tint);color:var(--teal-dark);">${catTag}</span></h3><div class="meta">${escapeHtml(target.code)} · 총 재고 <b>${r.stock} ${escapeHtml(r.unit||'')}</b>${expiredStock(r)>0?` · 사용가능 <b>${usableStock(r)}</b>`:''}${batchMeta}</div>${infoHtml}<div class="adjust-row"><div class="toggle-group"><button data-mode="in">입고 +</button><button data-mode="out" class="active">출고 -</button></div><input type="number" id="scan-qty" value="1" min="1" step="1"></div><div id="scan-batch-fields" style="display:none;margin-top:10px;"><div class="field-grid"><div><label>입고일</label><input type="date" id="scan-received" value="${todayStr()}"></div><div><label>유효기간</label><input type="date" id="scan-expiry" value="${escapeHtml(targetBatch?.expiryDate||'')}"></div>${(r.category||'reagent')==='standard'?`<div><label>Lot No.</label><input type="text" id="scan-lot" placeholder="새 Lot No." value="${escapeHtml(targetBatch?.lotNo||'')}"></div>`:''}</div><div class="hint">입고는 항상 새 입고회차로 추가되고 해당 입고회차 QR을 발급합니다.</div></div><div class="adjust-row" style="margin-top:10px;"><label style="font-size:12.5px;color:var(--ink-soft);font-weight:600;flex:none;" id="scan-handler-label">출고인</label><input type="text" id="scan-handler" placeholder="이름" value="${escapeHtml(lastHandlerName)}" style="flex:1;"><button class="primary" id="scan-apply-btn">적용</button></div><div class="hint" style="margin-top:8px;">${targetBatch?'이 QR은 해당 입고회차에서만 차감합니다.':'기존 품목 QR입니다. 신규 라벨은 입고회차별 QR로 발급됩니다.'}</div></div>`);
+    showScanModal(`<div class="scan-result"><h3>${escapeHtml(r.name)} ${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''} <span class="badge" style="background:var(--teal-tint);color:var(--teal-dark);">${catTag}</span></h3><div class="meta">${escapeHtml(target.code)} · 총 재고 <b>${r.stock} ${escapeHtml(r.unit||'')}</b>${expiredStock(r)>0?` · 사용가능 <b>${usableStock(r)}</b>`:''}${batchMeta}</div>${infoHtml}${window.GHSUI.inlineHtml(r)}<div class="adjust-row"><div class="toggle-group"><button data-mode="in">입고 +</button><button data-mode="out" class="active">출고 -</button></div><input type="number" id="scan-qty" value="1" min="1" step="1"></div><div id="scan-batch-fields" style="display:none;margin-top:10px;"><div class="field-grid"><div><label>입고일</label><input type="date" id="scan-received" value="${todayStr()}"></div><div><label>유효기간</label><input type="date" id="scan-expiry" value="${escapeHtml(targetBatch?.expiryDate||'')}"></div>${(r.category||'reagent')==='standard'?`<div><label>Lot No.</label><input type="text" id="scan-lot" placeholder="새 Lot No." value="${escapeHtml(targetBatch?.lotNo||'')}"></div>`:''}</div><div class="hint">입고는 항상 새 입고회차로 추가되고 해당 입고회차 QR을 발급합니다.</div></div><div class="adjust-row" style="margin-top:10px;"><label style="font-size:12.5px;color:var(--ink-soft);font-weight:600;flex:none;" id="scan-handler-label">출고인</label><input type="text" id="scan-handler" placeholder="이름" value="${escapeHtml(lastHandlerName)}" style="flex:1;"><button class="primary" id="scan-apply-btn">적용</button></div><div class="hint" style="margin-top:8px;">${targetBatch?'이 QR은 해당 입고회차에서만 차감합니다.':'기존 품목 QR입니다. 신규 라벨은 입고회차별 QR로 발급됩니다.'}</div></div>`);
     const applyMode=(mode)=>{setScanMode(mode);document.getElementById('scan-handler-label').textContent=mode==='in'?'입고인':'출고인';document.getElementById('scan-batch-fields').style.display=mode==='in'?'block':'none';}; applyMode('out');
     document.querySelectorAll('#scan-modal-box .toggle-group button').forEach(b=>b.onclick=()=>applyMode(b.dataset.mode));
     document.getElementById('scan-apply-btn').onclick=()=>{const qty=Math.max(1,Number(document.getElementById('scan-qty').value)||1),handler=document.getElementById('scan-handler').value.trim();if(scanMode==='out'){if(targetBatch&&isBatchExpired(targetBatch)){showToast('이 입고회차는 유효기간이 만료되어 일반 출고에서 제외됩니다.',true);return;}if(targetBatch&&Number(targetBatch.stock)<=0){showToast('이 입고회차의 재고가 없습니다.',true);return;}if(!targetBatch&&usableStock(r)<=0){showToast('출고 가능한 유효 재고가 없습니다. 만료 입고회차는 출고에서 자동 제외됩니다.',true);return;}}const extra=scanMode==='in'?{receivedDate:document.getElementById('scan-received').value||todayStr(),expiryDate:document.getElementById('scan-expiry').value||'',lotNo:document.getElementById('scan-lot')?.value.trim()||''}:{};renderScanConfirm(r,scanMode,qty,handler,extra,targetBatch);};
@@ -3711,6 +3818,30 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
+  function renderGhsSettingsSummary(){
+    const el=document.getElementById('ghs-settings-summary'); if(!el) return;
+    const items=DB.reagents.filter(r=>!r.archivedAt), c=window.GHSUI.counts(items,settings());
+    const top=Object.entries(c.pictograms).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${k} ${n}`).join(' · ');
+    el.textContent=`활성 품목 ${c.total}개 · GHS 입력 ${c.total-c.ghsMissing}개 · 미입력 ${c.ghsMissing}개 · 신호어 위험 ${c.danger}개 · MSDS 미첨부 ${c.msdsMissing}개 · MSDS 검토 필요 ${c.msdsReview}개${top?' · 그림문자: '+top:''}`;
+  }
+  async function exportGhsExcel(){
+    if(typeof ExcelJS==='undefined'){showToast('엑셀 라이브러리를 불러오지 못했습니다.',true);return;}
+    const items=DB.reagents.filter(r=>!r.archivedAt).slice().sort((a,b)=>a.id.localeCompare(b.id));
+    if(!items.length){showToast('내보낼 품목이 없습니다.',true);return;}
+    const wb=new ExcelJS.Workbook(); wb.creator='ReagentInventory';
+    const ws=wb.addWorksheet('GHS·MSDS현황',{views:[{state:'frozen',ySplit:1}]});
+    const data=window.GHSUI.excelRows(items,settings()), widths=[12,9,22,18,13,14,8,24,28,44,44,24,9,14,10,13,13,18,26];
+    data.header.forEach((h,i)=>{ws_setColWidth(ws,i+1,widths[i]||14);ws.getCell(1,i+1).value=h;});
+    ws.getRow(1).eachCell(c=>{c.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF558022'}};c.alignment={vertical:'middle',horizontal:'center'};});
+    ws.getRow(1).height=22;
+    const thin={style:'thin',color:{argb:'FFC7CDD3'}};
+    data.rows.forEach((vals,i)=>{const row=ws.getRow(i+2);row.values=vals;row.eachCell({includeEmpty:true},c=>{c.font={name:'맑은 고딕',size:11};c.alignment={vertical:'top',wrapText:true};c.border={top:thin,left:thin,bottom:thin,right:thin};});const st=row.getCell(18);if(/경과/.test(String(st.value)))st.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFED193A'}};else if(/미첨부|미입력|D-/.test(String(st.value)))st.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFC97A2B'}};});
+    ws.autoFilter={from:'A1',to:colLetter(data.header.length)+'1'};
+    ws.pageSetup={paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0};
+    const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`GHS_MSDS현황_${todayStr()}.xlsx`;document.body.appendChild(a);a.click();a.remove();restoreKeyboardFocus();URL.revokeObjectURL(url);
+    showToast('GHS·MSDS 현황을 엑셀로 저장했습니다.');
+  }
   function renderSettings(){
     const s=settings();
     const val=(id,v)=>{const el=document.getElementById(id);if(el)el.value=String(v);};
@@ -3718,6 +3849,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     val('settings-theme',s.theme); val('settings-accent',s.accent);
     val('settings-expiry-days',s.expiryWarningDays); val('settings-default-sort',s.defaultSort);
     chk('settings-hide-expired',s.hideExpiredOrOutDefault); chk('settings-show-archived',s.showArchivedDefault);
+    val('settings-msds-review',s.msdsReviewMonths); chk('settings-label-ghs',s.labelShowGhs); renderGhsSettingsSummary();
     val('settings-start-tab',s.defaultStartTab); chk('settings-auto-backup',s.autoBackup); val('settings-backup-retention',s.backupRetention); val('settings-label-width',s.labelWidthMm); val('settings-label-height',s.labelHeightMm); updateLabelSizeDisplays();
     renderSettingsLabelPreview();
     refreshPrinterList();
@@ -3728,6 +3860,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     settings()[key]=value; DB.settings=normalizeSettings(DB.settings); await saveDB();
     if(key==='theme'||key==='accent') applyTheme();
     if(key==='expiryWarningDays'){renderInventory();renderStats();}
+    if(key==='msdsReviewMonths'){renderInventory();renderStats();renderGhsSettingsSummary();}
     if(key==='defaultSort'){const ss=document.getElementById('sort-select');if(ss)ss.value=settings().defaultSort;renderInventory();}
     if(key==='labelWidthMm'||key==='labelHeightMm'){updateLabelSizeDisplays();renderFormLabelPreview();}
     renderSettings();
@@ -3741,6 +3874,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const testPrint=document.getElementById('settings-test-print'); if(testPrint)testPrint.onclick=()=>printLabelsBrother([testLabelItem()]);
     const onCheck=(id,key)=>{const el=document.getElementById(id);if(el)el.onchange=async e=>updateSetting(key,!!e.target.checked);};
     onCheck('settings-hide-expired','hideExpiredOrOutDefault'); onCheck('settings-show-archived','showArchivedDefault'); onCheck('settings-auto-backup','autoBackup');
+    onChange('settings-msds-review','msdsReviewMonths',Number); onCheck('settings-label-ghs','labelShowGhs');
+    const ghsExport=document.getElementById('settings-ghs-export'); if(ghsExport)ghsExport.onclick=exportGhsExcel;
     document.getElementById('settings-backup-now').onclick=exportBackup;
     document.getElementById('settings-backup-refresh').onclick=()=>refreshBackupStatus();
     document.getElementById('settings-backup-folder').onclick=async()=>{try{if(!window.inventoryStore?.openBackupFolder)throw new Error('설치형 앱에서 사용할 수 있습니다.');const r=await window.inventoryStore.openBackupFolder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){showToast('백업 폴더를 열 수 없습니다: '+String(e.message||e),true);}};
@@ -3987,6 +4122,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     // ---------- init ----------
   (async function init(){
     DB = await loadDB();
+    try{ await window.GHSUI.preload(); }catch(e){ console.error(e); }
     document.getElementById('f-received').value = todayStr();
     applyTheme();
     bindSettings();

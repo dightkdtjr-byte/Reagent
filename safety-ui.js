@@ -49,7 +49,7 @@
    const heading=E('h3',title);heading.id='safety-download-title';
    const note=E('p','이 창은 자동으로 사라지지 않습니다. 실패한 다운로드는 문서 연결 완료로 처리하지 않습니다.','hint');
    const report=E('textarea');report.id='safety-download-report';report.readOnly=true;report.setAttribute('aria-label','복사 가능한 다운로드 진단 내역');
-   report.value='시약 재고관리시스템 v3.9.9 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
+   report.value='시약 재고관리시스템 v3.10.0 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
    const status=E('p','','hint');status.setAttribute('role','status');const actions=E('div',undefined,'msds-actions');
    actions.append(button('오류 내용 복사',()=>copyText(report.value,status)),button('닫기',()=>dialog.close(),'primary'));
    dialog.append(heading,note,report,status,actions);document.body.append(dialog);
@@ -126,6 +126,7 @@
    }
    lastDetailErrors.delete(item.id);
    lastFeedback.set(item.id,{identity:C.identity(opts.getItem(item.id)),text:'PDF 저장·연결 완료 · '+doc.fileName});
+   if(intent==='connect')setTimeout(()=>{try{window.GHSUI?.onDocumentsAttached?.(item.id,[doc]);}catch(e){console.error(e);}},50);
    // Never open a file/dialog for a different item after the user changed the detail view.
    if(panels.get(opts.element)!==opts||!opts.element.isConnected||opts.element.offsetParent===null)return;
    if(intent==='open'){
@@ -257,5 +258,6 @@
    input.oninput=rows;select.onchange=rows;rows();locks();
   }catch(e){element.replaceChildren(E('h3','MSDS · GHS 자료 연결'),E('p','목록 확인 실패: '+safeError(e),'hint safety-warning'));}
  }
- window.InventorySafetyUI={mountDetail:drawDetail,mountSettings:drawSettings,isBusy:()=>busy,refresh};
+ async function suggestion(item){const cat=await catalog();if(!cat||!item)return null;const entry=state(cat,item),source=C.resolvedSource(cat,item);if(!source||!(entry.status==='ready'||entry.status==='reference'))return null;return {status:entry.status,source};}
+ window.InventorySafetyUI={mountDetail:drawDetail,mountSettings:drawSettings,isBusy:()=>busy,refresh,suggestion};
 })();

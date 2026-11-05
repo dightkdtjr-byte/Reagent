@@ -197,6 +197,33 @@ function createMSDSStore(getDataDir, options = {}) {
     }
     return {warning: failed ? `사용되지 않는 MSDS 백업 사본 ${failed}개를 정리하지 못했습니다.` : ''};
   }
-  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles};
+  // PDF 본문 텍스트. 앞쪽 페이지(2절)와 마지막 페이지(개정 이력)만 읽는다. 스캔본은 빈 문자열에 가깝다.
+  async function textOf(doc, {maxPages = 6, timeoutMs = 25000} = {}) {
+    const {bytes} = checkedFile(directory(), doc);
+    const pdfjs = require('pdfjs-dist/legacy/build/pdf.js');
+    const fonts = path.join(path.dirname(require.resolve('pdfjs-dist/package.json')), 'standard_fonts') + path.sep;
+    const work = (async () => {
+      const pdf = await pdfjs.getDocument({data: new Uint8Array(bytes), disableWorker: true, isEvalSupported: false, verbosity: 0, standardFontDataUrl: fonts}).promise;
+      try {
+        const pages = []; for (let i = 1; i <= Math.min(pdf.numPages, maxPages); i++) pages.push(i);
+        if (pdf.numPages > maxPages) { for (const i of [pdf.numPages - 1, pdf.numPages]) if (i > maxPages) pages.push(i); }
+        let out = '';
+        for (const i of pages) {
+          const page = await pdf.getPage(i), tc = await page.getTextContent();
+          let line = '', lastY = null;
+          for (const it of tc.items) {
+            if (lastY !== null && Math.abs(it.transform[5] - lastY) > 2) { out += line + '\n'; line = ''; }
+            line += it.str + (it.hasEOL ? '\n' : ' '); lastY = it.transform[5];
+          }
+          out += line + '\n';
+        }
+        return {text: out, pages: pdf.numPages};
+      } finally { try { await pdf.destroy(); } catch {} }
+    })();
+    let timer;
+    const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('PDF 읽기 시간이 초과되었습니다.')), timeoutMs); });
+    try { return await Promise.race([work, limit]); } finally { clearTimeout(timer); }
+  }
+  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles, textOf};
 }
 module.exports = {createMSDSStore, validateDocument, validateDocuments, references, MAX_BYTES, MAX_DOCUMENTS};

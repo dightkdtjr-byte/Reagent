@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld('inventoryMSDS', {
   list: (documents) => ipcRenderer.invoke('inventory-msds:list', documents),
   open: (document) => ipcRenderer.invoke('inventory-msds:open', document),
   export: (document) => ipcRenderer.invoke('inventory-msds:export', document),
+  preview: (document) => ipcRenderer.invoke('inventory-msds:preview', document),
+  extract: (document) => ipcRenderer.invoke('inventory-msds:extract', document),
   folder: () => ipcRenderer.invoke('inventory-msds:folder')
 });
 
@@ -55,5 +57,6 @@ contextBridge.exposeInMainWorld('inventorySafety', {
  copy:(text)=>ipcRenderer.invoke('inventory-safety:copy',text),
  receive:(id)=>ipcRenderer.invoke('inventory-safety:receive',id),
  icons:(codes)=>ipcRenderer.invoke('inventory-safety:icons',codes),
- source:(id)=>ipcRenderer.invoke('inventory-safety:source',id)
+ source:(id)=>ipcRenderer.invoke('inventory-safety:source',id),
+ lookup:(kind,query)=>ipcRenderer.invoke('inventory-safety:lookup',kind,query)
 });
