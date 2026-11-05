@@ -1,0 +1,48 @@
+name: Windows 빌드
+
+# 실행 방법
+# - GitHub 저장소 > Actions > "Windows 빌드" > Run workflow 버튼
+# - 또는 v3.9.9 같은 태그를 올리면 자동 실행
+# 결과: 비공개 초안(draft) 릴리스에 설치형 exe와 포터블 exe가 첨부된다.
+#       초안 릴리스는 저장소에 쓰기 권한이 있는 사람만 보고 내려받을 수 있다.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: exe 빌드
+        run: npx electron-builder --win --x64 --publish never
+
+      - name: 버전 읽기
+        id: ver
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: 초안 릴리스에 exe 첨부
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: v${{ steps.ver.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          draft: true
+          files: |
+            dist/installer/*-win-x64.exe
+            dist/installer/*-portable.exe
