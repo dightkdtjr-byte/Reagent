@@ -23,8 +23,14 @@ function safeReadJson(p){ try { if(!fs.existsSync(p)) return null; return JSON.p
 function atomicWriteJson(p, obj){ return writeJson(p, obj, true); }
 ipcMain.handle('inventory:load', async ()=> safeReadJson(dbFile()));
 ipcMain.handle('inventory:save', async (_evt, obj)=> {
-  validateInventory(obj);
-  atomicWriteJson(dbFile(), obj);
+  try {
+    validateInventory(obj);
+    atomicWriteJson(dbFile(), obj);
+  } catch(e) {
+    console.error('inventory save failed', e);
+    const code = e && e.code ? ' ['+e.code+']' : '';
+    return {ok:false, error:String(e && e.message || e)+code, path:dbFile()};
+  }
   return {ok:true, backup:backups.automatic(obj)};
 });
 ipcMain.handle('inventory:backup-status', async ()=> backups.status());

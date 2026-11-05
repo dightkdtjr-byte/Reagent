@@ -593,6 +593,9 @@ body{background:#f3f6fb;}
 .home-head-actions{display:flex;align-items:center;gap:12px;}
 .db-pill{height:46px;display:flex;align-items:center;gap:10px;padding:0 18px;border:1px solid #e1e8f1;border-radius:999px;background:#f7f9fc;color:#3d5c83;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(20,56,107,.04);}
 .db-dot{width:10px;height:10px;border-radius:50%;background:#11a36f;box-shadow:0 0 0 3px rgba(17,163,111,.12);}
+.db-pill.save-failed{border-color:#e5484d!important;color:#c62828!important;background:#fff1f1!important;cursor:help}
+.db-pill.save-failed .db-dot{background:#e5484d;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
+html[data-theme="dark"] .db-pill.save-failed{background:#3a1d20!important;color:#ff9b9b!important;border-color:#a33a3f!important}
 .home-theme-actions{height:46px;display:flex;align-items:center;background:#f7f9fc;border:1px solid #e1e8f1;border-radius:999px;overflow:hidden;}
 .home-theme-btn{width:48px;height:46px;border:0;background:transparent;color:#39597e;display:grid;place-items:center;cursor:pointer;}
 .home-theme-btn+ .home-theme-btn{border-left:1px solid #e6ebf2;}
@@ -1140,7 +1143,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.9.8</div>
+        <div class="work-version">v3.9.9</div>
       </div>
 </aside>
   </div>
@@ -1443,7 +1446,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · 등록 보조·데이터 점검</div></div>
-          <div class="setting-control settings-version">v3.9.8<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.9.9<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1516,7 +1519,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.9.8';
+  const APP_VERSION = '3.9.9';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1601,17 +1604,39 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       DB=migrateDB(DB);
       if(window.inventoryStore){
         const result=await window.inventoryStore.save(DB);
-        if(!result?.ok)throw new Error('데이터 저장 실패');
+        if(!result?.ok)throw new Error(result?.error||'데이터 저장 실패');
         if(result.backup?.ok===false)showToast('데이터는 저장됐지만 자동 백업에 실패했습니다.',true);
         else if(result.backup?.warning)showToast('백업 파일 정리에 문제가 있습니다. 설정에서 확인해주세요.',true);
         if(document.getElementById('tab-settings')?.classList.contains('active'))refreshBackupStatus();
       } else window.localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+      setSaveStatus(null);
       renderHomeDashboard();
       return true;
     }catch(e){
-      console.error(e); showToast('저장 중 오류가 발생했습니다. 백업 저장 후 프로그램을 다시 실행해주세요.', true);
+      console.error(e);
+      const reason=String(e&&e.message||e).replace(/^Error invoking remote method '[^']+':\s*(Error:\s*)?/,'');
+      const firstFailure=!lastSaveFailure;
+      setSaveStatus(reason);
+      showToast('저장 실패: '+reason, true);
+      // 연속 실패 때마다 창을 띄우지 않고, 처음 실패했을 때만 확인 창으로 알린다.
+      if(firstFailure){
+        let where='';
+        try{ where=window.inventoryStore?.path ? await window.inventoryStore.path() : ''; }catch{}
+        alert('데이터를 파일에 저장하지 못했습니다.\n방금 한 작업은 프로그램을 끄면 사라질 수 있습니다.\n\n원인: '+reason+(where?'\n저장 위치: '+where:'')+'\n\n보안 프로그램이 저장을 막고 있는지 확인하고, 설정에서 백업을 저장한 뒤 프로그램을 다시 실행해주세요.');
+        try{ restoreKeyboardFocus(); }catch{}
+      }
       return false;
     }
+  }
+  // 마지막 저장 결과를 상단 '데이터베이스' 표시에 반영한다. 실패 상태는 다음 저장이 성공할 때까지 유지된다.
+  var lastSaveFailure=null;
+  function setSaveStatus(reason){
+    lastSaveFailure=reason?{reason,at:Date.now()}:null;
+    document.querySelectorAll('.db-pill').forEach(p=>{
+      p.classList.toggle('save-failed',!!reason);
+      const label=p.querySelector('span:not(.db-dot)'); if(label) label.textContent=reason?'저장 실패':'데이터베이스 정상';
+      p.title=reason?('마지막 저장 실패: '+reason):'';
+    });
   }
 
   let manualBackupBusy=false;
@@ -2560,6 +2585,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     // ---------- toast ----------
   let toastTimer = null;
   function showToast(msg, isError, undoFn){
+    // 저장이 막 실패한 직후에는 '완료' 같은 성공 문구로 오류 문구를 덮지 않는다.
+    if(!isError && lastSaveFailure && Date.now()-lastSaveFailure.at<5000) return;
     const el = document.getElementById('toast');
     if(undoFn){
       el.innerHTML = `<span>${escapeHtml(msg)}</span> <button id="toast-undo-btn" class="toast-undo">되돌리기</button>`;
