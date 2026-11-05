@@ -3,7 +3,7 @@ const path=require('path'),{fileURLToPath}=require('url');
 const {errorInfo}=require('./safety-errors');
 // 외부 검색 페이지. 주소 틀은 고정이며 렌더러는 종류와 검색어만 보낸다.
 const LOOKUPS={
- kosha:{url:()=>'https://msds.kosha.or.kr/MSDSInfo/kcic/msdssearchMain.do',copy:true},
+ kosha:{url:q=>'https://msds.kosha.or.kr/MSDSInfo/kcic/msdssearchAll.do?searchKeyword='+encodeURIComponent(q),copy:false},
  pubchem:{url:q=>'https://pubchem.ncbi.nlm.nih.gov/#query='+encodeURIComponent(q),copy:false},
  echa:{url:q=>'https://echa.europa.eu/search-for-chemicals?p_p_id=disssimplesearch_WAR_disssearchportlet&p_p_lifecycle=0&_disssimplesearch_WAR_disssearchportlet_searchOccurred=true&_disssimplesearch_WAR_disssearchportlet_sskeywordKey='+encodeURIComponent(q),copy:false}
 };
