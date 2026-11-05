@@ -43,7 +43,7 @@
     if(!D.hasClassification(item))return '';
     const g=item.ghs,imgs=g.pictograms.slice(0,5).map(c=>{const u=icon(c);return u?`<img src="${u}" alt="${esc(c)}" style="width:${mm}mm;height:${mm}mm;display:block">`:'';}).join('');
     if(!imgs&&!g.signalWord)return '';
-    return `<div class="ghs" style="display:flex;align-items:center;gap:.35mm;flex:none">${imgs}${g.signalWord&&g.signalWord!=='None'?`<span style="font-weight:800;font-size:${Math.max(3.8,mm*.78)}mm;line-height:1">${esc(D.SIGNAL[g.signalWord])}</span>`:''}</div>`;
+    return `<div class="ghs" style="display:flex;align-items:center;gap:.35mm;flex:none">${imgs}${g.signalWord&&g.signalWord!=='None'?`<span style="font-weight:800;font-size:${Math.max(2.2,mm*.62)}mm;line-height:1;margin-left:.2mm">${esc(D.SIGNAL[g.signalWord])}</span>`:''}</div>`;
   }
   const FILTERS=[['all','GHS·MSDS 전체'],['ghs-missing','GHS 미입력'],['ghs-set','GHS 입력됨'],['danger','신호어 위험'],['msds-missing','MSDS 미첨부'],['msds-review','MSDS 검토 필요'],...CODES.map(c=>[c,`${c} ${D.PICTOGRAMS[c].label}`])];
   function matchesFilter(item,filter,settings){

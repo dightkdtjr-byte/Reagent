@@ -3178,7 +3178,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       const enClass=enLen>=26?' en-sm':'';
       const idLen=Array.from(String(r.id||'')).length;
       const idClass=idLen>=18?' id-sm':'';
-      return `<section class="label${compact?' compact':''}"><div class="qr">${qr?`<img src="${qr}" alt="QR">`:`<div class="qr-fail">QR</div>`}</div><div class="text"><div class="name${nameClass}">${escapeHtml(r.name)}</div>${r.nameEn?`<div class="en${enClass}">${escapeHtml(r.nameEn)}</div>`:''}<div class="meta">${metaHtml}</div><div class="id-row"><div class="id${idClass}">${escapeHtml(r.id)}</div>${settings().labelShowGhs!==false?window.GHSUI.labelHtml(r,compact?Math.max(3,3.3*m.scale):Math.max(3.4,4*m.scale)):''}</div></div></section>`;
+      return `<section class="label${compact?' compact':''}"><div class="qr">${qr?`<img src="${qr}" alt="QR">`:`<div class="qr-fail">QR</div>`}</div><div class="text"><div class="name${nameClass}">${escapeHtml(r.name)}</div>${r.nameEn?`<div class="en${enClass}">${escapeHtml(r.nameEn)}</div>`:''}<div class="meta">${metaHtml}</div><div class="id-row"><div class="id${idClass}">${escapeHtml(r.id)}</div>${settings().labelShowGhs!==false?window.GHSUI.labelHtml(r,compact?Math.max(3.4,3.8*m.scale):Math.max(3.8,4.4*m.scale)):''}</div></div></section>`;
     }).join('');
     const dir=m.horizontal?'row':'column',textH=m.horizontal?(m.h-m.pad*2):(m.h-m.pad*2-m.q-m.gap);
     const n=9.6*m.scale,en=5.25*m.scale,meta=4.7*m.scale,id=6.1*m.scale;
