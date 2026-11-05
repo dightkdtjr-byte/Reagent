@@ -6,10 +6,12 @@
   "description": "시약/표준물질 재고관리 시스템",
   "devDependencies": {
     "@electron/packager": "^18.4.4",
-    "electron": "^31.0.0"
+    "electron": "^31.0.0",
+    "electron-builder": "^25.1.8"
   },
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-packager . ReagentInventory --platform=win32 --arch=x64 --icon=icon.ico --out=dist --overwrite --ignore=^/dist --ignore=^/node_modules --ignore=^/\\\\.gitignore --ignore=^/package-lock\\\\.json --win32metadata.ProductName=\"시약 재고관리 시스템\" --win32metadata.FileDescription=\"시약/표준물질 재고관리 시스템\" --win32metadata.CompanyName=MAMO"
+    "build:win": "electron-packager . ReagentInventory --platform=win32 --arch=x64 --icon=icon.ico --out=dist --overwrite --ignore=^/dist --ignore=^/node_modules --ignore=^/\\\\.gitignore --ignore=^/package-lock\\\\.json --win32metadata.ProductName=\"시약 재고관리 시스템\" --win32metadata.FileDescription=\"시약/표준물질 재고관리 시스템\" --win32metadata.CompanyName=MAMO",
+    "dist:win": "electron-builder --win --x64"
   }
 }
