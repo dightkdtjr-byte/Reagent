@@ -1,0 +1,4106 @@
+{
+  "schemaVersion": 1,
+  "version": "2026-09-08.2",
+  "reviewedAt": "2026-09-08",
+  "scope": "제품별 제조사 영문 SDS 2절의 그림문자·신호어·H 문구. 국내 공급자 MSDS와 법정 경고표지 대체용이 아님.",
+  "sources": [
+    {
+      "id": "wako-140132",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Nitric Acid (1.42)",
+      "productCodes": [
+        "141-01327",
+        "143-01326"
+      ],
+      "fileName": "Wako_141-01327_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0114-0132JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.06",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS03",
+          "GHS06",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H272",
+          "H314",
+          "H318",
+          "H330",
+          "H304",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn189235view0 / turn496433view2 / turn972764search0",
+      "casNo": "7697-37-2",
+      "compositionSummary": "질산 69–70 wt% / 물 30–31 wt% · 수용액",
+      "compositionResearch": "turn981166view6",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-010025",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Acetic Acid",
+      "productCodes": [
+        "015-00257",
+        "017-00251",
+        "017-00256"
+      ],
+      "fileName": "Wako_015-00257_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0101-0025JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "4.05",
+      "revisionDate": "2025-05-07",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS02",
+          "GHS07",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H226",
+          "H314",
+          "H318",
+          "H312",
+          "H402",
+          "H370"
+        ],
+        "organNotes": {
+          "H370": "혈액, 호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn189235view1 / turn496433view3"
+    },
+    {
+      "id": "wako-080106",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydrochloric Acid",
+      "productCodes": [
+        "088-01067",
+        "080-01061",
+        "080-01066"
+      ],
+      "fileName": "Wako_088-01067_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0106JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.04",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H301",
+          "H332",
+          "H334",
+          "H400",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn189235view2 / turn496433view4",
+      "casNo": "7647-01-0",
+      "compositionSummary": "염화수소 35.0–37.0 wt% / 물 63.0–65.0 wt% · 수용액",
+      "compositionResearch": "turn981166view0 / turn981166view1",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-200679",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Toluene",
+      "productCodes": [
+        "209-06791"
+      ],
+      "fileName": "Wako_209-06791_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0120-0679JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "1.07",
+      "revisionDate": "2024-02-27",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS02",
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H225",
+          "H315",
+          "H320",
+          "H332",
+          "H360",
+          "H362",
+          "H335",
+          "H336",
+          "H304",
+          "H401",
+          "H412",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "중추신경계",
+          "H372": "중추신경계, 신장"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2
+      ],
+      "researchCitation": "turn189235view3 / turn496433view5 / turn461022view8",
+      "casNo": "108-88-3",
+      "compositionSummary": "단일물질 · 톨루엔 99.8 wt% · 액체",
+      "compositionResearch": "turn551428view7 / turn551428view8",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-010299",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Ammonium Chloride",
+      "productCodes": [
+        "013-02997",
+        "013-02992",
+        "017-02995",
+        "015-02991"
+      ],
+      "fileName": "Wako_013-02997_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0101-0299JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.05",
+      "revisionDate": "2023-05-08",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H320",
+          "H302",
+          "H402",
+          "H371",
+          "H372"
+        ],
+        "organNotes": {
+          "H371": "신경계",
+          "H372": "전신독성"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view0 / turn429392view0"
+    },
+    {
+      "id": "wako-020219",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Boric Acid",
+      "productCodes": [
+        "027-02197",
+        "021-02195",
+        "029-02191",
+        "027-02192",
+        "023-02194"
+      ],
+      "fileName": "Wako_027-02197_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0102-0219JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "11.06",
+      "revisionDate": "2023-10-05",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H315",
+          "H319",
+          "H360",
+          "H335",
+          "H370"
+        ],
+        "organNotes": {
+          "H370": "중추신경계, 소화관"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view1 / turn429392view1",
+      "casNo": "10043-35-3",
+      "compositionSummary": "단일물질 · 붕산 99.5 wt% · 고체 · 첨가제 해당 없음(문서 표기)",
+      "compositionResearch": "turn551428view2 / turn551428view3",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-030349",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Citric Acid Monohydrate",
+      "productCodes": [
+        "031-03497",
+        "031-03492",
+        "035-03495",
+        "033-03491"
+      ],
+      "fileName": "Wako_031-03497_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0103-0349JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.02",
+      "revisionDate": "2023-01-30",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS07"
+        ],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H315",
+          "H319"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view2 / turn429392view2"
+    },
+    {
+      "id": "wako-190286",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Disodium Hydrogenphosphate",
+      "productCodes": [
+        "193-02862",
+        "197-02865",
+        "195-02861"
+      ],
+      "fileName": "Wako_193-02862_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-0286JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "6.05",
+      "revisionDate": "2025-02-19",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H320"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view3 / turn429392view3"
+    },
+    {
+      "id": "wako-070061",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Glycerol",
+      "productCodes": [
+        "073-00617",
+        "075-00611",
+        "075-00616"
+      ],
+      "fileName": "Wako_073-00617_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0107-0061JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.04",
+      "revisionDate": "2025-09-10",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H320"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view4 / turn429392view4"
+    },
+    {
+      "id": "wako-081036",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydrochloric Acid",
+      "productCodes": [
+        "087-10361"
+      ],
+      "fileName": "Wako_087-10361_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-1036JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "1.06",
+      "revisionDate": "2024-02-29",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H301",
+          "H332",
+          "H334",
+          "H400",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view5 / turn429392view5"
+    },
+    {
+      "id": "wako-080108",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydrochloric Acid",
+      "productCodes": [
+        "084-01086"
+      ],
+      "fileName": "Wako_084-01086_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0108JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.04",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H301",
+          "H332",
+          "H334",
+          "H400",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view6 / turn429392view6"
+    },
+    {
+      "id": "wako-080347",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydrochloric Acid",
+      "productCodes": [
+        "081-03475"
+      ],
+      "fileName": "Wako_081-03475_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0347JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.04",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H301",
+          "H332",
+          "H334",
+          "H400",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn441186view7 / turn429392view7"
+    },
+    {
+      "id": "wako-080421",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydrogen Peroxide",
+      "productCodes": [
+        "081-04215"
+      ],
+      "fileName": "Wako_081-04215_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0421JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.05",
+      "revisionDate": "2025-05-22",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS03",
+          "GHS06",
+          "GHS08",
+          "GHS05",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H272",
+          "H314",
+          "H318",
+          "H302",
+          "H312",
+          "H330",
+          "H351",
+          "H400",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view0 / turn461022view0",
+      "casNo": "7722-84-1",
+      "compositionSummary": "과산화수소 30.0–35.5 wt% / 물 64.5–70.0 wt% · 수용액",
+      "compositionResearch": "turn981166view2 / turn981166view3",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-080147",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydroxylammonium Chloride",
+      "productCodes": [
+        "081-01471",
+        "089-01472",
+        "083-01475"
+      ],
+      "fileName": "Wako_081-01471_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0147JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.08",
+      "revisionDate": "2024-09-11",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H315",
+          "H301",
+          "H317",
+          "H400",
+          "H410"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view1 / turn461022view1"
+    },
+    {
+      "id": "wako-080345",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Hydroxylammonium Chloride",
+      "productCodes": [
+        "085-03451",
+        "083-03452"
+      ],
+      "fileName": "Wako_085-03451_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0108-0345JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.09",
+      "revisionDate": "2024-09-11",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H315",
+          "H301",
+          "H317",
+          "H400",
+          "H410"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view2 / turn461022view2"
+    },
+    {
+      "id": "wako-090001",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Imidazole",
+      "productCodes": [
+        "091-00012",
+        "095-00015",
+        "099-00013"
+      ],
+      "fileName": "Wako_091-00012_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0109-0001JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.07",
+      "revisionDate": "2026-06-19",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS07",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H319",
+          "H302",
+          "H360",
+          "H371"
+        ],
+        "organNotes": {
+          "H371": "신경계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view3 / turn461022view3"
+    },
+    {
+      "id": "wako-140401",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Nitric Acid (1.38)",
+      "productCodes": [
+        "140-04016"
+      ],
+      "fileName": "Wako_140-04016_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0114-0401JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "5.06",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H318",
+          "H330",
+          "H304",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view4 / turn461022view4"
+    },
+    {
+      "id": "wako-140974",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Nitric Acid (1.42)",
+      "productCodes": [
+        "143-09741"
+      ],
+      "fileName": "Wako_143-09741_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0114-0974JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "1.08",
+      "revisionDate": "2026-09-02",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS03",
+          "GHS06",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H272",
+          "H314",
+          "H318",
+          "H330",
+          "H304",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계, 치아"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view5 / turn461022view5"
+    },
+    {
+      "id": "wako-160102",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Phenol",
+      "productCodes": [
+        "167-01022",
+        "161-01025",
+        "169-01021"
+      ],
+      "fileName": "Wako_167-01022_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0116-0102JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "5.05",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS08",
+          "GHS05",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H318",
+          "H302",
+          "H311",
+          "H341",
+          "H360",
+          "H411",
+          "H401",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "신경계, 호흡기계, 심혈관계, 신장",
+          "H372": "중추신경계, 심혈관계, 혈액계, 간, 신장"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view6 / turn461022view6"
+    },
+    {
+      "id": "wako-160382",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Potassium Hydrogen Phthalate",
+      "productCodes": [
+        "163-03822",
+        "167-03825"
+      ],
+      "fileName": "Wako_163-03822_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0116-0382JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.03",
+      "revisionDate": "2023-02-14",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS07"
+        ],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H315",
+          "H319"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn384220view7 / turn461022view7"
+    },
+    {
+      "id": "wako-160917",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Potassium Peroxodisulfate",
+      "productCodes": [
+        "164-09175"
+      ],
+      "fileName": "Wako_164-09175_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0116-0917JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "6.04",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS03",
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H272",
+          "H315",
+          "H302",
+          "H334",
+          "H335",
+          "H317",
+          "H371"
+        ],
+        "organNotes": {
+          "H371": "전신독성"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn350387view0 / turn518458view0"
+    },
+    {
+      "id": "wako-191275",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sodium 4-Pyridinecarboxylate",
+      "productCodes": [
+        "195-12751",
+        "193-12752"
+      ],
+      "fileName": "Wako_195-12751_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-1275JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.05",
+      "revisionDate": "2026-08-03",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "None",
+        "hCodes": [],
+        "organNotes": {},
+        "notClassifiedHazardous": true,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view1 / turn501406view0"
+    },
+    {
+      "id": "wako-190166",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sodium Chloride",
+      "productCodes": [
+        "197-01667",
+        "191-01665",
+        "195-01663"
+      ],
+      "fileName": "Wako_197-01667_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-0166JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "10.05",
+      "revisionDate": "2025-10-29",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H320"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view2 / turn501406view1"
+    },
+    {
+      "id": "wako-191832",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sulfuric Acid",
+      "productCodes": [
+        "194-18321"
+      ],
+      "fileName": "Wako_194-18321_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-1832JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "1.06",
+      "revisionDate": "2024-02-29",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H330",
+          "H410",
+          "H402",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view3 / turn501406view2"
+    },
+    {
+      "id": "wako-190470",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sulfuric Acid",
+      "productCodes": [
+        "191-04708",
+        "195-04706",
+        "191-04703"
+      ],
+      "fileName": "Wako_191-04708_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-0470JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.11",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H330",
+          "H410",
+          "H402",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view4 / turn501406view3",
+      "casNo": "7664-93-9",
+      "compositionSummary": "황산 95.0 wt% · 액체(문서의 단일물질 표기)",
+      "compositionResearch": "turn981166view4 / turn981166view5",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-191156",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "64% Sulfuric Acid",
+      "productCodes": [
+        "198-11565",
+        "196-11561"
+      ],
+      "fileName": "Wako_198-11565_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-1156JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.06",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H318",
+          "H331",
+          "H402",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view5 / turn501406view4"
+    },
+    {
+      "id": "wako-190732",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sulfuric Acid",
+      "productCodes": [
+        "199-07325"
+      ],
+      "fileName": "Wako_199-07325_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-0732JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.12",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS05",
+          "GHS06",
+          "GHS08",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H290",
+          "H314",
+          "H318",
+          "H330",
+          "H410",
+          "H402",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계",
+          "H372": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view6 / turn501406view5"
+    },
+    {
+      "id": "wako-200192",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "p-Toluenesulfonamide",
+      "productCodes": [
+        "200-01922"
+      ],
+      "fileName": "Wako_200-01922_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0120-0192JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.02",
+      "revisionDate": "2023-02-17",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "None",
+        "hCodes": [],
+        "organNotes": {},
+        "notClassifiedHazardous": true,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view7 / turn501406view6"
+    },
+    {
+      "id": "wako-010343",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Ammonium Sulfate",
+      "productCodes": [
+        "015-03437",
+        "015-03432",
+        "019-03435",
+        "013-03433"
+      ],
+      "fileName": "Wako_015-03437_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0101-0343JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "6.03",
+      "revisionDate": "2025-01-09",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "None",
+        "hCodes": [],
+        "organNotes": {},
+        "notClassifiedHazardous": true,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view8 / turn501406view7",
+      "casNo": "7783-20-2",
+      "compositionSummary": "단일물질 · 황산암모늄 99.5 wt% · 고체",
+      "compositionResearch": "turn551428view4",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-042864",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Diethylene Glycol",
+      "productCodes": [
+        "040-28645"
+      ],
+      "fileName": "Wako_040-28645_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0104-2864JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "4.09",
+      "revisionDate": "2026-07-16",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H361",
+          "H372"
+        ],
+        "organNotes": {
+          "H372": "신장, 간"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view9 / turn501406view8",
+      "casNo": "111-46-6",
+      "compositionSummary": "단일물질 · 디에틸렌글리콜 99.0 wt% · 액체",
+      "compositionResearch": "turn551428view5 / turn551428view6",
+      "compositionReviewedAt": "2026-09-08"
+    },
+    {
+      "id": "wako-161272",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Phenol, Crystals",
+      "productCodes": [
+        "168-12721",
+        "164-12723",
+        "160-12725"
+      ],
+      "fileName": "Wako_168-12721_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0116-1272JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "7.05",
+      "revisionDate": "2026-06-01",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS08",
+          "GHS05",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H318",
+          "H302",
+          "H311",
+          "H341",
+          "H360",
+          "H401",
+          "H411",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "신경계, 호흡기계, 심혈관계, 신장",
+          "H372": "중추신경계, 심혈관계, 혈액계, 간, 신장"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn895599view10 / turn501406view9"
+    },
+    {
+      "id": "wako-030260",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Chloroform",
+      "productCodes": [
+        "036-02607",
+        "038-02601",
+        "038-02606",
+        "034-02603",
+        "034-02608"
+      ],
+      "fileName": "Wako_036-02607_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0103-0260JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.07",
+      "revisionDate": "2024-10-11",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS06",
+          "GHS08",
+          "GHS05",
+          "GHS09"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H315",
+          "H318",
+          "H302",
+          "H331",
+          "H341",
+          "H351",
+          "H361",
+          "H336",
+          "H402",
+          "H410",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "호흡기계, 심혈관계, 간, 신장",
+          "H372": "중추신경계, 호흡기계, 간, 신장"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2
+      ],
+      "researchCitation": "turn895599view11 / turn501406view10 / turn613463view1"
+    },
+    {
+      "id": "wako-010034",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Acetone",
+      "productCodes": [
+        "014-00347",
+        "012-00343",
+        "016-00346",
+        "016-00341"
+      ],
+      "fileName": "Wako_014-00347_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0101-0034JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "7.05",
+      "revisionDate": "2026-07-10",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS02",
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H225",
+          "H320",
+          "H361",
+          "H335",
+          "H336",
+          "H372"
+        ],
+        "organNotes": {
+          "H372": "중추신경계, 호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2
+      ],
+      "researchCitation": "turn709232view1 / turn709232view2",
+      "casNo": "67-64-1",
+      "compositionSummary": "단일물질 · 아세톤 99.5 wt% · 액체",
+      "referenceOnly": true
+    },
+    {
+      "id": "wako-130647",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Methanol",
+      "productCodes": [
+        "138-06473",
+        "132-06471"
+      ],
+      "fileName": "Wako_138-06473_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0113-0647JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "1.06",
+      "revisionDate": "2024-02-26",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS02",
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H225",
+          "H319",
+          "H302",
+          "H360",
+          "H336",
+          "H370",
+          "H372"
+        ],
+        "organNotes": {
+          "H370": "중추신경계, 시각기관, 전신독성",
+          "H372": "중추신경계, 시각기관"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2
+      ],
+      "researchCitation": "turn709232view5 / turn709232view6",
+      "casNo": "67-56-1",
+      "compositionSummary": "단일물질 · 메탄올 99.7 wt% · 액체",
+      "referenceOnly": true
+    },
+    {
+      "id": "wako-050045",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Ethanol (99.5)",
+      "productCodes": [
+        "055-00457",
+        "057-00451",
+        "057-00456",
+        "053-00453"
+      ],
+      "fileName": "Wako_055-00457_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0105-0045JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "3.05",
+      "revisionDate": "2023-07-12",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS02",
+          "GHS07",
+          "GHS08"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H225",
+          "H320",
+          "H350",
+          "H360",
+          "H335",
+          "H336",
+          "H372",
+          "H373"
+        ],
+        "organNotes": {
+          "H372": "간",
+          "H373": "중추신경계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2
+      ],
+      "researchCitation": "turn709232view3 / turn709232view4",
+      "casNo": "64-17-5",
+      "compositionSummary": "단일물질 · 에탄올 99.5 wt% · 액체 · 첨가제 해당 없음(문서 표기)",
+      "referenceOnly": true
+    },
+    {
+      "id": "wako-191598",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Sodium Hydroxide",
+      "productCodes": [
+        "192-15985"
+      ],
+      "fileName": "Wako_192-15985_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0119-1598JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "9.05",
+      "revisionDate": "2024-02-28",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [
+          "GHS08",
+          "GHS05"
+        ],
+        "signalWord": "Danger",
+        "hCodes": [
+          "H314",
+          "H318",
+          "H402",
+          "H370"
+        ],
+        "organNotes": {
+          "H370": "호흡기계"
+        },
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1,
+        2,
+        3
+      ],
+      "researchCitation": "turn551428view0 / turn551428view1 / turn709232view0",
+      "casNo": "1310-73-2",
+      "compositionSummary": "단일물질 · 수산화나트륨 97.0 wt% · 고체(shot)",
+      "referenceOnly": true
+    },
+    {
+      "id": "wako-160424",
+      "publisher": "FUJIFILM Wako Pure Chemical Corporation",
+      "productName": "Potassium Dihydrogen Phosphate",
+      "productCodes": [
+        "165-04242",
+        "165-04247",
+        "169-04245",
+        "167-04241",
+        "163-04243"
+      ],
+      "fileName": "Wako_165-04242_SDS_EN.pdf",
+      "pdfURL": "https://labchem-wako.fujifilm.com/sds/W01W0116-0424JGHEEN.pdf",
+      "allowedHosts": [
+        "labchem-wako.fujifilm.com"
+      ],
+      "language": "영문",
+      "jurisdiction": "일본 JIS Z 7252:2019 / Z 7253:2019",
+      "revision": "2.04",
+      "revisionDate": "2025-08-27",
+      "reviewedAt": "2026-09-08",
+      "ghs": {
+        "pictograms": [],
+        "signalWord": "Warning",
+        "hCodes": [
+          "H320"
+        ],
+        "organNotes": {},
+        "notClassifiedHazardous": false,
+        "reviewedSection": 2
+      },
+      "reviewedPageNumbers": [
+        1
+      ],
+      "researchCitation": "turn709232view7",
+      "casNo": "7778-77-0",
+      "compositionSummary": "단일물질 · 인산이수소칼륨 99.5 wt% · 고체",
+      "referenceOnly": true
+    }
+  ],
+  "entries": [
+    {
+      "itemId": "ST0001",
+      "itemName": "Yittrium Standard for ICP",
+      "category": "standard",
+      "identity": "[\"ST0001\",\"standard\",\"Yittrium Standard for ICP\",\"Yittrium Standard for ICP\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0002",
+      "itemName": "Yittrium Standard for ICP",
+      "category": "standard",
+      "identity": "[\"ST0002\",\"standard\",\"Yittrium Standard for ICP\",\"Yittrium Standard for ICP\",\"100 mL\",\"\",\"1357\",\"SIGMA-ALDRICH\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0003",
+      "itemName": "Yittrium Standard for ICP-MS",
+      "category": "standard",
+      "identity": "[\"ST0003\",\"standard\",\"Yittrium Standard for ICP-MS\",\"Yittrium Standard for ICP-MS\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0004",
+      "itemName": "ICP multi-element standard solution Ⅳ",
+      "category": "standard",
+      "identity": "[\"ST0004\",\"standard\",\"ICP multi-element standard solution Ⅳ\",\"ICP multi-element standard solution Ⅳ\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0005",
+      "itemName": "Method 6020A Calibration Standard",
+      "category": "standard",
+      "identity": "[\"ST0005\",\"standard\",\"Method 6020A Calibration Standard\",\"Method 6020A Calibration Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0006",
+      "itemName": "Method 6021A Calibration Standard",
+      "category": "standard",
+      "identity": "[\"ST0006\",\"standard\",\"Method 6021A Calibration Standard\",\"Method 6021A Calibration Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0007",
+      "itemName": "Method 6022A Calibration Standard",
+      "category": "standard",
+      "identity": "[\"ST0007\",\"standard\",\"Method 6022A Calibration Standard\",\"Method 6022A Calibration Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0008",
+      "itemName": "Gold Standard for ICP-MS",
+      "category": "standard",
+      "identity": "[\"ST0008\",\"standard\",\"Gold Standard for ICP-MS\",\"Gold Standard for ICP-MS\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0009",
+      "itemName": "Scandium Standard for ICP-MS",
+      "category": "standard",
+      "identity": "[\"ST0009\",\"standard\",\"Scandium Standard for ICP-MS\",\"Scandium Standard for ICP-MS\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0010",
+      "itemName": "Lead ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0010\",\"standard\",\"Lead ICP standard\",\"Lead ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0011",
+      "itemName": "Nickel ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0011\",\"standard\",\"Nickel ICP standard\",\"Nickel ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0012",
+      "itemName": "Zinc ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0012\",\"standard\",\"Zinc ICP standard\",\"Zinc ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0013",
+      "itemName": "Chromium ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0013\",\"standard\",\"Chromium ICP standard\",\"Chromium ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0014",
+      "itemName": "Cadmium ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0014\",\"standard\",\"Cadmium ICP standard\",\"Cadmium ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0015",
+      "itemName": "Copper ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0015\",\"standard\",\"Copper ICP standard\",\"Copper ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0016",
+      "itemName": "Manganese ICP Standard",
+      "category": "standard",
+      "identity": "[\"ST0016\",\"standard\",\"Manganese ICP Standard\",\"Manganese ICP Standard\",\"500 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0017",
+      "itemName": "Arsenic ICP standard",
+      "category": "standard",
+      "identity": "[\"ST0017\",\"standard\",\"Arsenic ICP standard\",\"Arsenic ICP standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0018",
+      "itemName": "Aluminum AA Standard",
+      "category": "standard",
+      "identity": "[\"ST0018\",\"standard\",\"Aluminum AA Standard\",\"Aluminum AA Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0019",
+      "itemName": "Beryllium Pure Standard",
+      "category": "standard",
+      "identity": "[\"ST0019\",\"standard\",\"Beryllium Pure Standard\",\"Beryllium Pure Standard\",\"125 mL\",\"\",\"NaN\",\"PerkinElmer\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0020",
+      "itemName": "Hg Mercury standard solution",
+      "category": "standard",
+      "identity": "[\"ST0020\",\"standard\",\"Hg Mercury standard solution\",\"Hg Mercury standard solution\",\"100 mL\",\"\",\"NaN\",\"Kanto\",\"1000 ppm\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0021",
+      "itemName": "STD GEOCHEM CUSTOM 4",
+      "category": "standard",
+      "identity": "[\"ST0021\",\"standard\",\"STD GEOCHEM CUSTOM 4\",\"STD GEOCHEM CUSTOM 4\",\"500 mL\",\"\",\"NaN\",\"PerkinElmer\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0022",
+      "itemName": "Mercury Standard",
+      "category": "standard",
+      "identity": "[\"ST0022\",\"standard\",\"Mercury Standard\",\"Mercury Standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 mg/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0023",
+      "itemName": "Aluminum standard for AAS",
+      "category": "standard",
+      "identity": "[\"ST0023\",\"standard\",\"Aluminum standard for AAS\",\"Aluminum standard for AAS\",\"250 mL\",\"\",\"NaN\",\"Supelco\",\"1 g/L\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0024",
+      "itemName": "Benzo(a)pyrene Solution",
+      "category": "standard",
+      "identity": "[\"ST0024\",\"standard\",\"Benzo(a)pyrene Solution\",\"Benzo(a)pyrene Solution\",\"1 mL\",\"\",\"NaN\",\"Kemidas\",\"1000-3 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0025",
+      "itemName": "Custom Surrogate Standard",
+      "category": "standard",
+      "identity": "[\"ST0025\",\"standard\",\"Custom Surrogate Standard\",\"Custom Surrogate Standard\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0026",
+      "itemName": "D12-Benzo[e]pyrene",
+      "category": "standard",
+      "identity": "[\"ST0026\",\"standard\",\"D12-Benzo[e]pyrene\",\"D12-Benzo[e]pyrene\",\"5 mL\",\"\",\"687942\",\"HPC\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0027",
+      "itemName": "p-Terphenyl-d14",
+      "category": "standard",
+      "identity": "[\"ST0027\",\"standard\",\"p-Terphenyl-d14\",\"p-Terphenyl-d14\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"500 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0028",
+      "itemName": "Custom Deuterated PAH Standard",
+      "category": "standard",
+      "identity": "[\"ST0028\",\"standard\",\"Custom Deuterated PAH Standard\",\"Custom Deuterated PAH Standard\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0029",
+      "itemName": "custom Deuterated PAH Mix",
+      "category": "standard",
+      "identity": "[\"ST0029\",\"standard\",\"custom Deuterated PAH Mix\",\"custom Deuterated PAH Mix\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0030",
+      "itemName": "EPA 610 Polynuclear Aromatic Hydrocarbons Mix",
+      "category": "standard",
+      "identity": "[\"ST0030\",\"standard\",\"EPA 610 Polynuclear Aromatic Hydrocarbons Mix\",\"EPA 610 Polynuclear Aromatic Hydrocarbons Mix\",\"1 mL\",\"\",\"NaN\",\"SIGMA-ALDRICH\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0031",
+      "itemName": "Custom Deuterated Standard\n(Benzo[e]pyrene-d12/Pyrene-d10)",
+      "category": "standard",
+      "identity": "[\"ST0031\",\"standard\",\"Custom Deuterated Standard\\n(Benzo[e]pyrene-d12/Pyrene-d10)\",\"Custom Deuterated Standard\\n(Benzo[e]pyrene-d12/Pyrene-d10)\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"10 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0032",
+      "itemName": "Benzo[a]pyrene",
+      "category": "standard",
+      "identity": "[\"ST0032\",\"standard\",\"Benzo[a]pyrene\",\"Benzo[a]pyrene\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"10 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0033",
+      "itemName": "Custom Deuterated PAH Standard\n(Benzo[a]pyrene-d12/Fluoranthene-d10)",
+      "category": "standard",
+      "identity": "[\"ST0033\",\"standard\",\"Custom Deuterated PAH Standard\\n(Benzo[a]pyrene-d12/Fluoranthene-d10)\",\"Custom Deuterated PAH Standard\\n(Benzo[a]pyrene-d12/Fluoranthene-d10)\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"10 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0034",
+      "itemName": "p-Terphenyl-d14",
+      "category": "standard",
+      "identity": "[\"ST0034\",\"standard\",\"p-Terphenyl-d14\",\"p-Terphenyl-d14\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"10 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0035",
+      "itemName": "Formaldehyde-DNPH Solution",
+      "category": "standard",
+      "identity": "[\"ST0035\",\"standard\",\"Formaldehyde-DNPH Solution\",\"Formaldehyde-DNPH Solution\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0036",
+      "itemName": "Formaldehyde Standard",
+      "category": "standard",
+      "identity": "[\"ST0036\",\"standard\",\"Formaldehyde Standard\",\"Formaldehyde Standard\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0037",
+      "itemName": "알데하이드류 표준물질",
+      "category": "standard",
+      "identity": "[\"ST0037\",\"standard\",\"알데하이드류 표준물질\",\"알데하이드류 표준물질\",\"1 mL\",\"\",\"NaN\",\"Supelco\",\"30 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0038",
+      "itemName": "Acetaldehyde-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0038\",\"standard\",\"Acetaldehyde-DNPH\",\"Acetaldehyde-DNPH\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"0-1 mg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0039",
+      "itemName": "Formaldehyde-2,4-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0039\",\"standard\",\"Formaldehyde-2,4-DNPH\",\"Formaldehyde-2,4-DNPH\",\"1 mL\",\"\",\"NaN\",\"Supelco\",\"700 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0040",
+      "itemName": "Acetaldehyde-2,4-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0040\",\"standard\",\"Acetaldehyde-2,4-DNPH\",\"Acetaldehyde-2,4-DNPH\",\"1 mL\",\"\",\"NaN\",\"Supelco\",\"5089 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0041",
+      "itemName": "Formaldehyde-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0041\",\"standard\",\"Formaldehyde-DNPH\",\"Formaldehyde-DNPH\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"0.1 mg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0042",
+      "itemName": "Acetaldehyde-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0042\",\"standard\",\"Acetaldehyde-DNPH\",\"Acetaldehyde-DNPH\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"0.1 mg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0043",
+      "itemName": "Acetaldehyde-DNPH",
+      "category": "standard",
+      "identity": "[\"ST0043\",\"standard\",\"Acetaldehyde-DNPH\",\"Acetaldehyde-DNPH\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"5089 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0044",
+      "itemName": "Ammonium standard for IC",
+      "category": "standard",
+      "identity": "[\"ST0044\",\"standard\",\"Ammonium standard for IC\",\"Ammonium standard for IC\",\"100 mL\",\"\",\"NaN\",\"Supelco\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0045",
+      "itemName": "Sulfide IC Standard",
+      "category": "standard",
+      "identity": "[\"ST0045\",\"standard\",\"Sulfide IC Standard\",\"Sulfide IC Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0046",
+      "itemName": "Cyanide Standard",
+      "category": "standard",
+      "identity": "[\"ST0046\",\"standard\",\"Cyanide Standard\",\"Cyanide Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 ug/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0047",
+      "itemName": "Cyanide Standard",
+      "category": "standard",
+      "identity": "[\"ST0047\",\"standard\",\"Cyanide Standard\",\"Cyanide Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0048",
+      "itemName": "Multi-Component Anion Mix 4",
+      "category": "standard",
+      "identity": "[\"ST0048\",\"standard\",\"Multi-Component Anion Mix 4\",\"Multi-Component Anion Mix 4\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0049",
+      "itemName": "Anion Standard - Flouride",
+      "category": "standard",
+      "identity": "[\"ST0049\",\"standard\",\"Anion Standard - Flouride\",\"Anion Standard - Flouride\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0050",
+      "itemName": "Anion Standard - Chloride",
+      "category": "standard",
+      "identity": "[\"ST0050\",\"standard\",\"Anion Standard - Chloride\",\"Anion Standard - Chloride\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0051",
+      "itemName": "Anion Standard - Bromide",
+      "category": "standard",
+      "identity": "[\"ST0051\",\"standard\",\"Anion Standard - Bromide\",\"Anion Standard - Bromide\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0052",
+      "itemName": "Anion Standard - Flouride",
+      "category": "standard",
+      "identity": "[\"ST0052\",\"standard\",\"Anion Standard - Flouride\",\"Anion Standard - Flouride\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0053",
+      "itemName": "Anion Standard - Chloride",
+      "category": "standard",
+      "identity": "[\"ST0053\",\"standard\",\"Anion Standard - Chloride\",\"Anion Standard - Chloride\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0054",
+      "itemName": "Anion Standard - Bromide",
+      "category": "standard",
+      "identity": "[\"ST0054\",\"standard\",\"Anion Standard - Bromide\",\"Anion Standard - Bromide\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0055",
+      "itemName": "Hydrazine",
+      "category": "standard",
+      "identity": "[\"ST0055\",\"standard\",\"Hydrazine\",\"Hydrazine\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"0.1 mg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0056",
+      "itemName": "Phenol Standard",
+      "category": "standard",
+      "identity": "[\"ST0056\",\"standard\",\"Phenol Standard\",\"Phenol Standard\",\"100 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0057",
+      "itemName": "Penol in Dicloromethane",
+      "category": "standard",
+      "identity": "[\"ST0057\",\"standard\",\"Penol in Dicloromethane\",\"Penol in Dicloromethane\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0058",
+      "itemName": "Pentachlorophenol",
+      "category": "standard",
+      "identity": "[\"ST0058\",\"standard\",\"Pentachlorophenol\",\"Pentachlorophenol\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"1000 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0059",
+      "itemName": "Benzidin",
+      "category": "standard",
+      "identity": "[\"ST0059\",\"standard\",\"Benzidin\",\"Benzidin\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0060",
+      "itemName": "Benzidin",
+      "category": "standard",
+      "identity": "[\"ST0060\",\"standard\",\"Benzidin\",\"Benzidin\",\"1 mL\",\"\",\"NaN\",\"\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0061",
+      "itemName": "Aniline",
+      "category": "standard",
+      "identity": "[\"ST0061\",\"standard\",\"Aniline\",\"Aniline\",\"1 mL\",\"\",\"NaN\",\"Accustandard\",\"100 μg/mL\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0062",
+      "itemName": "Metals on Filter Paper",
+      "category": "standard",
+      "identity": "[\"ST0062\",\"standard\",\"Metals on Filter Paper\",\"Metals on Filter Paper\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0063",
+      "itemName": "Metals in Impinger Solution",
+      "category": "standard",
+      "identity": "[\"ST0063\",\"standard\",\"Metals in Impinger Solution\",\"Metals in Impinger Solution\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0064",
+      "itemName": "Mercury on Filter Paper",
+      "category": "standard",
+      "identity": "[\"ST0064\",\"standard\",\"Mercury on Filter Paper\",\"Mercury on Filter Paper\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0065",
+      "itemName": "Mercury in Impinger Solution",
+      "category": "standard",
+      "identity": "[\"ST0065\",\"standard\",\"Mercury in Impinger Solution\",\"Mercury in Impinger Solution\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0066",
+      "itemName": "Hydrogen Halides & Halogens in Impinger Solution",
+      "category": "standard",
+      "identity": "[\"ST0066\",\"standard\",\"Hydrogen Halides & Halogens in Impinger Solution\",\"Hydrogen Halides & Halogens in Impinger Solution\",\"NaN\",\"\",\"NaN\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0067",
+      "itemName": "Fluoride in Impinger Solution",
+      "category": "standard",
+      "identity": "[\"ST0067\",\"standard\",\"Fluoride in Impinger Solution\",\"Fluoride in Impinger Solution\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "ST0068",
+      "itemName": "Ammonia in Impinger Solution",
+      "category": "standard",
+      "identity": "[\"ST0068\",\"standard\",\"Ammonia in Impinger Solution\",\"Ammonia in Impinger Solution\",\"NaN\",\"\",\"NaN\",\"ERA\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제품번호 미입력 / 표준용액은 농도·용매·제품번호 확인 후 제품 자체 SDS 연결 필요 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0001",
+      "itemName": "0.2 mol/L 과망가니즈산칼륨 솔루션",
+      "category": "reagent",
+      "identity": "[\"RG0001\",\"reagent\",\"0.2 mol/L 과망가니즈산칼륨 솔루션\",\"0.2 mol/L-Potassium permangananatae solution (1N)\",\"NaN\",\"000P1041\",\"7722-64-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0002",
+      "itemName": "1,3-디메틸바르비투르산",
+      "category": "reagent",
+      "identity": "[\"RG0002\",\"reagent\",\"1,3-디메틸바르비투르산\",\"1,3-dimethylbarbituric acid\",\"GR, 250 g\",\"39565-250G\",\"769-42-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0003",
+      "itemName": "1N 질산은 용액",
+      "category": "reagent",
+      "identity": "[\"RG0003\",\"reagent\",\"1N 질산은 용액\",\"1N-Silver(I) nitrate standard solution\",\"500 mL\",\"7812-3705\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0004",
+      "itemName": "0.1M 질산은 용액",
+      "category": "reagent",
+      "identity": "[\"RG0004\",\"reagent\",\"0.1M 질산은 용액\",\"0.1M-Silver(I) nitrate standard solution\",\"500 mL\",\"7523-3705\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0005",
+      "itemName": "3-메틸-1-페닐-2-피라졸린-5-온",
+      "category": "reagent",
+      "identity": "[\"RG0005\",\"reagent\",\"3-메틸-1-페닐-2-피라졸린-5-온\",\"3-Methyl-1-phenyl-2-pyrazoline-5-one\",\"0.99\",\"M70800-100G\",\"89-25-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0006",
+      "itemName": "4-아미노안티피리딘",
+      "category": "reagent",
+      "identity": "[\"RG0006\",\"reagent\",\"4-아미노안티피리딘\",\"4-amminoantipyrine\",\"100g, 97%\",\"A4382-100G\",\"87-07-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0007",
+      "itemName": "5-(4-디메틸아미노벤질리덴)로다닌",
+      "category": "reagent",
+      "identity": "[\"RG0007\",\"reagent\",\"5-(4-디메틸아미노벤질리덴)로다닌\",\"5-(4-dimethylaminobenzylidene)rhodanine\",\"0.97\",\"001255-25G\",\"536-17-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0008",
+      "itemName": "5-(4-디메틸아미노벤질리덴)로다닌",
+      "category": "reagent",
+      "identity": "[\"RG0008\",\"reagent\",\"5-(4-디메틸아미노벤질리덴)로다닌\",\"5-(4-dimethylaminobenzylidene)rhodanine\",\"25g, ExtraPure\",\"3052-4425\",\"536-17-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0009",
+      "itemName": "초산",
+      "category": "reagent",
+      "identity": "[\"RG0009\",\"reagent\",\"초산\",\"Acetic acid\",\"CH3COOH, 특급, 500 mL\",\"017-00256\",\"64-19-7\",\"\",\"\",\"\"]",
+      "sourceId": "wako-010025",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0010",
+      "itemName": "아세톤",
+      "category": "reagent",
+      "identity": "[\"RG0010\",\"reagent\",\"아세톤\",\"Acetone\",\"순도 : 99.7, 등급 : HPLC, 4L\",\"\",\"67-64-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0011",
+      "itemName": "아세톤",
+      "category": "reagent",
+      "identity": "[\"RG0011\",\"reagent\",\"아세톤\",\"Acetone\",\"CH3COCH3, 특급, 1 L\",\"11265S0380\",\"67-64-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0012",
+      "itemName": "아세톤",
+      "category": "reagent",
+      "identity": "[\"RG0012\",\"reagent\",\"아세톤\",\"Acetone\",\"4L, HPLC\",\"1009-2304\",\"67-64-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0013",
+      "itemName": "아세토니트릴",
+      "category": "reagent",
+      "identity": "[\"RG0013\",\"reagent\",\"아세토니트릴\",\"Acetonitrile\",\"2.5 L, HPLC\",\"A955-212\",\"75-05-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0014",
+      "itemName": "알파손",
+      "category": "reagent",
+      "identity": "[\"RG0014\",\"reagent\",\"알파손\",\"Alfuson\",\"25 g\",\"343-00102\",\"-\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0015",
+      "itemName": "앰버라이트 XAD 수지",
+      "category": "reagent",
+      "identity": "[\"RG0015\",\"reagent\",\"앰버라이트 XAD 수지\",\"Amberlite XAD\",\"500g\",\"\",\"9003-70-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0016",
+      "itemName": "염화암모늄",
+      "category": "reagent",
+      "identity": "[\"RG0016\",\"reagent\",\"염화암모늄\",\"Ammonium chloride\",\"GR,500 g\",\"017-02995\",\"12125-02-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-010299",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0017",
+      "itemName": "6N 수산화암모늄 표준용액",
+      "category": "reagent",
+      "identity": "[\"RG0017\",\"reagent\",\"6N 수산화암모늄 표준용액\",\"Ammonium hydroxide standard solution-6N\",\"S/T, 1 L\",\"1114-3700\",\"1336-21-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0018",
+      "itemName": "황산제삼철암모늄 12수화물",
+      "category": "reagent",
+      "identity": "[\"RG0018\",\"reagent\",\"황산제삼철암모늄 12수화물\",\"Ammonium iron(III) sulfate dodecahydrate\",\"1kg, EP 등급\",\"000A0812\",\"7783-83-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0019",
+      "itemName": "황산암모늄",
+      "category": "reagent",
+      "identity": "[\"RG0019\",\"reagent\",\"황산암모늄\",\"Ammonium Sulfate\",\"99.0%, 1kg\",\"790\",\"7783-20-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0020",
+      "itemName": "삼산화비소",
+      "category": "reagent",
+      "identity": "[\"RG0020\",\"reagent\",\"삼산화비소\",\"Arsenic trioxide\",\"순도 : 99.95% (ACS), 125 g\",\"\",\"1327-53-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0021",
+      "itemName": "아스코르빅산",
+      "category": "reagent",
+      "identity": "[\"RG0021\",\"reagent\",\"아스코르빅산\",\"Ascorbic acid\",\"L-Ascorbic acid, 99%, 500g\",\"A92902-500G\",\"50-81-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0022",
+      "itemName": "벤즈알데하이드",
+      "category": "reagent",
+      "identity": "[\"RG0022\",\"reagent\",\"벤즈알데하이드\",\"Benzaldehyde\",\"100 mL\",\"1003608148\",\"100-52-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0023",
+      "itemName": "벤지딘",
+      "category": "reagent",
+      "identity": "[\"RG0023\",\"reagent\",\"벤지딘\",\"Benzidine\",\"10g, 0>98%\",\"B3503\",\"92-87-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0024",
+      "itemName": "붕산",
+      "category": "reagent",
+      "identity": "[\"RG0024\",\"reagent\",\"붕산\",\"Boric acid\",\"GR, >99.5%\",\"B0394-100G\",\"10043-35-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0025",
+      "itemName": "붕산",
+      "category": "reagent",
+      "identity": "[\"RG0025\",\"reagent\",\"붕산\",\"Boric acid\",\"GR, 99.5% 500g\",\"021-02195\",\"10043-35-3\",\"\",\"\",\"\"]",
+      "sourceId": "wako-020219",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0026",
+      "itemName": "이황화탄소",
+      "category": "reagent",
+      "identity": "[\"RG0026\",\"reagent\",\"이황화탄소\",\"Carbon disulfide\",\">99.9%, 2L\",\"180173\",\"75-15-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0027",
+      "itemName": "클로라민 T 3수화물",
+      "category": "reagent",
+      "identity": "[\"RG0027\",\"reagent\",\"클로라민 T 3수화물\",\"Chloramine T trihydrate\",\"NaN\",\"402869-100G\",\"7080-50-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0028",
+      "itemName": "클로로폼",
+      "category": "reagent",
+      "identity": "[\"RG0028\",\"reagent\",\"클로로폼\",\"Chloroform\",\"Guaranteed Reagent, 1 KG\",\"28560S0350\",\"67-66-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0029",
+      "itemName": "클로로폼",
+      "category": "reagent",
+      "identity": "[\"RG0029\",\"reagent\",\"클로로폼\",\"Chloroform\",\"500 mL, 99 %, GR\",\"038-02606\",\"67-66-4\",\"\",\"\",\"\"]",
+      "sourceId": "wako-030260",
+      "status": "review",
+      "notes": [],
+      "reason": "제품번호는 일치하나 재고 CAS 67-66-4와 SDS의 클로로폼 CAS 67-66-3이 다름. 자동 수정·연결하지 않음."
+    },
+    {
+      "itemId": "RG0030",
+      "itemName": "시트르산 1수화물",
+      "category": "reagent",
+      "identity": "[\"RG0030\",\"reagent\",\"시트르산 1수화물\",\"Citric acid monohydrate\",\"99.5%, GR, 500 g\",\"035-03495\",\"5949-29-1\",\"\",\"\",\"\"]",
+      "sourceId": "wako-030349",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0031",
+      "itemName": "디클로로메탄",
+      "category": "reagent",
+      "identity": "[\"RG0031\",\"reagent\",\"디클로로메탄\",\"Dichloromethane\",\"4L, HPLC\",\"3030-2304\",\"75-09-02\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0032",
+      "itemName": "디에틸프탈레이트-3,4,5,6-d₄",
+      "category": "reagent",
+      "identity": "[\"RG0032\",\"reagent\",\"디에틸프탈레이트-3,4,5,6-d₄\",\"Diethyl phthalate-3,4,5,6-d₄\",\"NaN\",\"24185-25MG\",\"93952-12-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0033",
+      "itemName": "디에틸렌글리콜",
+      "category": "reagent",
+      "identity": "[\"RG0033\",\"reagent\",\"디에틸렌글리콜\",\"Diethylene glycol\",\"20 kg, 99%\",\"D0369\",\"111-46-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0034",
+      "itemName": "디메틸다이설파이드",
+      "category": "reagent",
+      "identity": "[\"RG0034\",\"reagent\",\"디메틸다이설파이드\",\"Dimethyl disulfide\",\"99%, 1L\",\"471569-1L\",\"624-92-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0035",
+      "itemName": "인산나트륨, 이염기",
+      "category": "reagent",
+      "identity": "[\"RG0035\",\"reagent\",\"인산나트륨, 이염기\",\"Disodium hydrogenphosphate\",\"GR, 99%, 500 g\",\"197-02865\",\"7558-79-4\",\"\",\"\",\"\"]",
+      "sourceId": "wako-190286",
+      "status": "ready",
+      "notes": [
+        "해당 SDS는 그림문자 없이 신호어 Warning 및 H320을 표기함. 무위험을 의미하지 않음."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0036",
+      "itemName": "인산나트륨, 이염기",
+      "category": "reagent",
+      "identity": "[\"RG0036\",\"reagent\",\"인산나트륨, 이염기\",\"Disodium hydrogenphosphate\",\"NaN\",\"B1965966 134\",\"7558-79-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0037",
+      "itemName": "에탄올",
+      "category": "reagent",
+      "identity": "[\"RG0037\",\"reagent\",\"에탄올\",\"Ethanol\",\"CH3CH2OH, ≥99.9%, ACS, 1 L\",\"8006-88\",\"64-17-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0038",
+      "itemName": "에탄올",
+      "category": "reagent",
+      "identity": "[\"RG0038\",\"reagent\",\"에탄올\",\"Ethanol\",\"RESIDUE, 1L\",\"02851-1L\",\"64-17-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0039",
+      "itemName": "에틸렌디아민",
+      "category": "reagent",
+      "identity": "[\"RG0039\",\"reagent\",\"에틸렌디아민\",\"Ethylenediamine\",\"순도 : 99%, 1 L\",\"S8013747103\",\"107-15-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0040",
+      "itemName": "EDTA 2나트륨 2수화물",
+      "category": "reagent",
+      "identity": "[\"RG0040\",\"reagent\",\"EDTA 2나트륨 2수화물\",\"Ethylenediaminetertraacetic acid disodium salt dihydrate\",\"NaN\",\"E4884-100G\",\"6381-92-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0041",
+      "itemName": "글리세롤",
+      "category": "reagent",
+      "identity": "[\"RG0041\",\"reagent\",\"글리세롤\",\"Glycerol\",\"CH(OH)(CH2OH)2, 특급, 500 mL\",\"075-00616\",\"56-81-5\",\"\",\"\",\"\"]",
+      "sourceId": "wako-070061",
+      "status": "ready",
+      "notes": [
+        "해당 SDS는 그림문자 없이 신호어 Warning 및 H320을 표기함."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0042",
+      "itemName": "헵타플루오로부티르산 무수물",
+      "category": "reagent",
+      "identity": "[\"RG0042\",\"reagent\",\"헵타플루오로부티르산 무수물\",\"Heptafluorobutyric anhydricd\",\"NaN\",\"394912-5ML\",\"336-59-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0043",
+      "itemName": "헥세인",
+      "category": "reagent",
+      "identity": "[\"RG0043\",\"reagent\",\"헥세인\",\"Hexanes\",\"4L, HPLC\",\"H302-4\",\"110-54-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0044",
+      "itemName": "-",
+      "category": "reagent",
+      "identity": "[\"RG0044\",\"reagent\",\"-\",\"HPLC Flushing solution\",\"NaN\",\"G1969-85026\",\"-\",\"Agilent Technologies\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0045",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0045\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"EP, 35~37%, 1 kg\",\"1129\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0046",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0046\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"EP 35~37%, 1kg\",\"4090-4400\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0047",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0047\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"GR, 35~37%, 500 mL\",\"080-01066\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080106",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0048",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0048\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"1kg, for Electronics Industry\",\"087-10361\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "sourceId": "wako-081036",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0049",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0049\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"35~37%, for Arsenic Analysis\",\"084-01086\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080108",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0050",
+      "itemName": "염산",
+      "category": "reagent",
+      "identity": "[\"RG0050\",\"reagent\",\"염산\",\"Hydrochloric acid\",\"35%,   for  Analysis of Poisonous Metal\",\"081-03475\",\"7647-01-0\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080347",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0051",
+      "itemName": "과산화수소",
+      "category": "reagent",
+      "identity": "[\"RG0051\",\"reagent\",\"과산화수소\",\"Hydrogen peroxide\",\"EP, 28 %, 1kg\",\"3059\",\"7722-84-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0052",
+      "itemName": "과산화수소",
+      "category": "reagent",
+      "identity": "[\"RG0052\",\"reagent\",\"과산화수소\",\"Hydrogen peroxide\",\"EP 30%, 500 mL\",\"4104-4405\",\"7722-84-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0053",
+      "itemName": "과산화수소",
+      "category": "reagent",
+      "identity": "[\"RG0053\",\"reagent\",\"과산화수소\",\"Hydrogen peroxide(30%)\",\"Guaranteed Reagent, 1 KG\",\"4104-4100\",\"7722-84-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0054",
+      "itemName": "과산화수소",
+      "category": "reagent",
+      "identity": "[\"RG0054\",\"reagent\",\"과산화수소\",\"Hydrogen peroxide(30%)\",\"GR, 30% 500 mL\",\"081-04215\",\"7722-84-1\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080421",
+      "status": "ready",
+      "notes": [
+        "SDS 성분 범위: 과산화수소 30.0–35.5%."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0055",
+      "itemName": "염산히드록실아민",
+      "category": "reagent",
+      "identity": "[\"RG0055\",\"reagent\",\"염산히드록실아민\",\"Hydroxylamine hydrochloride\",\"GR, 500 g\",\"083-01475\",\"1304222\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080147",
+      "status": "review",
+      "notes": [],
+      "reason": "제품번호는 일치하나 재고 CAS 값 1304222는 CAS 형식이 아님. 제품 라벨과 CAS 확인 필요."
+    },
+    {
+      "itemId": "RG0056",
+      "itemName": "염산히드록실아민",
+      "category": "reagent",
+      "identity": "[\"RG0056\",\"reagent\",\"염산히드록실아민\",\"Hydroxylamine hydrochloride\",\"35%,   for  Analysis of Poisonous Metal\",\"085-03451\",\"1304222\",\"\",\"\",\"\"]",
+      "sourceId": "wako-080345",
+      "status": "review",
+      "notes": [],
+      "reason": "재고 CAS 1304222 및 규격 35% 표기가 제조사 고체 제품 식별과 맞는지 확인 필요."
+    },
+    {
+      "itemId": "RG0057",
+      "itemName": "이미다졸",
+      "category": "reagent",
+      "identity": "[\"RG0057\",\"reagent\",\"이미다졸\",\"Imidazole\",\"C3H4N2, 특급, 500 mL\",\"095-00015\",\"288-32-4\",\"\",\"\",\"\"]",
+      "sourceId": "wako-090001",
+      "status": "review",
+      "notes": [],
+      "reason": "제품번호는 일치하나 재고 규격 500 mL와 고체 제품의 규격을 대조해야 함."
+    },
+    {
+      "itemId": "RG0058",
+      "itemName": "아이오딘 표준용액 0.1N",
+      "category": "reagent",
+      "identity": "[\"RG0058\",\"reagent\",\"아이오딘 표준용액 0.1N\",\"Iodine standard solution-0.1 N\",\"S/T, 0.1 N, 1L\",\"5011-3700\",\"7553-56-2\\n7681-11-0\\n7732-18-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0059",
+      "itemName": "염화철(III) 6수화물",
+      "category": "reagent",
+      "identity": "[\"RG0059\",\"reagent\",\"염화철(III) 6수화물\",\"iron(Ⅲ) chloride hexahydrate\",\"NaN\",\"31232-250G\",\"10025-77-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0060",
+      "itemName": "L-시스테인",
+      "category": "reagent",
+      "identity": "[\"RG0060\",\"reagent\",\"L-시스테인\",\"L-Cysteine\",\"98%,25 g\",\"34450S0410\",\"52-90-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0061",
+      "itemName": "염화수은(II)",
+      "category": "reagent",
+      "identity": "[\"RG0061\",\"reagent\",\"염화수은(II)\",\"Mercury(Ⅱ) chloride\",\"99.5+%, GR\",\"423931000\",\"7487-94-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0062",
+      "itemName": "염화수은(II)",
+      "category": "reagent",
+      "identity": "[\"RG0062\",\"reagent\",\"염화수은(II)\",\"Mercury(Ⅱ) chloride\",\"25g,\",\"5542-4125\",\"7487-94-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0063",
+      "itemName": "티오시안산 수은(II)",
+      "category": "reagent",
+      "identity": "[\"RG0063\",\"reagent\",\"티오시안산 수은(II)\",\"Mercury(Ⅱ) thiocyanate\",\"GR, 25 g\",\"25131-32\",\"592-85-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0064",
+      "itemName": "메틸 알코올",
+      "category": "reagent",
+      "identity": "[\"RG0064\",\"reagent\",\"메틸 알코올\",\"Methanol\",\"HPLC, 4L\",\"AH-230-4\",\"67-56-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0065",
+      "itemName": "메틸 알코올",
+      "category": "reagent",
+      "identity": "[\"RG0065\",\"reagent\",\"메틸 알코올\",\"Methanol\",\">99.9%, 1L, HPLC\",\"34860\",\"67-56-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0066",
+      "itemName": "메틸 알코올",
+      "category": "reagent",
+      "identity": "[\"RG0066\",\"reagent\",\"메틸 알코올\",\"Methanol\",\"1L\",\"1.06007.1000\",\"67-56-1\",\"Supelco\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0067",
+      "itemName": "메틸 알코올",
+      "category": "reagent",
+      "identity": "[\"RG0067\",\"reagent\",\"메틸 알코올\",\"Methanol\",\"4L\",\"1.06007.4000\",\"67-56-1\",\"Supelco\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0068",
+      "itemName": "메틸오렌지 용액 0.1%",
+      "category": "reagent",
+      "identity": "[\"RG0068\",\"reagent\",\"메틸오렌지 용액 0.1%\",\"Methyl orange solution-0.1%\",\"500ml\",\"5564-8805\",\"547-58-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0069",
+      "itemName": "디클로로메탄",
+      "category": "reagent",
+      "identity": "[\"RG0069\",\"reagent\",\"디클로로메탄\",\"Methylene Chloride\",\"4L, HPLC\",\"D143-4\",\"75-09-02\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0070",
+      "itemName": "N,N-디메틸-1,4-페닐렌디아민 이염산염",
+      "category": "reagent",
+      "identity": "[\"RG0070\",\"reagent\",\"N,N-디메틸-1,4-페닐렌디아민 이염산염\",\"N,N-dimethyl-1,4-phenylenediamine dihydrochloride\",\"25g, >=99%\",\"\",\"62778-12-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0071",
+      "itemName": "N,N-디메틸폼아마이드",
+      "category": "reagent",
+      "identity": "[\"RG0071\",\"reagent\",\"N,N-디메틸폼아마이드\",\"N,N-Dimethylformamide\",\"GR, 99.5%, 1L\",\"07770-25G\",\"68-12-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0072",
+      "itemName": "N,N-디메틸폼아마이드",
+      "category": "reagent",
+      "identity": "[\"RG0072\",\"reagent\",\"N,N-디메틸폼아마이드\",\"N,N-Dimethylformamide\",\"1L, HPLC\",\"270547\",\"68-12-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0073",
+      "itemName": "헥세인",
+      "category": "reagent",
+      "identity": "[\"RG0073\",\"reagent\",\"헥세인\",\"n-Hexane\",\"4L, HPLC\",\"4081-2304\",\"110-54-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0074",
+      "itemName": "헥세인",
+      "category": "reagent",
+      "identity": "[\"RG0074\",\"reagent\",\"헥세인\",\"n-Hexane\",\"2.5L\",\"1.04367.2511\",\"110-54-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0075",
+      "itemName": "질산",
+      "category": "reagent",
+      "identity": "[\"RG0075\",\"reagent\",\"질산\",\"Nitric acid\",\"500 g, 69 %, 1.42, GR\",\"143-01326\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-140132",
+      "status": "review",
+      "notes": [],
+      "reason": "제품번호는 일치하나 재고 규격은 500 g, 제조사 제품은 500 mL로 표시되어 용기 확인 필요. 농도 69–70%."
+    },
+    {
+      "itemId": "RG0076",
+      "itemName": "질산",
+      "category": "reagent",
+      "identity": "[\"RG0076\",\"reagent\",\"질산\",\"Nitric acid\",\"61%, 1.38, for  Analysis of Poisonous Metal\",\"140-04016\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-140401",
+      "status": "ready",
+      "notes": [
+        "61% 제품 SDS 기준. 69–70% 제품의 산화성 그림문자를 일괄 적용하지 않음."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0077",
+      "itemName": "질산",
+      "category": "reagent",
+      "identity": "[\"RG0077\",\"reagent\",\"질산\",\"Nitric acid\",\"1kg, for Electronics Industry\",\"143-09741\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-140974",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0078",
+      "itemName": "O-톨루이딘 용액",
+      "category": "reagent",
+      "identity": "[\"RG0078\",\"reagent\",\"O-톨루이딘 용액\",\"O-tolidine solution\",\"0.1%, CR, 500ml\",\"40930-08\",\"119-93-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0079",
+      "itemName": "O-톨루이딘",
+      "category": "reagent",
+      "identity": "[\"RG0079\",\"reagent\",\"O-톨루이딘\",\"O-toluidine\",\"500mL, 99%\",\"8674-4105\",\"119-93-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0080",
+      "itemName": "p-디메틸아미노벤즈알데하이드",
+      "category": "reagent",
+      "identity": "[\"RG0080\",\"reagent\",\"p-디메틸아미노벤즈알데하이드\",\"p-dimethylaminobenzaldehyde\",\"25g\",\"000D0507\",\"100-10-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0081",
+      "itemName": "과염소산",
+      "category": "reagent",
+      "identity": "[\"RG0081\",\"reagent\",\"과염소산\",\"Perchloric acid\",\"1L, 70%\",\"3718\",\"7601-90-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0082",
+      "itemName": "과염소산",
+      "category": "reagent",
+      "identity": "[\"RG0082\",\"reagent\",\"과염소산\",\"Perchloric acid\",\"500 g, 70%\",\"6513-4105\",\"7601-90-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0083",
+      "itemName": "페놀",
+      "category": "reagent",
+      "identity": "[\"RG0083\",\"reagent\",\"페놀\",\"Phenol\",\"GR, 100g\",\"169-01021\",\"108-95-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-160102",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0084",
+      "itemName": "페놀프탈레인",
+      "category": "reagent",
+      "identity": "[\"RG0084\",\"reagent\",\"페놀프탈레인\",\"phenolphthalein\",\"100g\",\"105945\",\"28376\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0085",
+      "itemName": "인산",
+      "category": "reagent",
+      "identity": "[\"RG0085\",\"reagent\",\"인산\",\"Phosphoric acid\",\"H3PO4,특급, 1 kg\",\"84045S0350\",\"7664-38-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0086",
+      "itemName": "인산",
+      "category": "reagent",
+      "identity": "[\"RG0086\",\"reagent\",\"인산\",\"Phosphoric acid\",\"NaN\",\"466123-100G\",\"7664-38-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0087",
+      "itemName": "시안화칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0087\",\"reagent\",\"시안화칼륨\",\"Potassium cynide\",\"99%, 500g\",\"000P2304\",\"151-50-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0088",
+      "itemName": "인산이수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0088\",\"reagent\",\"인산이수소칼륨\",\"potassium dihydrogen phosphate\",\"1kg, 99.5%, GR\",\"84185S0350\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0089",
+      "itemName": "칼륨 시안화제3철",
+      "category": "reagent",
+      "identity": "[\"RG0089\",\"reagent\",\"칼륨 시안화제3철\",\"potassium hexa-cyanoferrate(Ⅲ)\",\"100g, 99%\",\"244023-100G\",\"13746-66-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0090",
+      "itemName": "프탈산수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0090\",\"reagent\",\"프탈산수소칼륨\",\"Potassium hydrogen phthalate\",\"GR, 500 g\",\"167-03825\",\"877-24-7\",\"\",\"\",\"\"]",
+      "sourceId": "wako-160382",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0091",
+      "itemName": "아이오딘화칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0091\",\"reagent\",\"아이오딘화칼륨\",\"potassium iodide\",\"500g, >=99%\",\"221945\",\"7681-11-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0092",
+      "itemName": "과망가니즈산칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0092\",\"reagent\",\"과망가니즈산칼륨\",\"Potassium permangananatae\",\"100g, 99.5%\",\"24165S3306\",\"7722-64-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0093",
+      "itemName": "과망가니즈산칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0093\",\"reagent\",\"과망가니즈산칼륨\",\"Potassium permangananatae\",\"500g, 99.3%\",\"24165S0301\",\"7722-64-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0094",
+      "itemName": "과망가니즈산칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0094\",\"reagent\",\"과망가니즈산칼륨\",\"Potassium permangananatae\",\"1kg, 99.3%\",\"24165S0350\",\"7722-64-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0095",
+      "itemName": "과황산칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0095\",\"reagent\",\"과황산칼륨\",\"Potassium peroxodisulfate\",\"RHM,500 g\",\"164-09175\",\"7727-21-1\",\"\",\"\",\"\"]",
+      "sourceId": "wako-160917",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0096",
+      "itemName": "인산이수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0096\",\"reagent\",\"인산이수소칼륨\",\"Potassium phosphate monobasic\",\"1kg, EP\",\"433\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0097",
+      "itemName": "인산이수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0097\",\"reagent\",\"인산이수소칼륨\",\"Potassium phosphate monobasic\",\"99%, 50g\",\"57618-50G\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0098",
+      "itemName": "인산이수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0098\",\"reagent\",\"인산이수소칼륨\",\"Potassium phosphate monobasic\",\"99%, 500g\",\"P0662-500G\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0099",
+      "itemName": "인산이수소칼륨 용액",
+      "category": "reagent",
+      "identity": "[\"RG0099\",\"reagent\",\"인산이수소칼륨 용액\",\"Potassium phosphate monobasic solution\",\"1.0M\",\"P8709-1L\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0100",
+      "itemName": "피리딘-4-카복실산",
+      "category": "reagent",
+      "identity": "[\"RG0100\",\"reagent\",\"피리딘-4-카복실산\",\"Pyridine-4-carboxylic acid\",\"GR, 500 g\",\"17508-500G\",\"55-22-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0101",
+      "itemName": "실리카겔",
+      "category": "reagent",
+      "identity": "[\"RG0101\",\"reagent\",\"실리카겔\",\"Silicagel 60\",\"1kg\",\"1.07734.1000\",\"63231-67-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0102",
+      "itemName": "실리카겔",
+      "category": "reagent",
+      "identity": "[\"RG0102\",\"reagent\",\"실리카겔\",\"Silicagel blue\",\"5~10 mesh, min. 15.0%\",\"500S0018\",\"63231-67-4\",\"삼전순약\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0103",
+      "itemName": "이산화규소",
+      "category": "reagent",
+      "identity": "[\"RG0103\",\"reagent\",\"이산화규소\",\"Silicon dioxide\",\"500g, EP\",\"7514-4405\",\"7631-86-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0104",
+      "itemName": "이산화규소",
+      "category": "reagent",
+      "identity": "[\"RG0104\",\"reagent\",\"이산화규소\",\"Silicon dioxide(Quartz Form)\",\"500g\",\"37974-00\",\"7631-86-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0105",
+      "itemName": "피리딘-4-카복실레이트 나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0105\",\"reagent\",\"피리딘-4-카복실레이트 나트륨\",\"sodium 4-Pyridinecarboxylate\",\"250g, >=99%\",\"195-12751\",\"16887-79-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-191275",
+      "status": "review",
+      "notes": [],
+      "reason": "제품번호는 일치하나 재고 규격 >=99%와 최신 SDS 성분 97.0%의 차이를 확인해야 함."
+    },
+    {
+      "itemId": "RG0106",
+      "itemName": "붕수소화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0106\",\"reagent\",\"붕수소화나트륨\",\"Sodium borohydride\",\">98%\",\"452882-100G\",\"16940-66-2\",\"Sigma Aldrich\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0107",
+      "itemName": "염화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0107\",\"reagent\",\"염화나트륨\",\"Sodium chloride\",\"NaCl, 특급, 500 g\",\"191-01665\",\"7647-14-5\",\"\",\"\",\"\"]",
+      "sourceId": "wako-190166",
+      "status": "ready",
+      "notes": [
+        "해당 SDS에 그림문자는 없지만 H320이 기재됨."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0108",
+      "itemName": "플루오르화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0108\",\"reagent\",\"플루오르화나트륨\",\"Sodium fluoride\",\"NaN\",\"201154-100G\",\"7681-49-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0109",
+      "itemName": "수산화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0109\",\"reagent\",\"수산화나트륨\",\"Sodium hydroxide\",\"1kg(pellet) 98%\",\"000S0620\",\"1310-73-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0110",
+      "itemName": "수산화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0110\",\"reagent\",\"수산화나트륨\",\"Sodium hydroxide\",\"500g(pellet) 98% / GR\",\"7570-4105\",\"1310-73-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0111",
+      "itemName": "수산화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0111\",\"reagent\",\"수산화나트륨\",\"Sodium hydroxide\",\"500g(bead) 98% / GR\",\"7571-4105\",\"1310-73-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0112",
+      "itemName": "수산화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0112\",\"reagent\",\"수산화나트륨\",\"Sodium hydroxide\",\"GRGR, 97%, 1 Kg\",\"39155S0350\",\"1310-73-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0113",
+      "itemName": "차아염소산나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0113\",\"reagent\",\"차아염소산나트륨\",\"sodium hypochlorite\",\"500 g\",\"7585-1405\",\"7681-52-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0114",
+      "itemName": "차아염소산나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0114\",\"reagent\",\"차아염소산나트륨\",\"sodium hypochlorite\",\"25 mL\",\"239305\",\"7681-52-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0115",
+      "itemName": "나이트로페리시안화나트륨 2수화물",
+      "category": "reagent",
+      "identity": "[\"RG0115\",\"reagent\",\"나이트로페리시안화나트륨 2수화물\",\"Sodium nitroferricyanide dihydrate\",\"99%, 500g, SP\",\"000S2039\",\"13755-38-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0116",
+      "itemName": "나이트로페리시안화나트륨 2수화물",
+      "category": "reagent",
+      "identity": "[\"RG0116\",\"reagent\",\"나이트로페리시안화나트륨 2수화물\",\"Sodium nitroferricyanide dihydrate\",\"100mg\",\"567538-100MG\",\"13755-38-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0117",
+      "itemName": "인산일수소나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0117\",\"reagent\",\"인산일수소나트륨\",\"Sodium phosphate monobasic\",\"NaN\",\"S9638-250G\",\"7558-80-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0118",
+      "itemName": "황산나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0118\",\"reagent\",\"황산나트륨\",\"Sodium sulfate\",\"99%, 500g\",\"238597-500G\",\"7757-82-6\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0119",
+      "itemName": "무수 황화나트륨",
+      "category": "reagent",
+      "identity": "[\"RG0119\",\"reagent\",\"무수 황화나트륨\",\"Sodium sulfate anhydrous\",\"5g\",\"65122\",\"1313-82-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0120",
+      "itemName": "황화나트륨 9수화물",
+      "category": "reagent",
+      "identity": "[\"RG0120\",\"reagent\",\"황화나트륨 9수화물\",\"Sodium sulfide nonahydrate\",\"500g\",\"152580\",\"1313-84-4\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0121",
+      "itemName": "티오황산나트륨 용액",
+      "category": "reagent",
+      "identity": "[\"RG0121\",\"reagent\",\"티오황산나트륨 용액\",\"Sodium thiosulfate solution-0.05mol/L\",\"0.05mol/L, 500mL\",\"000S2012\",\"7772-98-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0122",
+      "itemName": "티오황산나트륨 용액",
+      "category": "reagent",
+      "identity": "[\"RG0122\",\"reagent\",\"티오황산나트륨 용액\",\"Sodium thiosulfate solution-0.1mol/L\",\"0.1mol/L, 500mL\",\"000S1095\",\"7772-98-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0123",
+      "itemName": "전분",
+      "category": "reagent",
+      "identity": "[\"RG0123\",\"reagent\",\"전분\",\"Starch\",\"500g\",\"03967-500G\",\"9005-25-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0124",
+      "itemName": "황산",
+      "category": "reagent",
+      "identity": "[\"RG0124\",\"reagent\",\"황산\",\"Sulfuric acid\",\"1kg, for Electronics Industry\",\"194-18321\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-191832",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0125",
+      "itemName": "황산",
+      "category": "reagent",
+      "identity": "[\"RG0125\",\"reagent\",\"황산\",\"Sulfuric acid\",\"95%, H2SO4, 특급, 1 kg\",\"83010S0350\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0126",
+      "itemName": "황산",
+      "category": "reagent",
+      "identity": "[\"RG0126\",\"reagent\",\"황산\",\"Sulfuric acid\",\"95%, 500mL, 1st Grade\",\"195-04706\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-190470",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0127",
+      "itemName": "황산",
+      "category": "reagent",
+      "identity": "[\"RG0127\",\"reagent\",\"황산\",\"Sulfuric acid\",\"500g, EP, 95%\",\"234\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0128",
+      "itemName": "황산(64%)",
+      "category": "reagent",
+      "identity": "[\"RG0128\",\"reagent\",\"황산(64%)\",\"Sulfuric Acid (64%)\",\"Sulfuric Acid(1+1), 500 mL, GR\",\"198-11565\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-191156",
+      "status": "ready",
+      "notes": [
+        "64% 제품 자체 SDS 기준. 고농도 황산 자료와 분리."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0129",
+      "itemName": "황산",
+      "category": "reagent",
+      "identity": "[\"RG0129\",\"reagent\",\"황산\",\"Surfuric acid\",\"97%, 500g, for Analysis Poisonous Metals\",\"199-07325\",\"7664-93-9\",\"\",\"\",\"\"]",
+      "sourceId": "wako-190732",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0130",
+      "itemName": "테트라히드로푸란",
+      "category": "reagent",
+      "identity": "[\"RG0130\",\"reagent\",\"테트라히드로푸란\",\"Tetrahydrofuran inhibitor-free\",\"1L, HPLC\",\"34865\",\"109-99-9\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0131",
+      "itemName": "염화주석(II)",
+      "category": "reagent",
+      "identity": "[\"RG0131\",\"reagent\",\"염화주석(II)\",\"Tin(II) chloride\",\"NaN\",\"208256-100G\",\"7772-99-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0132",
+      "itemName": "염화주석(II) 용액",
+      "category": "reagent",
+      "identity": "[\"RG0132\",\"reagent\",\"염화주석(II) 용액\",\"Tin(II) chloride solution\",\"Tin(II) chloride solution, 500 mL, 98 %\",\"36522-08\",\"7772-99-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0133",
+      "itemName": "톨루엔",
+      "category": "reagent",
+      "identity": "[\"RG0133\",\"reagent\",\"톨루엔\",\"Toluen\",\">99.9%, HPLC, GC, 1L\",\"650579\",\"108-88-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0134",
+      "itemName": "톨루엔",
+      "category": "reagent",
+      "identity": "[\"RG0134\",\"reagent\",\"톨루엔\",\"Toluen\",\"4L, HPLC\",\"8541-2304\",\"108-88-3\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0135",
+      "itemName": "톨루엔",
+      "category": "reagent",
+      "identity": "[\"RG0135\",\"reagent\",\"톨루엔\",\"Toluen\",\"1L, 99.8%\",\"209-06791\",\"108-88-3\",\"\",\"\",\"\"]",
+      "sourceId": "wako-200679",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0136",
+      "itemName": "트리톤 X-100",
+      "category": "reagent",
+      "identity": "[\"RG0136\",\"reagent\",\"트리톤 X-100\",\"TRITON X-100\",\"GR, 1 L\",\"102553365\",\"9002-93-1\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0137",
+      "itemName": "물",
+      "category": "reagent",
+      "identity": "[\"RG0137\",\"reagent\",\"물\",\"Water\",\"등급 : LC-MS, 2.5L\",\"\",\"7732-18-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0138",
+      "itemName": "황산아연 7수화물",
+      "category": "reagent",
+      "identity": "[\"RG0138\",\"reagent\",\"황산아연 7수화물\",\"Zinc sulfate heptahydrate\",\"1kg, 99%, EP\",\"2653\",\"7446-20-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0139",
+      "itemName": "p-톨루엔설폰아마이드",
+      "category": "reagent",
+      "identity": "[\"RG0139\",\"reagent\",\"p-톨루엔설폰아마이드\",\"p-toluenesulfonamide\",\"1kg, 100%, EP\",\"204-01925\",\"70-55-3\",\"\",\"\",\"\"]",
+      "sourceId": "wako-200192",
+      "status": "review",
+      "notes": [],
+      "reason": "동일 물질 SDS 후보이지만 PDF 기재 제품번호 200-01922가 재고 제품번호 204-01925와 다름. 자동 연결하지 않음."
+    },
+    {
+      "itemId": "RG0140",
+      "itemName": "인산이수소칼륨",
+      "category": "reagent",
+      "identity": "[\"RG0140\",\"reagent\",\"인산이수소칼륨\",\"potassium dihydrogen phosphate anhydrous\",\"for HPLC LiChropur™, 100g\",\"5.43841.0100\",\"7778-77-0\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0141",
+      "itemName": "수산화나트륨 솔루션 10%",
+      "category": "reagent",
+      "identity": "[\"RG0141\",\"reagent\",\"수산화나트륨 솔루션 10%\",\"Sodium hydroxide solution (10%)\",\"10%,20kg\",\"000S4734\",\"1310-73-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0142",
+      "itemName": "질산",
+      "category": "reagent",
+      "identity": "[\"RG0142\",\"reagent\",\"질산\",\"Nitric acid\",\"68.0%~70.0%,EP,1kg\",\"000N1276\",\"7697-37-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0143",
+      "itemName": "아세토니트릴",
+      "category": "reagent",
+      "identity": "[\"RG0143\",\"reagent\",\"아세토니트릴\",\"Acetonitrile\",\"4L, Extra pure\",\"1012-4404\",\"27522\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0144",
+      "itemName": "황산암모늄",
+      "category": "reagent",
+      "identity": "[\"RG0144\",\"reagent\",\"황산암모늄\",\"Ammonium Sulfate\",\"500 g\",\"019-03435\",\"7783-20-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-010343",
+      "status": "ready",
+      "notes": [
+        "이 제조사 SDS에서 GHS 유해물질로 분류하지 않음. 모든 취급조건에서 안전하다는 뜻은 아님."
+      ],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0145",
+      "itemName": "벤즈알데하이드",
+      "category": "reagent",
+      "identity": "[\"RG0145\",\"reagent\",\"벤즈알데하이드\",\"Benzaldehyde\",\"2 mL, ≥99%, liquid\",\"B1334\",\"100-52-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0146",
+      "itemName": "벤즈알데하이드",
+      "category": "reagent",
+      "identity": "[\"RG0146\",\"reagent\",\"벤즈알데하이드\",\"Benzaldehyde\",\"purified by redistillation, ≥99.5%, 100mL\",\"418099\",\"100-52-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0147",
+      "itemName": "디에틸렌글리콜",
+      "category": "reagent",
+      "identity": "[\"RG0147\",\"reagent\",\"디에틸렌글리콜\",\"Diethylene glycol\",\"500 mL\",\"040-28645\",\"111-46-6\",\"\",\"\",\"\"]",
+      "sourceId": "wako-042864",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0148",
+      "itemName": "에탄올",
+      "category": "reagent",
+      "identity": "[\"RG0148\",\"reagent\",\"에탄올\",\"Ethanol\",\"NaN\",\"1.00983.1011\",\"64-17-5\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0149",
+      "itemName": "하이드라진 황산염",
+      "category": "reagent",
+      "identity": "[\"RG0149\",\"reagent\",\"하이드라진 황산염\",\"Hydrazine sulfate salt\",\"5 G, ACS reagent, ≥99.0%\",\"216046-5G\",\"10034-93-2\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0150",
+      "itemName": "페놀",
+      "category": "reagent",
+      "identity": "[\"RG0150\",\"reagent\",\"페놀\",\"Phenol, Crystals\",\"for Nucleic Acid Extraction, 500 g\",\"160-12725\",\"108-95-2\",\"\",\"\",\"\"]",
+      "sourceId": "wako-161272",
+      "status": "ready",
+      "notes": [],
+      "reason": "제조사 SDS의 제품번호와 품명 대조 완료. 기존 제조사 칸은 변경하지 않음."
+    },
+    {
+      "itemId": "RG0151",
+      "itemName": "티오황산나트륨 용액",
+      "category": "reagent",
+      "identity": "[\"RG0151\",\"reagent\",\"티오황산나트륨 용액\",\"0.05mol/L Sodium thiosulfate solution\",\"0.05mol/L, 500mL\",\"\",\"7772-98-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0152",
+      "itemName": "티오황산나트륨 용액",
+      "category": "reagent",
+      "identity": "[\"RG0152\",\"reagent\",\"티오황산나트륨 용액\",\"0.1mol/L Sodium thiosulfate solution\",\"0.1mol/L, 500mL\",\"\",\"7772-98-7\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 제품번호 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    },
+    {
+      "itemId": "RG0153",
+      "itemName": "트리에틸아민",
+      "category": "reagent",
+      "identity": "[\"RG0153\",\"reagent\",\"트리에틸아민\",\"Triethylamine\",\"CAS(121-44-8), BioUltra, >=99.5%, 100mL\",\"90335\",\"121-44-8\",\"\",\"\",\"\"]",
+      "status": "unresolved",
+      "sourceId": null,
+      "notes": [],
+      "reason": "제조사 미입력 / 이번 검토에서 제품별 원문·GHS 확정하지 못함"
+    }
+  ],
+  "counts": {
+    "unresolved": 189,
+    "ready": 25,
+    "review": 7
+  },
+  "referenceProfiles": [
+    {
+      "id": "ref-wako-010034",
+      "sourceId": "wako-010034",
+      "casNo": "67-64-1",
+      "aliases": [
+        "Acetone",
+        "아세톤"
+      ],
+      "form": "liquid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-130647",
+      "sourceId": "wako-130647",
+      "casNo": "67-56-1",
+      "aliases": [
+        "Methanol",
+        "Methyl alcohol",
+        "메탄올",
+        "메틸 알코올"
+      ],
+      "form": "liquid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-050045",
+      "sourceId": "wako-050045",
+      "casNo": "64-17-5",
+      "aliases": [
+        "Ethanol",
+        "Ethyl alcohol",
+        "에탄올"
+      ],
+      "form": "liquid",
+      "minPercent": 99.5,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-191598",
+      "sourceId": "wako-191598",
+      "casNo": "1310-73-2",
+      "aliases": [
+        "Sodium hydroxide",
+        "수산화나트륨"
+      ],
+      "form": "solid",
+      "minPercent": 97,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": false,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-160424",
+      "sourceId": "wako-160424",
+      "casNo": "7778-77-0",
+      "aliases": [
+        "Potassium dihydrogen phosphate",
+        "Potassium phosphate monobasic",
+        "potassium dihydrogen phosphate anhydrous",
+        "인산이수소칼륨"
+      ],
+      "form": "solid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-020219",
+      "sourceId": "wako-020219",
+      "casNo": "10043-35-3",
+      "aliases": [
+        "Boric acid",
+        "붕산"
+      ],
+      "form": "solid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-010343",
+      "sourceId": "wako-010343",
+      "casNo": "7783-20-2",
+      "aliases": [
+        "Ammonium sulfate",
+        "황산암모늄"
+      ],
+      "form": "solid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-042864",
+      "sourceId": "wako-042864",
+      "casNo": "111-46-6",
+      "aliases": [
+        "Diethylene glycol",
+        "디에틸렌글리콜"
+      ],
+      "form": "liquid",
+      "minPercent": 99,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-200679",
+      "sourceId": "wako-200679",
+      "casNo": "108-88-3",
+      "aliases": [
+        "Toluene",
+        "Toluen",
+        "톨루엔"
+      ],
+      "form": "liquid",
+      "minPercent": 99.8,
+      "maxPercent": 100,
+      "allowGradeWithoutPercent": true,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-080106",
+      "sourceId": "wako-080106",
+      "casNo": "7647-01-0",
+      "aliases": [
+        "Hydrochloric acid",
+        "염산"
+      ],
+      "form": "aqueous",
+      "minPercent": 35,
+      "maxPercent": 37,
+      "allowGradeWithoutPercent": false,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-080421",
+      "sourceId": "wako-080421",
+      "casNo": "7722-84-1",
+      "aliases": [
+        "Hydrogen peroxide",
+        "과산화수소"
+      ],
+      "form": "aqueous",
+      "minPercent": 30,
+      "maxPercent": 35.5,
+      "allowGradeWithoutPercent": false,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-190470",
+      "sourceId": "wako-190470",
+      "casNo": "7664-93-9",
+      "aliases": [
+        "Sulfuric acid",
+        "Surfuric acid",
+        "황산"
+      ],
+      "form": "aqueous",
+      "minPercent": 95,
+      "maxPercent": 95,
+      "allowGradeWithoutPercent": false,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    },
+    {
+      "id": "ref-wako-140132",
+      "sourceId": "wako-140132",
+      "casNo": "7697-37-2",
+      "aliases": [
+        "Nitric acid",
+        "질산"
+      ],
+      "form": "aqueous",
+      "minPercent": 69,
+      "maxPercent": 70,
+      "allowGradeWithoutPercent": false,
+      "reviewedAt": "2026-09-08",
+      "equivalenceVerified": false
+    }
+  ],
+  "referenceReviewedAt": "2026-09-08",
+  "referenceScope": "13개 물질·조성 프로필의 참고자료 검색. 다른 제품의 동등성이나 실제 제품 GHS를 확정하지 않음. CAS와 품명뿐 아니라 농도·형태 단서를 확인하고, 표준용액·첨가제·불일치는 자동 적용하지 않음.",
+  "sourceRetrievalNote": "원문은 공급자 URL에서 사용자 PC로 다운로드. 이 배포본에는 PDF 원본 바이트를 포함하지 않음. 검토한 페이지의 GHS를 표시하며 다운로드된 원문의 버전 일치·국내 법정 적합성을 자동 검증하지 않음."
+}

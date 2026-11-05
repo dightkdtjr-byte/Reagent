@@ -1,0 +1,12 @@
+GHS pictogram artwork
+
+Unmodified PNG files from the ghsystem package v4.8c (2020-02-17).
+Copyright 2011-2020 Clemens Niederberger.
+License: LaTeX Project Public License 1.3c or later.
+Source: https://ctan.org/pkg/ghsystem
+Repository: https://github.com/cgnieder/ghsystem
+The original filenames and image bytes have been preserved.
+Only the nine pictograms are used. No hazard classification or H/P wording is taken from this package.
+GHS classifications continue to use the reviewed manufacturer SDS catalog.
+A SHA-256 manifest is supplied in safety-icons.json.
+Full license text is supplied verbatim as lppl.tex.

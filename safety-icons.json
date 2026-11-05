@@ -1,0 +1,47 @@
+{
+  "GHS01": {
+    "fileName": "ghsystem_explos.png",
+    "sha256": "214692e6499c55b33bfee0dbed8a7da966e647dd5af979255ccda310be535b71",
+    "size": 10980
+  },
+  "GHS02": {
+    "fileName": "ghsystem_flame.png",
+    "sha256": "98ecada7e0fd1f78c7bca14810a2d177d67003522720211659ba7465dd846c21",
+    "size": 8223
+  },
+  "GHS03": {
+    "fileName": "ghsystem_flame-O.png",
+    "sha256": "0b25c33eff0f74049a1c8c0bed856f13797139a9992e07a14c89592e672c6108",
+    "size": 8862
+  },
+  "GHS04": {
+    "fileName": "ghsystem_bottle.png",
+    "sha256": "fbfe917c1d20ac2d8d0c0a92d4baf4c2ae7273e0d70c4e471dd71be467dafea1",
+    "size": 5028
+  },
+  "GHS05": {
+    "fileName": "ghsystem_acid.png",
+    "sha256": "219b9d90e5d268d2f168e088ce6f691e94aaaac0c0585b6f700bdeea18459a0e",
+    "size": 37706
+  },
+  "GHS06": {
+    "fileName": "ghsystem_skull.png",
+    "sha256": "f710858941ebd0a3025351d5935211ed93945484d3cd245535e01cd3e56c73e4",
+    "size": 10514
+  },
+  "GHS07": {
+    "fileName": "ghsystem_exclam.png",
+    "sha256": "07d9990f5334e3e38f7938e9c3b85fbefa6c8efdc5654097ae1b85a60e3fb070",
+    "size": 5716
+  },
+  "GHS08": {
+    "fileName": "ghsystem_health.png",
+    "sha256": "835786f0d094b698e76918c61f6dab6cc1ae24b3432380a9667a1540aa558111",
+    "size": 9431
+  },
+  "GHS09": {
+    "fileName": "ghsystem_aqpol.png",
+    "sha256": "61bc05886ca841b13f58f26a26884888c3cd0b1d40bd25041817e696a41dd8c6",
+    "size": 8339
+  }
+}
