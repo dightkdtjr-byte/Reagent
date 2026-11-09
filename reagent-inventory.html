@@ -843,7 +843,7 @@ html.msds-mode #app{padding-top:8px;}
 .msds-mgr-head h3{margin:0 0 4px;font-size:18px}.msds-mgr-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;align-items:center}.msds-mgr-tools input[type=search]{flex:1;min-width:220px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.msds-mgr-tools select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 .msds-mgr-tbl{width:100%;border-collapse:collapse;font-size:12.5px}.msds-mgr-tbl th{text-align:left;font-size:11.5px;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line)}.msds-mgr-tbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .msds-mgr-link{border:0;background:transparent;color:var(--ink);font-weight:700;padding:0;cursor:pointer;text-align:left;font-size:13px}.msds-mgr-link:hover{text-decoration:underline}
-.msds-mgr-doc{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0;flex-wrap:wrap}.msds-mgr-doc+.msds-mgr-doc{border-top:1px dashed var(--line)}.msds-mgr-doc-info{min-width:0;flex:1}.msds-mgr-doc .msds-name{font-size:12px}.msds-mgr-doc .msds-actions button,.msds-mgr-acts button{font-size:11.5px;padding:5px 8px}.msds-mgr-acts{flex-direction:column;align-items:stretch}.msds-mgr-progress{font-weight:700}.msds-mgr-lastrun{margin:8px 0}.msds-mgr-lastrun summary{cursor:pointer;font-size:12.5px}
+.msds-mgr-doc{display:block;padding:4px 0}.msds-mgr-doc+.msds-mgr-doc{border-top:1px dashed var(--line);margin-top:4px}.msds-mgr-doc-info{min-width:0}.msds-mgr-doc .msds-actions{margin-top:5px}.msds-mgr-doc .msds-name{font-size:12px}.msds-mgr-doc .msds-actions button,.msds-mgr-acts button{font-size:11.5px;padding:5px 8px}.msds-mgr-acts{flex-direction:column;align-items:stretch}.msds-mgr-progress{font-weight:700}.msds-mgr-lastrun{margin:8px 0}.msds-mgr-lastrun summary{cursor:pointer;font-size:12.5px}
 html.forms-mode #app{padding-top:8px;}
 .form-template-panel{padding:18px 18px 20px;}
 .form-template-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
@@ -1514,7 +1514,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
           <div class="setting-copy"><div class="setting-title">현황</div><div class="setting-sub" id="ghs-settings-summary">확인 중</div></div>
           <div class="setting-control"><button class="ghost" id="settings-ghs-export">GHS·MSDS 현황 엑셀 저장</button></div>
         </div>
-        <p class="hint">한국어 H·P 문구는 읽기용 요약입니다. 공급자 MSDS와 법정 경고표지를 대체하지 않으며, 분류는 반드시 해당 제품의 MSDS로 확인하세요.</p>
+        <p class="hint">한국어 H·P 문구는 읽기용 요약입니다.</p>
       </div>
       <div class="settings-card full safety-widget" id="safety-settings-card"></div>
       <div class="settings-card full" id="assist-settings-card">

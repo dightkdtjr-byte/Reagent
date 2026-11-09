@@ -68,7 +68,7 @@
         const folder = button('문서 폴더', () => action(async () => { const r = await window.inventoryMSDS.folder(); if (!r?.ok) throw new Error(r?.error || '폴더 열기 실패'); })); folder.id = 'msds-folder';
         tools.append(add, folder); heading.append(title, tools); element.append(heading);
         const note = document.createElement('p'); note.className = 'hint msds-note';
-        note.textContent = '공급자에게 받은 MSDS PDF를 첨부해 두면 프로그램 안에서 바로 열어볼 수 있습니다. 파일당 25 MB, 품목당 20개까지 지원하며 첨부·연결 해제는 즉시 저장됩니다. MSDS 작성·개정일과 검토일은 위 GHS 분류 영역에서 기록합니다.'; element.append(note);
+        note.textContent = 'MSDS PDF를 첨부하면 프로그램 안에서 바로 열어볼 수 있습니다. 파일당 25 MB, 품목당 20개까지.'; element.append(note);
         if (!window.inventoryMSDS) { note.textContent = 'MSDS 첨부는 Windows 설치형 앱에서 사용할 수 있습니다.'; add.disabled = folder.disabled = true; return; }
         const list = document.createElement('div'); list.className = 'msds-list'; list.setAttribute('aria-live', 'polite'); element.append(list);
         if (!docs.length) { const empty = document.createElement('p'); empty.className = 'hint'; empty.textContent = '첨부된 MSDS가 없습니다.'; list.append(empty); return; }
@@ -87,7 +87,7 @@
             info.append(name, meta);
             const role=window.InventorySafetyCommon?.linkRole(getItem(itemId),doc);
             const badge=document.createElement('p');badge.className='hint';badge.dataset.msdsRole=role||'manual';
-            badge.textContent=({reference:'동일 물질 참고 MSDS · 다른 제품의 자료 · 실제 제품 확정 아님',product:'제품번호 일치 자료 · 실제 공급자 확인 필요',stale:'식별정보 변경 또는 이전 참고자료 · 적용 대상 재확인 필요',unverified:'제조사 문서 · 해당 품목 적용 여부 미확인',manual:'직접 첨부 · 제품 일치 여부 자동 검증 안 함'})[role||'manual'];info.append(badge);
+            badge.textContent=doc.koshaChemId?'KOSHA 국문 MSDS'+(doc.koshaRevisedAt?' · 개정 '+doc.koshaRevisedAt:''):({reference:'같은 물질 참고 SDS (다른 제품)',product:'제품번호 일치 SDS',stale:'품목 정보 변경 후 재확인 필요',unverified:'제조사 문서',manual:'직접 첨부'})[role||'manual'];info.append(badge);
             const actions = document.createElement('div'); actions.className = 'msds-actions';
             const look = button('미리보기', () => preview(doc), 'primary'); look.dataset.msdsAction = 'preview';
             const view = button('외부 프로그램으로 열기', () => open(doc)); view.dataset.msdsAction = 'open';

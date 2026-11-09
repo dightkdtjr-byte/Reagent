@@ -59,7 +59,7 @@
       const targets=items().filter(r=>CAS_RE.test(String(r.casNo||'').trim())&&!(r.msdsDocuments||[]).length);
       const noCas=items().filter(r=>!(r.msdsDocuments||[]).length&&!CAS_RE.test(String(r.casNo||'').trim())).length;
       if(!targets.length){toast(noCas?`MSDS가 없는 품목 ${noCas}개는 CAS 번호가 없어 자동으로 받을 수 없습니다. CAS를 입력하거나 PDF를 직접 첨부하세요.`:'MSDS가 없는 품목이 없습니다.',!!noCas);return;}
-      if(!confirm(`CAS 번호가 있고 MSDS가 없는 품목 ${targets.length}개의 국문 MSDS를 KOSHA 화학물질정보에서 받아 첨부할까요?${noCas?`\n(CAS가 없는 ${noCas}개는 건너뜁니다.)`:''}\n\n품목당 10~30초가 걸리며 중간에 중단할 수 있습니다. GHS가 비어 있는 품목은 읽어온 분류로 채웁니다. 안전보건공단 물질 기준 MSDS이므로 농도·혼합물이 다른 제품은 공급자 MSDS로 확인하세요.`))return;
+      if(!confirm(`CAS 번호가 있고 MSDS가 없는 품목 ${targets.length}개의 국문 MSDS를 KOSHA에서 받아 첨부할까요?${noCas?`\n(CAS가 없는 ${noCas}개는 건너뜁니다.)`:''}\n품목당 10~30초 걸리며 중간에 중단할 수 있습니다. GHS가 비어 있는 품목은 읽어온 분류로 채웁니다.`))return;
       state.busy=true;state.stop=false;const result={ok:0,filled:0,errors:[]};
       try{
         for(let i=0;i<targets.length;i++){
@@ -127,7 +127,7 @@
       const progress=E('p','','hint msds-mgr-progress');progress.id='msds-mgr-progress';progress.setAttribute('role','status');progress.hidden=!state.progress;progress.textContent=state.progress;element.append(progress);
       if(state.lastRun){const r=state.lastRun;const box=E('details',undefined,'msds-mgr-lastrun');box.open=r.errors.length>0;box.append(E('summary',`직전 일괄 받기 (${r.at}): 대상 ${r.total}개 · 첨부 ${r.ok}개 · GHS 채움 ${r.filled}개 · 실패 ${r.errors.length}개${r.stopped?' · 중단됨':''}`));for(const e of r.errors)box.append(E('p',e,'hint safety-warning'));element.append(box);}
       const wrap=E('div',undefined,'msds-mgr-table');wrap.id='msds-mgr-table';element.append(wrap);
-      element.append(E('p','KOSHA 자료는 안전보건공단이 작성한 물질 기준 MSDS입니다. 농도·혼합물이 다른 제품은 공급자 MSDS를 첨부해 대조하세요. 검토 주기는 설정에서 바꿀 수 있습니다.','hint safety-notice'));
+      element.append(E('p','KOSHA 자료는 물질 기준 국문 MSDS입니다. 검토 주기는 설정에서 바꿀 수 있습니다.','hint safety-notice'));
       drawTable();
     }
     draw();

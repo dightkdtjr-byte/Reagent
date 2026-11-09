@@ -73,7 +73,7 @@
  function state(cat,item){return C.resolve(cat,item);}
  function statusText(entry){return {ready:'제품번호 일치 MSDS',reference:'동일 물질 참고 MSDS',composition:'조성 확인 필요',review:'제품 정보 확인 필요',unresolved:'미확인'}[entry.status]||'미확인';}
  function sourceInfo(root,source){root.append(E('p',source.publisher+' · '+source.productName,'safety-source'));root.append(E('p',`검토본 ${source.revisionDate} · 버전 ${source.revision} · ${source.language} · ${source.jurisdiction}`,'hint'));}
- function networkConfirm(confirm,count,usage='product'){return confirm(`${usage==='reference'?'동일 물질 참고 MSDS':'제품번호 일치 MSDS'} ${count}개 품목의 자료를 받아 연결할까요?\n\n${usage==='reference'?'다른 제조사 또는 다른 제품의 참고문서입니다. 정확한 순도·첨가제·형태·제품 동등성이 확인된 자료가 아니며, GHS도 참고자료 기준입니다. 실제 보유 제품의 확정 위험분류나 법정 경고표지로 사용하지 않습니다.\n\n':''}제조사 서버에서 PDF 원본을 받아 이 프로그램의 MSDS 문서 폴더에 저장·연결합니다. PDF 수신에는 인터넷 연결이 필요합니다. GHS 그림은 프로그램에 내장되어 인터넷 없이 표시됩니다.\n재고 수량·입출고 이력은 전송하지 않습니다.\n\n영문 SDS는 국내 공급자 MSDS나 법정 경고표지를 대체하지 않습니다. 다운로드 파일의 개정 버전을 자동 대조하지 않으므로 원문의 버전도 확인하세요. 실패한 파일은 연결하지 않고 기존 자료를 유지합니다.`);}
+ function networkConfirm(confirm,count,usage='product'){return confirm(`${usage==='reference'?'같은 물질 참고 SDS':'제품번호 일치 SDS'} ${count}개 품목의 MSDS를 제조사 서버에서 받아 첨부할까요?\n인터넷 연결이 필요합니다.${usage==='reference'?'\n같은 물질의 다른 제품 자료이므로 실제 제품 MSDS와 다를 수 있습니다.':''}`);}
  function changedForm(item){const map={'d-name':'name','d-name-en':'nameEn','d-spec':'spec','d-cas':'casNo','d-maker':'maker','d-serial':'serialNo','d-concentration':'concentration','d-purity':'purity'};return Object.entries(map).some(([id,key])=>{const el=document.getElementById(id);return el&&!el.disabled&&el.value!==String(item[key]??'');});}
  function refresh(){for(const [el,opts]of panels){if(!el.isConnected)panels.delete(el);else drawDetail(opts);}if(settingsOpts?.element?.isConnected)drawSettings(settingsOpts);}
  function locks(){document.querySelectorAll('[data-safety-receive]').forEach(b=>b.disabled=busy);const stopButton=document.getElementById('safety-stop');if(stopButton){stopButton.disabled=!busy;stopButton.hidden=!busy;}}
@@ -155,7 +155,7 @@
   const {element,itemId,getItem,toast}=opts;if(!element?.isConnected)return;
   panels.set(element,opts);const token=(element._safetyToken||0)+1;element._safetyToken=token;
   const live=()=>element.isConnected&&element._safetyToken===token;
-  element.replaceChildren(E('h4','MSDS · GHS 자료'));
+  element.hidden=false;element.replaceChildren(E('h4','제조사 검토 SDS (내장 자료)'));
   try{
    const cat=await catalog();if(!live())return;
    if(!cat){element.append(E('p','자료 연결은 설치형 앱에서 사용할 수 있습니다.','hint'));return;}
@@ -164,8 +164,8 @@
    element.dataset.safetyStatus=entry.status;
    element.append(E('p',statusText(entry),'hint'));
    const stale=[item.safetyInfo,item.safetyReferenceInfo].filter(i=>i&&i.identity!==C.identity(item));
-   if(stale.length)element.append(E('p','품목 정보가 바뀐 기존 문서는 재확인이 필요합니다. 현재 제품의 확정 자료로 표시하지 않습니다.','hint safety-warning'));
-   if(!source){element.append(E('p',entry.reason,'hint'),E('p','확인된 자료가 없으며, 안전하다는 뜻은 아닙니다. 연결된 PDF는 아래 첨부 목록에서 확인할 수 있습니다.','hint'));return;}
+   if(stale.length)element.append(E('p','품목 정보가 바뀌어 기존 연결 문서를 다시 확인해야 합니다.','hint safety-warning'));
+   if(!source){element.replaceChildren();element.hidden=true;return;}
    const actions=E('div',undefined,'msds-actions safety-toolbar');
    if(connectable){
     const receive=button(reference?'참고 MSDS 받기 · 연결':'MSDS 받기 · 연결',()=>one(opts),'primary');receive.id='safety-detail-receive';receive.dataset.safetyReceive='1';
@@ -174,13 +174,13 @@
     actions.append(receive,open,save);
    }
    actions.append(button('제조사 원문 주소 열기',()=>sourceOpen(source,toast)));element.append(actions);locks();
-   if(!connectable){element.append(E('p',entry.reason,'hint safety-warning'),E('p','후보 문서입니다. 해당 품목의 GHS로 확정·적용하지 않았으며 자동 연결하지 않습니다.','hint safety-warning'));sourceInfo(element,source);return;}
+   if(!connectable){element.append(E('p',entry.reason,'hint'));sourceInfo(element,source);return;}
    const fileStatus=E('p','PDF 파일 상태 확인 중…','hint safety-file-status');fileStatus.setAttribute('role','status');element.append(fileStatus);
-   element.append(E('p',reference?'참고자료 기준 GHS · 실제 보유 제품의 확정 분류 아님':'제품번호가 일치하는 검토 SDS의 GHS · 실제 공급자 확인 필요','safety-reference-note'));
+   element.append(E('p',reference?'같은 물질 참고 SDS 기준 GHS (다른 제품 자료)':'제품번호가 일치하는 제조사 SDS 기준 GHS','safety-reference-note'));
    element.append(E('p',`신호어: ${{Danger:'위험 (Danger)',Warning:'경고 (Warning)',None:'없음 (None)'}[source.ghs.signalWord]||source.ghs.signalWord}`,'safety-signal'));
    const symbols=E('div',undefined,'safety-symbols');symbols.setAttribute('aria-label','GHS 그림문자');element.append(symbols);
    // No history/HTTP request can block the toolbar or the offline pictograms.
-   if(!source.ghs.pictograms.length)symbols.append(E('span',source.ghs.notClassifiedHazardous?'해당 SDS에서 GHS 유해물질로 분류하지 않음. 무조건 안전하다는 뜻은 아닙니다.':'해당 SDS에 그림문자 표기 없음. 신호어와 위험문구를 확인하세요.','hint'));
+   if(!source.ghs.pictograms.length)symbols.append(E('span',source.ghs.notClassifiedHazardous?'이 SDS에서는 GHS 유해물질로 분류하지 않았습니다.':'SDS에 그림문자가 없습니다. 신호어와 위험문구를 확인하세요.','hint'));
    else{
     try{
      const result=await window.inventorySafety.icons(source.ghs.pictograms);if(!live())return;
@@ -201,7 +201,7 @@
    const more=E('details',undefined,'safety-source-details');more.append(E('summary','자료 출처 · 제품 비교 · 주의사항'));
    sourceInfo(more,source);more.append(E('p',entry.reason,'hint'));
    const comparison=E('div',undefined,'safety-comparison');comparison.append(E('p',`보유 품목: ${item.name||item.nameEn} · CAS ${item.casNo||'미입력'} · 규격 ${item.spec||'미입력'} · 농도 ${item.concentration||'미입력'} · 제조사 ${item.maker||'미입력'}`,'hint'),E('p',`문서의 제품/조성: ${source.productName} · ${source.compositionSummary||'제조사 원문에서 확인하세요.'}`,'hint'));more.append(comparison);
-   more.append(E('p','검토한 문서 버전의 표시입니다. 내려받은 PDF의 개정 여부와 새로운 분류를 자동 재검증하지 않습니다. 한국어 문구는 읽기 위한 요약이고 국내 공급자 MSDS·법정 경고표지를 대체하지 않습니다.','hint safety-notice'));
+   more.append(E('p','검토한 문서 버전 기준입니다. 한국어 문구는 읽기용 요약입니다.','hint safety-notice'));
    for(const note of entry.notes||[])more.append(E('p',note,'hint'));element.append(more);
    try{
     const doc=await availableDocument(opts,source,reference);if(!live())return;
@@ -237,26 +237,26 @@
   finally{busy=false;locks();refresh();}
  }
  async function drawSettings(opts){const {element,getItems}=opts;if(!element?.isConnected)return;settingsOpts=opts;const filterState=element.querySelector('#safety-filter')?.value||'all',queryState=element.querySelector('#safety-query')?.value||'';const token=(element._safetyToken||0)+1;element._safetyToken=token;
-  try{const cat=await catalog();if(!element.isConnected||element._safetyToken!==token)return;element.replaceChildren(E('h3','MSDS · GHS 자료 연결'));if(!cat){element.append(E('p','설치형 앱에서 사용할 수 있습니다.','hint'));return;}
+  try{const cat=await catalog();if(!element.isConnected||element._safetyToken!==token)return;element.replaceChildren(E('h3','제조사 검토 SDS 연결 (내장 자료)'));if(!cat){element.append(E('p','설치형 앱에서 사용할 수 있습니다.','hint'));return;}
    const items=getItems(),counts={ready:0,reference:0,composition:0,review:0,unresolved:0};for(const r of items)counts[state(cat,r).status]++;
    element.append(E('p',`현재 ${items.length}개 품목 · 제품번호 일치 ${counts.ready}개 · 참고자료 연결 가능 ${counts.reference}개 · 조성 확인 필요 ${counts.composition}개 · 제품 정보 확인 필요 ${counts.review}개 · 미확인 ${counts.unresolved}개`,'settings-desc'));
-   element.append(E('p',`확인 기준 ${cat.reviewedAt}. 제품번호 일치 자료와 동일 물질 참고자료를 나누어 연결합니다. 참고자료는 제품 동등성·실제 제품 GHS를 확정하지 않습니다. PDF는 이 PC에서 내려받으며 재고를 덮어쓰지 않습니다.`,'hint'));
+   element.append(E('p',`확인 기준 ${cat.reviewedAt}. 제품번호가 일치하는 자료와 같은 물질 참고자료를 구분해 연결합니다. MSDS를 받는 더 쉬운 방법은 왼쪽 'MSDS 관리'의 KOSHA 일괄 받기입니다.`,'hint'));
    const actions=E('div',undefined,'settings-actions'),receive=button('확인된 제조사 자료 받기',()=>bulk(opts),'primary');receive.id='safety-bulk-receive';receive.dataset.safetyReceive='1';const stopButton=button('현재 파일 후 중단',()=>{stop=true;stopButton.disabled=true;});stopButton.id='safety-stop';stopButton.hidden=!busy;
    const referenceButton=button('참고 MSDS 받기',()=>bulk(opts,'reference'));referenceButton.id='safety-bulk-reference';referenceButton.dataset.safetyReceive='1';const historyButton=button('최근 다운로드 결과',()=>showHistory(opts.toast));historyButton.id='safety-download-history';actions.append(receive,referenceButton,stopButton,button('문서 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'문서 폴더 열기 실패');}catch(e){opts.toast(safeError(e),true);}}),button('목록 새로고침',()=>drawSettings(opts)),historyButton);element.append(actions);
-   const progress=E('p','받은 PDF는 문서 폴더에 저장·연결됩니다. 개별 품목의 세부내역에서 열기·PDF 다운로드를 사용할 수 있습니다. GHS 그림은 인터넷 없이 표시됩니다.','hint');progress.id='safety-progress';progress.setAttribute('role','status');element.append(progress);
+   const progress=E('p','받은 PDF는 문서 폴더에 저장되고 품목에 연결됩니다.','hint');progress.id='safety-progress';progress.setAttribute('role','status');element.append(progress);
    if(lastBatchResult){const result=lastBatchResult;progress.textContent=`직전 실행 (${result.usage==='reference'?'참고용':'제품번호 일치'}): PDF 연결 ${result.successes}개 / 실패 ${result.errors.length}개 / 그림문자 미완료 ${result.warnings}개${result.stopped?' / 중단됨':''}${result.unattempted?' / 미시도 '+result.unattempted+'개':''}`;if(result.errors.length){const errors=E('details');errors.open=false;errors.append(E('summary','실패 내역 보기'));for(const error of result.errors)errors.append(E('pre',entryText(error),'hint safety-warning'));element.append(errors);}}
    try{const logs=await history();if(!element.isConnected||element._safetyToken!==token)return;const latest=new Map();for(const row of logs)if(!latest.has(row.sourceId))latest.set(row.sourceId,row);const failed=[...latest.values()].filter(row=>!row.ok);
     if(failed.length){const area=E('details',undefined,'safety-download-failure');area.id='safety-persistent-errors';area.append(E('summary',`최근 다운로드에서 실패한 문서 ${failed.length}개`),E('p','아래 기록은 프로그램을 닫았다 열어도 남습니다. 같은 문서의 최신 수신 결과를 기준으로 표시합니다.','hint'));
      for(const row of failed.slice(0,3))area.append(E('p',(row.sourceName||row.sourceId)+' · '+(row.diagnostic?.message||'다운로드 실패')+' ['+(row.diagnostic?.code||'UNKNOWN')+']','hint safety-warning'));
      area.append(button('저장된 오류 상세 보기',()=>showReport(failed)));element.append(area);}
    }catch(e){element.append(E('p','다운로드 기록 확인 실패: '+safeError(e),'hint safety-warning'));}
-   element.append(E('p','제조사 영문 SDS에 따른 참고 표시입니다. 국내 공급자 MSDS·법정 경고표지를 대체하지 않습니다. 자료 미확인은 안전함을 의미하지 않습니다.','hint safety-notice'));
+   element.append(E('p','제조사 영문 SDS 기준 참고 표시입니다. 국내 공급자 MSDS가 있으면 그쪽을 우선하세요.','hint safety-notice'));
    const controls=E('div',undefined,'safety-controls'),input=E('input');input.id='safety-query';input.type='search';input.placeholder='품목명 / ID / 제품번호';input.setAttribute('aria-label','MSDS 연결 목록 검색');input.value=queryState;
    const select=E('select');select.id='safety-filter';select.setAttribute('aria-label','MSDS 자료 확인 상태');for(const [v,t]of [['all','전체'],['ready','제품번호 일치'],['reference','동일 물질 참고 MSDS'],['composition','조성 확인 필요'],['review','제품 정보 확인 필요'],['unresolved','미확인']]){const option=E('option',t);option.value=v;select.append(option);}select.value=filterState;controls.append(input,select);element.append(controls);
    const tableWrap=E('div',undefined,'safety-table-wrap'),table=E('table',undefined,'safety-table');table.append(E('caption','제품별 MSDS 연결 검토 결과'));const head=E('thead'),tr=E('tr');for(const t of ['품목','제품번호','상태 / 확인 내용','자료'])tr.append(E('th',t));head.append(tr);const body=E('tbody');table.append(head,body);tableWrap.append(table);element.append(tableWrap);
    function rows(){const q=input.value.trim().toLowerCase();body.replaceChildren();for(const r of getItems()){const entry=state(cat,r);if(select.value!=='all'&&entry.status!==select.value)continue;if(q&&![r.id,r.name,r.nameEn,r.serialNo].join(' ').toLowerCase().includes(q))continue;const row=E('tr'),name=E('td');name.append(button(r.id+' · '+(r.name||r.nameEn||''),()=>opts.openItem(r.id)));const code=E('td',r.serialNo||'미입력'),status=E('td');status.append(E('strong',statusText(entry)),E('p',entry.reason,'hint'));const docs=E('td'),source=C.resolvedSource(cat,r);if(source)docs.append(button(entry.status==='ready'?'제품 원문':entry.status==='reference'?'참고 원문':'후보 원문',()=>sourceOpen(source,opts.toast)));else docs.textContent='—';row.append(name,code,status,docs);body.append(row);}if(!body.children.length){const row=E('tr'),td=E('td','해당 항목이 없습니다.');td.colSpan=4;row.append(td);body.append(row);}}
    input.oninput=rows;select.onchange=rows;rows();locks();
-  }catch(e){element.replaceChildren(E('h3','MSDS · GHS 자료 연결'),E('p','목록 확인 실패: '+safeError(e),'hint safety-warning'));}
+  }catch(e){element.replaceChildren(E('h3','제조사 검토 SDS 연결 (내장 자료)'),E('p','목록 확인 실패: '+safeError(e),'hint safety-warning'));}
  }
  async function suggestion(item){const cat=await catalog();if(!cat||!item)return null;const entry=state(cat,item),source=C.resolvedSource(cat,item);if(!source||!(entry.status==='ready'||entry.status==='reference'))return null;return {status:entry.status,source};}
  window.InventorySafetyUI={mountDetail:drawDetail,mountSettings:drawSettings,isBusy:()=>busy,refresh,suggestion};
