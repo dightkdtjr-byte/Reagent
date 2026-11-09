@@ -49,7 +49,7 @@
    const heading=E('h3',title);heading.id='safety-download-title';
    const note=E('p','이 창은 자동으로 사라지지 않습니다. 실패한 다운로드는 문서 연결 완료로 처리하지 않습니다.','hint');
    const report=E('textarea');report.id='safety-download-report';report.readOnly=true;report.setAttribute('aria-label','복사 가능한 다운로드 진단 내역');
-   report.value='시약 재고관리시스템 v3.11.0 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
+   report.value='시약 재고관리시스템 v3.12.0 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
    const status=E('p','','hint');status.setAttribute('role','status');const actions=E('div',undefined,'msds-actions');
    actions.append(button('오류 내용 복사',()=>copyText(report.value,status)),button('닫기',()=>dialog.close(),'primary'));
    dialog.append(heading,note,report,status,actions);document.body.append(dialog);
@@ -73,7 +73,7 @@
  function state(cat,item){return C.resolve(cat,item);}
  function statusText(entry){return {ready:'제품번호 일치 MSDS',reference:'동일 물질 참고 MSDS',composition:'조성 확인 필요',review:'제품 정보 확인 필요',unresolved:'미확인'}[entry.status]||'미확인';}
  function sourceInfo(root,source){root.append(E('p',source.publisher+' · '+source.productName,'safety-source'));root.append(E('p',`검토본 ${source.revisionDate} · 버전 ${source.revision} · ${source.language} · ${source.jurisdiction}`,'hint'));}
- function networkConfirm(confirm,count,usage='product'){return confirm(`${usage==='reference'?'동일 물질 참고 MSDS':'제품번호 일치 MSDS'} ${count}개 품목의 자료를 받아 연결할까요?\n\n${usage==='reference'?'다른 제조사 또는 다른 제품의 참고문서입니다. 정확한 순도·첨가제·형태·제품 동등성이 확인된 자료가 아니며, GHS도 참고자료 기준입니다. 실제 보유 제품의 확정 위험분류나 법정 경고표지로 사용하지 않습니다.\n\n':''}제조사 서버에서 PDF 원본을 받아 이 프로그램의 MSDS 문서 폴더에 저장·연결합니다. PDF 수신에는 인터넷 연결이 필요합니다. GHS 그림은 프로그램에 내장되어 인터넷 없이 표시됩니다.\n재고 수량·입출고 이력·API 키는 전송하지 않습니다.\n\n영문 SDS는 국내 공급자 MSDS나 법정 경고표지를 대체하지 않습니다. 다운로드 파일의 개정 버전을 자동 대조하지 않으므로 원문의 버전도 확인하세요. 실패한 파일은 연결하지 않고 기존 자료를 유지합니다.`);}
+ function networkConfirm(confirm,count,usage='product'){return confirm(`${usage==='reference'?'동일 물질 참고 MSDS':'제품번호 일치 MSDS'} ${count}개 품목의 자료를 받아 연결할까요?\n\n${usage==='reference'?'다른 제조사 또는 다른 제품의 참고문서입니다. 정확한 순도·첨가제·형태·제품 동등성이 확인된 자료가 아니며, GHS도 참고자료 기준입니다. 실제 보유 제품의 확정 위험분류나 법정 경고표지로 사용하지 않습니다.\n\n':''}제조사 서버에서 PDF 원본을 받아 이 프로그램의 MSDS 문서 폴더에 저장·연결합니다. PDF 수신에는 인터넷 연결이 필요합니다. GHS 그림은 프로그램에 내장되어 인터넷 없이 표시됩니다.\n재고 수량·입출고 이력은 전송하지 않습니다.\n\n영문 SDS는 국내 공급자 MSDS나 법정 경고표지를 대체하지 않습니다. 다운로드 파일의 개정 버전을 자동 대조하지 않으므로 원문의 버전도 확인하세요. 실패한 파일은 연결하지 않고 기존 자료를 유지합니다.`);}
  function changedForm(item){const map={'d-name':'name','d-name-en':'nameEn','d-spec':'spec','d-cas':'casNo','d-maker':'maker','d-serial':'serialNo','d-concentration':'concentration','d-purity':'purity'};return Object.entries(map).some(([id,key])=>{const el=document.getElementById(id);return el&&!el.disabled&&el.value!==String(item[key]??'');});}
  function refresh(){for(const [el,opts]of panels){if(!el.isConnected)panels.delete(el);else drawDetail(opts);}if(settingsOpts?.element?.isConnected)drawSettings(settingsOpts);}
  function locks(){document.querySelectorAll('[data-safety-receive]').forEach(b=>b.disabled=busy);const stopButton=document.getElementById('safety-stop');if(stopButton){stopButton.disabled=!busy;stopButton.hidden=!busy;}}

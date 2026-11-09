@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, net, clipboard } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const {cleanupRetiredSettings}=require('./retired-settings');
 
 function dataDir(){
   const dir = path.join(app.getPath('userData'), 'data');
@@ -304,17 +303,7 @@ if (!gotSingleInstanceLock) {
   });
 
   app.whenReady().then(() => {
-    const cleanup = cleanupRetiredSettings(app.getPath('userData'));
     createWindow();
-    if (!cleanup.ok) {
-      // Feature removal is complete even if an old local file is locked.
-      // Report only filenames/error codes, never file content or credentials.
-      dialog.showMessageBox({type:'warning', title:'이전 연결 설정 정리',
-        message:'이전 검색 연결 설정 파일 일부를 지우지 못했습니다.',
-        detail:'외부 검색 연결 기능은 제거되어 사용되지 않습니다. 다음 실행 때 다시 정리합니다.\n'
-          + cleanup.failures.map(x => x.name + ' (' + x.code + ')').join('\n'),
-        buttons:['확인']}).catch(() => {});
-    }
     app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
   });
   app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

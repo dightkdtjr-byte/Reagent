@@ -117,6 +117,12 @@ function createBackupStore(getDataDir, options = {}) {
     while (fs.existsSync(target)) target = path.join(base, stem + '_' + (++i) + '.json');
     return target;
   }
+  // MSDS PDF 사본 보관은 재고 JSON 백업과 분리한다. PDF가 없거나 잠겨 있어도 재고 백업은 계속 저장한다.
+  function copyMsds(obj) {
+    if (!options.msdsStore) return '';
+    try { options.msdsStore.ensureBackup(obj); return ''; }
+    catch (e) { return 'MSDS PDF 사본 보관 실패: ' + errorText(e); }
+  }
   function automatic(obj) {
     try {
       validateInventory(obj);
@@ -126,25 +132,25 @@ function createBackupStore(getDataDir, options = {}) {
         if ((meta.cleanupWarning || '') !== cleanup.warning) atomicWriteJson(metaFile(), {...meta, cleanupWarning: cleanup.warning});
         return {ok: true, skipped: true, warning: cleanup.warning};
       }
-      if (options.msdsStore) options.msdsStore.ensureBackup(obj);
+      const msdsWarning = copyMsds(obj);
       const now = clock(), base = dir();
       const daily = path.join(base, `inventory_${stamp(now)}.json`);
       if (!fs.existsSync(daily)) atomicWriteJson(daily, obj);
       const target = path.join(base, LATEST);
       atomicWriteJson(target, obj);
       const cleanup = prune(obj, !readMeta().lastBackupAt ? daily : undefined);
-      return success('auto', target, now, cleanup.warning);
+      return success('auto', target, now, [msdsWarning, cleanup.warning].filter(Boolean).join(' / '));
     } catch (e) { return recordFailure(e); }
   }
   function snapshot(obj, type = 'manual', retentionSettings) {
     try {
       validateInventory(obj);
       if (!['manual', 'before_restore'].includes(type)) throw new Error('지원하지 않는 백업 종류입니다.');
-      if (options.msdsStore) options.msdsStore.ensureBackup(obj);
+      const msdsWarning = copyMsds(obj);
       const now = clock(), target = uniquePath(type, now);
       atomicWriteJson(target, obj);
       const cleanup = prune(retentionSettings || obj, target);
-      return success(type, target, now, cleanup.warning);
+      return success(type, target, now, [msdsWarning, cleanup.warning].filter(Boolean).join(' / '));
     } catch (e) { return recordFailure(e); }
   }
   function inspect(name) {

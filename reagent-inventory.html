@@ -13,6 +13,7 @@
 <script src="./safety-ui.js"></script>
 <script src="./ghs-data.js"></script>
 <script src="./ghs-ui.js"></script>
+<script src="./msds-manager.js"></script>
 <style>
   :root{
     --bg:#F5F7FA;
@@ -837,7 +838,12 @@ html[data-theme="dark"] .home-camera-head h2{color:#e9f2ff}html[data-theme="dark
 
 
 /* ===== v3.8.2 서식 라벨 ===== */
-html.forms-mode header.top,html.forms-mode nav.tabs{display:none!important;}
+html.forms-mode header.top,html.forms-mode nav.tabs,html.msds-mode header.top,html.msds-mode nav.tabs{display:none!important;}
+html.msds-mode #app{padding-top:8px;}
+.msds-mgr-head h3{margin:0 0 4px;font-size:18px}.msds-mgr-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;align-items:center}.msds-mgr-tools input[type=search]{flex:1;min-width:220px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.msds-mgr-tools select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.msds-mgr-tbl{width:100%;border-collapse:collapse;font-size:12.5px}.msds-mgr-tbl th{text-align:left;font-size:11.5px;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line)}.msds-mgr-tbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.msds-mgr-link{border:0;background:transparent;color:var(--ink);font-weight:700;padding:0;cursor:pointer;text-align:left;font-size:13px}.msds-mgr-link:hover{text-decoration:underline}
+.msds-mgr-doc{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0;flex-wrap:wrap}.msds-mgr-doc+.msds-mgr-doc{border-top:1px dashed var(--line)}.msds-mgr-doc-info{min-width:0;flex:1}.msds-mgr-doc .msds-name{font-size:12px}.msds-mgr-doc .msds-actions button,.msds-mgr-acts button{font-size:11.5px;padding:5px 8px}.msds-mgr-acts{flex-direction:column;align-items:stretch}.msds-mgr-progress{font-weight:700}.msds-mgr-lastrun{margin:8px 0}.msds-mgr-lastrun summary{cursor:pointer;font-size:12.5px}
 html.forms-mode #app{padding-top:8px;}
 .form-template-panel{padding:18px 18px 20px;}
 .form-template-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
@@ -1191,12 +1197,13 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <button id="side-scan-btn"><svg viewBox="0 0 24 24"><path d="M8 4H5a1 1 0 0 0-1 1v3M16 4h3a1 1 0 0 1 1 1v3M8 20H5a1 1 0 0 1-1-1v-3M16 20h3a1 1 0 0 0 1-1v-3"/><rect x="7.2" y="7.2" width="3.6" height="3.6" rx=".55"/><rect x="13.2" y="7.2" width="3.6" height="3.6" rx=".55"/><rect x="7.2" y="13.2" width="3.6" height="3.6" rx=".55"/></svg><span>스캔</span></button>
         <button id="side-reagent-btn"><svg viewBox="0 0 24 24"><path d="M8 3h8"/><path d="M10 3v5L5.5 17a3 3 0 0 0 2.7 4h7.6a3 3 0 0 0 2.7-4L14 8V3"/><path d="M8.5 13h7"/></svg><span>시약관리</span></button>
         <button id="side-standard-btn"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M8 8h8M8 12h5"/><path d="m14.5 16.5 1.5 1.5 3-3"/></svg><span>표준물질관리</span></button>
+        <button id="side-msds-btn"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/><path d="m8.5 8.5 1 1 2-2"/></svg><span>MSDS 관리</span></button>
         <button id="side-forms-btn"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>서식</span></button>
         <button id="side-settings-btn"><svg viewBox="0 0 24 24"><path d="M10.3 2.8h3.4l.5 2.2a7.7 7.7 0 0 1 1.7.7l1.9-1.2 2.4 2.4-1.2 1.9c.3.8.0 1.1.7 1.7l2.2.5v3.4l-2.2.5a7.7 7.7 0 0 1-.7 1.7l1.2 1.9-2.4 2.4-1.9-1.2c-.5.3-1.1.5-1.7.7l-.5 2.2h-3.4l-.5-2.2a7.7 7.7 0 0 1-1.7-.7l-1.9 1.2-2.4-2.4 1.2-1.9a7.7 7.7 0 0 1-.7-1.7l-2.2-.5v-3.4l2.2-.5c.2-.6.4-1.2.7-1.7L4.2 6.9l2.4-2.4 1.9 1.2c.5-.3 1.1-.5 1.7-.7l.5-2.2Z"/><circle cx="12" cy="12" r="3.1"/></svg><span>설정</span></button>
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.11.0</div>
+        <div class="work-version">v3.12.0</div>
       </div>
 </aside>
   </div>
@@ -1387,6 +1394,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
   <!-- 설정 -->
   <!-- 서식 -->
+  <section class="tab" id="tab-msds">
+    <div class="panel" id="msds-manager-panel"></div>
+  </section>
   <section class="tab" id="tab-forms">
     <div class="panel form-template-panel">
       <div class="form-template-selector" id="form-template-selector">
@@ -1509,15 +1519,15 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       <div class="settings-card full safety-widget" id="safety-settings-card"></div>
       <div class="settings-card full" id="assist-settings-card">
         <h3>데이터 점검·요약</h3>
-        <div class="settings-desc">데이터 점검과 재고 요약은 이 PC에서 처리하며 원본 데이터를 변경하지 않습니다.</div>
+        <div class="settings-desc">등록 데이터의 누락·중복·유효기간을 점검하고 재고와 입출고를 요약합니다. 원본 데이터는 변경하지 않습니다.</div>
         <div class="settings-actions"><button class="ghost" id="assist-settings-check">데이터 점검</button><button class="ghost" id="assist-settings-summary">재고 요약</button></div>
       </div>
       <div class="settings-card full">
         <h3>데이터 및 앱 정보</h3>
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
-          <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · 등록 보조·데이터 점검</div></div>
-          <div class="setting-control settings-version">v3.11.0<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
+          <div class="setting-control settings-version">v3.12.0<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1590,7 +1600,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.11.0';
+  const APP_VERSION = '3.12.0';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1676,8 +1686,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(window.inventoryStore){
         const result=await window.inventoryStore.save(DB);
         if(!result?.ok)throw new Error(result?.error||'데이터 저장 실패');
-        if(result.backup?.ok===false)showToast('데이터는 저장됐지만 자동 백업에 실패했습니다.',true);
-        else if(result.backup?.warning)showToast('백업 파일 정리에 문제가 있습니다. 설정에서 확인해주세요.',true);
+        if(result.backup?.ok===false)showToast('데이터는 저장됐지만 자동 백업에 실패했습니다: '+String(result.backup.error||'원인 미확인'),true);
+        else if(result.backup?.warning)showToast('백업은 저장됐지만 확인할 내용이 있습니다: '+String(result.backup.warning).slice(0,160),true);
         if(document.getElementById('tab-settings')?.classList.contains('active'))refreshBackupStatus();
       } else window.localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
       setSaveStatus(null);
@@ -2668,6 +2678,21 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const run=()=>setTimeout(()=>{try{frame.contentWindow.focus();frame.contentWindow.print();}catch(e){console.error(e);showToast('인쇄창을 열 수 없습니다.',true);}finally{setTimeout(()=>{try{frame.remove();}catch{}restoreKeyboardFocus();},350);}},180);
     if(doc.readyState==='complete')run();else frame.onload=run;
   }
+  function openMsds(opts){
+    opts=opts||{};
+    stopScan();unifiedScanMode=false;
+    document.getElementById('landing-screen').style.display='none';
+    document.getElementById('brand-bar').style.display='block';
+    document.getElementById('app').style.display='block';
+    document.getElementById('app-footer').style.display='block';
+    document.getElementById('footer-text').textContent='MSDS 관리';
+    activateTab('msds',{focus:false});
+    if(opts.pushState!==false)history.pushState({view:'msds'},'',location.href);
+  }
+  function renderMsdsManager(){
+    const el=document.getElementById('msds-manager-panel'); if(!el) return;
+    window.MSDSManager.mount({element:el,getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,settings,exportExcel:exportGhsExcel,openItem:(id)=>{const r=findReagent(id);if(!r)return;currentCategory=r.category||'reagent';enterSystem(currentCategory,{});setTimeout(()=>{selectedId=id;renderInventory();renderDetail();},80);}});
+  }
   function openForms(opts){
     opts=opts||{};
     currentFormTemplate='sample';
@@ -2720,6 +2745,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     }
     document.documentElement.classList.toggle('settings-mode',tab==='settings');
     document.documentElement.classList.toggle('forms-mode',tab==='forms');
+    document.documentElement.classList.toggle('msds-mode',tab==='msds');
+    if(tab==='msds') renderMsdsManager();
     document.documentElement.classList.toggle('scan-workspace-mode',tab==='scan' && unifiedScanMode);
     if(tab==='settings') renderSettings();
     if(tab==='forms') renderFormEditor();
@@ -2852,12 +2879,13 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   }
 
   function syncWorkSidebar(tab){
-    const ids=['home-btn','side-scan-btn','side-reagent-btn','side-standard-btn','side-forms-btn','side-settings-btn'];
+    const ids=['home-btn','side-scan-btn','side-reagent-btn','side-standard-btn','side-msds-btn','side-forms-btn','side-settings-btn'];
     ids.forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('active');});
     let active;
     if(tab==='scan' && unifiedScanMode) active='side-scan-btn';
     else if(tab==='settings') active='side-settings-btn';
     else if(tab==='forms') active='side-forms-btn';
+    else if(tab==='msds') active='side-msds-btn';
     else active=currentCategory==='standard'?'side-standard-btn':'side-reagent-btn';
     const el=document.getElementById(active);if(el)el.classList.add('active');
     const title=document.getElementById('work-head-title'), sub=document.getElementById('work-head-sub');
@@ -2866,8 +2894,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(sub) sub.textContent='시약 · 표준물질 QR/바코드 통합 입출고';
       return;
     }
-    if(title) title.textContent = tab==='dashboard'?`${catLabel()} 재고현황`:tab==='settings'?'설정':tab==='forms'?'서식':tab==='register'?`${catLabel()} 등록`:`${catLabel()}관리`;
-    if(sub) sub.textContent = tab==='dashboard'?`${catLabel()} 재고 및 유효기간`:tab==='settings'?'앱 옵션':tab==='forms'?`${labelSizeText()} 라벨 서식`:tab==='register'?`${catLabel()} 등록`:'QR 입출고';
+    if(title) title.textContent = tab==='dashboard'?`${catLabel()} 재고현황`:tab==='settings'?'설정':tab==='forms'?'서식':tab==='msds'?'MSDS 관리':tab==='register'?`${catLabel()} 등록`:`${catLabel()}관리`;
+    if(sub) sub.textContent = tab==='dashboard'?`${catLabel()} 재고 및 유효기간`:tab==='settings'?'앱 옵션':tab==='forms'?`${labelSizeText()} 라벨 서식`:tab==='msds'?'MSDS 첨부·검토 · GHS 현황':tab==='register'?`${catLabel()} 등록`:'QR 입출고';
   }
 
   // ---------- render: stats ----------
@@ -3984,6 +4012,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     document.getElementById('landing-screen').style.display = 'flex';
     document.documentElement.classList.remove('settings-mode');
     document.documentElement.classList.remove('forms-mode');
+    document.documentElement.classList.remove('msds-mode');
     renderHomeDashboard();
     renderHomeRecentLogs();
     document.querySelectorAll('.work-nav button').forEach(b=>b.classList.remove('active'));
@@ -4026,6 +4055,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   document.getElementById('side-reagent-btn')?.addEventListener('click',()=>enterSystem('reagent'));
   document.getElementById('side-standard-btn')?.addEventListener('click',()=>enterSystem('standard'));
   document.getElementById('side-forms-btn')?.addEventListener('click',()=>openForms());
+  document.getElementById('side-msds-btn')?.addEventListener('click',()=>openMsds());
 
   function openSidebarTab(tab){
     const appVisible = document.getElementById('app').style.display !== 'none';
@@ -4044,6 +4074,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       openUnifiedScan({pushState:false});
     } else if(state.view === 'forms'){
       openForms({pushState:false});
+    } else if(state.view === 'msds'){
+      openMsds({pushState:false});
     } else if(state.view === 'app'){
       enterSystem(state.cat, { pushState:false });
     }

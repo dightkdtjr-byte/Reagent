@@ -71,6 +71,18 @@
     return {header,rows};
   }
 
+  // 추출 결과를 저장 가능한 GHS 객체로 만든다 (일괄 처리용). 읽은 내용이 없으면 null.
+  function ghsFromExtract(doc,r,origin,existing){
+    if(!r||!r.found)return null;
+    const g=existing?clone(existing):{};
+    g.pictograms=r.pictograms.slice();g.signalWord=r.signalWord||'';g.hCodes=r.hCodes.slice();
+    if(r.pCodes.length)g.pCodes=r.pCodes.slice();
+    if(r.hazardClasses)g.hazardClasses=r.hazardClasses;
+    g.source=origin==='kosha'?'kosha':'supplier';g.sourceNote=`${doc.fileName}에서 자동 추출 (${today()})`;
+    if(r.issuedAt)g.msdsIssuedAt=r.issuedAt;if(r.revision)g.msdsRevision=r.revision;if(!g.msdsReviewedAt)g.msdsReviewedAt=today();
+    g.extractedFrom={documentId:doc.id,at:new Date().toISOString()};g.updatedAt=new Date().toISOString();
+    return D.normalizeGHS(g);
+  }
   // ---------- 상세 화면 편집기 ----------
   const panels=new Map();
   function mountDetail(opts){
@@ -311,5 +323,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract};
 })();
