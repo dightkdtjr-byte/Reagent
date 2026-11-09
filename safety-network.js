@@ -33,7 +33,7 @@ function createDownloader(netProvider) {
         const net = typeof netProvider === 'function' ? netProvider() : netProvider;
         if (!net?.request) throw failure('NETWORK_UNAVAILABLE', '앱의 다운로드 모듈을 사용할 수 없습니다.', {stage:'요청 준비'});
         req = net.request({method:'GET', url:u.href, redirect:'manual', credentials:'omit', useSessionCookies:false});
-        req.setHeader('User-Agent', 'ReagentInventory/3.13.0 (MSDS download)');
+        req.setHeader('User-Agent', 'ReagentInventory/3.13.1 (MSDS download)');
         req.setHeader('Accept', 'application/pdf,image/svg+xml,*/*;q=0.1');
         timer = setTimeout(() => fail('ETIMEDOUT', '파일 다운로드 시간이 초과되었습니다.'), timeout);
         req.on('error', e => finish(e));

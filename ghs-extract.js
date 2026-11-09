@@ -30,10 +30,10 @@
     const re=new RegExp('(?:'+labels+')\\s*[:：]?\\s*\\n?\\s*'+DATE_TOKEN,'i');const m=text.match(re);return m?parseDate(m[1]):'';
   }
   function codes(text,kind){
-    const re=kind==='H'?/\bH\s?(\d{3})((?:\s*\+\s*H\s?\d{3})*)/g:/\bP\s?(\d{3})((?:\s*\+\s*P\s?\d{3})*)/g;
+    const re=kind==='H'?/\b(?:EU)?H\s?(\d{3}[FDfd]{0,2}|\d{3}A)((?:\s*\+\s*(?:EU)?H\s?\d{3}[FDfd]{0,2})*)/g:/\bP\s?(\d{3})((?:\s*\+\s*P\s?\d{3})*)/g;
     const map=kind==='H'?D.H:D.P,out=[];
     for(const m of text.matchAll(re)){
-      const raw=(kind+m[1]+m[2]).replace(/\s+/g,'').toUpperCase();
+      const raw=D.normalizeCode(m[0]);
       const parts=raw.split('+');
       if(!parts.every(p=>map.has(p)))continue; // 사전에 없는 번호는 오인식으로 본다 (예: 제품코드)
       if(!out.includes(raw))out.push(raw);
