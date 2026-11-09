@@ -26,7 +26,9 @@ jobs:
           cache: npm
 
       - name: 의존성 설치
-        run: npm ci
+        shell: bash
+        run: |
+          for i in 1 2 3; do npm ci && exit 0; echo "설치 실패, 재시도 $i"; rm -rf node_modules; sleep 20; done; exit 1
 
       - name: exe 빌드
         run: npx electron-builder --win --x64 --publish never
