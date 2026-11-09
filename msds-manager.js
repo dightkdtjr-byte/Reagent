@@ -115,7 +115,7 @@
     function draw(){
       element.replaceChildren();
       const head=E('div',undefined,'msds-mgr-head');head.append(E('h3','MSDS · GHS 관리'));
-      head.append(E('p','모든 시약·표준물질의 MSDS 첨부와 검토 상태, GHS 입력 현황입니다. CAS 번호가 있는 품목은 KOSHA에서 국문 MSDS를 한 번에 받을 수 있습니다.','hint'));
+      head.append(E('p','전체 품목의 MSDS 첨부·검토 상태와 GHS 입력 현황. CAS 번호가 있는 품목은 KOSHA에서 국문 MSDS를 한 번에 받습니다.','hint'));
       element.append(head,summaryChips());
       const tools=E('div',undefined,'msds-mgr-tools');
       const search=E('input');search.type='search';search.placeholder='품목명 / ID / CAS / 파일명 검색';search.value=state.query;search.oninput=()=>{state.query=search.value;drawTable();};
