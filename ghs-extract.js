@@ -22,7 +22,8 @@
     if((m=s.match(/(\d{4})\s*[-./년]\s*(\d{1,2})\s*[-./월]\s*(\d{1,2})/)))return toISO(m[1],m[2],m[3]);
     if((m=s.match(/(\d{1,2})[-\s/]([A-Za-z]{3,9})\.?[-\s/,]+(\d{4})/)))return toISO(m[3],MONTHS[m[2].slice(0,3).toLowerCase()]||0,m[1]);
     if((m=s.match(/([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})/)))return toISO(m[3],MONTHS[m[1].slice(0,3).toLowerCase()]||0,m[2]);
-    if((m=s.match(/(\d{1,2})[./-](\d{1,2})[./-](\d{4})/))){const a=Number(m[1]),b=Number(m[2]);return a>12?toISO(m[3],b,a):toISO(m[3],a,b);}
+    // 점(.)으로 나눈 날짜는 유럽식 일.월.년(Sigma, Merck 등), 빗금(/)은 미국식 월/일/년으로 본다. 둘 중 하나만 가능하면 그쪽을 따른다.
+    if((m=s.match(/(\d{1,2})([./-])(\d{1,2})[./-](\d{4})/))){const a=Number(m[1]),b=Number(m[3]);if(a>12)return toISO(m[4],b,a);if(b>12)return toISO(m[4],a,b);return m[2]==='/'?toISO(m[4],a,b):toISO(m[4],b,a);}
     return '';
   }
   const DATE_TOKEN='((?:\\d{4}\\s*[-./년]\\s*\\d{1,2}\\s*[-./월]\\s*\\d{1,2})|(?:\\d{1,2}[-\\s/][A-Za-z]{3,9}\\.?[-\\s/,]+\\d{4})|(?:[A-Za-z]{3,9}\\.?\\s+\\d{1,2},?\\s+\\d{4})|(?:\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}))';
@@ -62,7 +63,7 @@
     return {codes:found,how:found.length?'named':'none'};
   }
   function hazardClasses(section){
-    const start=section.search(/classification\s+of\s+the\s+substance|GHS\s*classification|유해성\s*[·ㆍ・]?\s*위험성\s*분류|분류\s*[:：]|classification/i);
+    const start=section.search(/classification\s+of\s+the\s+substance|GHS\s*classification|유해성\s*[·ㆍ・]?\s*위험성\s*분류|혼합물의\s*분류|물질의\s*분류|분류\s*[:：]|classification/i);
     if(start<0)return '';
     const body=section.slice(start,start+2500).split(/\n/).slice(1);
     const lines=[];
