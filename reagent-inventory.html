@@ -1065,6 +1065,8 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 </style>
 <style id="ghs-styles">
 .ghs-cell{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.ghs-head-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}.ghs-head-strip .ghs-icons img{width:30px;height:30px}.ghs-head-strip .hint{font-family:var(--mono);font-size:11px}
+.reg-cas-note{font-size:12px;color:var(--teal-dark);margin-top:4px;min-height:16px}.reg-cas-note.err{color:var(--red)}
 .ghs-icons{display:inline-flex;gap:2px;align-items:center}
 .ghs-ico{display:inline-block;vertical-align:middle;border-radius:3px}
 .ghs-ico-code{font-size:10px;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:1px 4px}
@@ -1204,7 +1206,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.15</div>
+        <div class="work-version">v3.13.16</div>
       </div>
 </aside>
   </div>
@@ -1338,7 +1340,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         </div>
         <div>
           <label for="f-cas">CAS No.</label>
-          <input type="text" id="f-cas" placeholder="예: 67-64-1">
+          <input type="text" id="f-cas" placeholder="예: 67-64-1" autocomplete="off">
+          <div class="reg-cas-note" id="f-cas-note"></div>
         </div>
         <div>
           <label for="f-serial" id="f-serial-label">제품 시리얼번호</label>
@@ -1532,7 +1535,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.15<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.16<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1605,7 +1608,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.15';
+  const APP_VERSION = '3.13.16';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -2714,7 +2717,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   }
   function renderMsdsManager(){
     const el=document.getElementById('msds-manager-panel'); if(!el) return;
-    window.MSDSManager.mount({element:el,getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,settings,exportExcel:exportGhsExcel,openItem:(id)=>{const r=findReagent(id);if(!r)return;currentCategory=r.category||'reagent';selectedId=id;renderDetail();}});
+    window.MSDSManager.mount({element:el,getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,settings,exportExcel:exportGhsExcel,orgName:'수도권대기환경청',appName:'시약 재고관리시스템 v'+APP_VERSION,openItem:(id)=>{const r=findReagent(id);if(!r)return;currentCategory=r.category||'reagent';selectedId=id;renderDetail();}});
   }
   function openForms(opts){
     opts=opts||{};
@@ -2903,6 +2906,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     apply('standard',statsFor('standard'));
   }
 
+
   function syncWorkSidebar(tab){
     const ids=['home-btn','side-scan-btn','side-reagent-btn','side-standard-btn','side-msds-btn','side-forms-btn','side-settings-btn'];
     ids.forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('active');});
@@ -3082,6 +3086,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div>
           <h3>${escapeHtml(r.name)}${r.nameEn ? ` <span style="font-weight:400; color:var(--ink-soft); font-size:14px;">(${escapeHtml(r.nameEn)})</span>` : ''}</h3>
           <div class="subid">${r.id}</div>
+          ${window.GHSUI.headerHtml(r,settings())}
         </div>
       </div>
       <div class="field-grid">
@@ -3188,6 +3193,31 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     showToast(mergedIntoExisting?`${reagent.id}에 새 입고회차 추가 완료`:`${reagent.id} 발급 완료 — 라벨을 인쇄해 부착하세요.`);
     if(!mergedIntoExisting) autoFetchMsdsFor(reagent.id);
   });
+  // 등록 화면에서 CAS를 입력하고 칸을 벗어나면 물질명을 찾아 비어 있는 국문명·영문명을 채운다 (출처: 안전보건공단 KOSHA).
+  (function(){
+    const cas=document.getElementById('f-cas'),note=document.getElementById('f-cas-note');if(!cas||!note)return;
+    let last='';
+    async function lookup(){
+      const v=cas.value.trim();if(v===last)return;last=v;note.className='reg-cas-note';note.textContent='';
+      if(!/^\d{2,7}-\d{2}-\d$/.test(v)){if(v)note.textContent='CAS 형식은 00-00-0 입니다.';return;}
+      if(!window.inventorySafety?.koshaSearch)return;
+      note.textContent='물질명 찾는 중…';
+      try{
+        const r=await window.inventorySafety.koshaSearch(v);if(cas.value.trim()!==v)return;
+        const rows=(r?.rows||[]).filter(x=>x.casNo===v);
+        if(!r?.ok||!rows.length){note.textContent='이 CAS로 등록된 MSDS를 찾지 못했습니다. 이름을 직접 입력해주세요.';return;}
+        const name=document.getElementById('f-name'),en=document.getElementById('f-name-en');
+        const pick=rows[0];const m=String(pick.name||'').match(/^(.*?)\s*\(([A-Za-z][^()]*)\)\s*$/);
+        const ko=(m?m[1]:pick.name||'').trim(),eng=(m?m[2]:'').trim();
+        const filled=[];
+        if(name&&!name.value.trim()&&ko){name.value=ko;filled.push('국문명');}
+        if(en&&!en.value.trim()&&eng){en.value=eng;filled.push('영문명');}
+        note.textContent=`${pick.name}${pick.pictograms?.length?' · 그림문자 '+pick.pictograms.join('·'):''}${filled.length?' → '+filled.join('·')+' 채움':''} (KOSHA)`;
+      }catch(e){note.className='reg-cas-note err';note.textContent='물질명 찾기 실패: '+String(e.message||e);}
+    }
+    cas.addEventListener('change',lookup);cas.addEventListener('blur',lookup);
+    document.getElementById('reg-form')?.addEventListener('reset',()=>{last='';note.textContent='';});
+  })();
   // 등록 직후 CAS가 있으면 뒤에서 MSDS를 받아 첨부한다. 실패해도 등록에는 영향이 없다.
   const autoFetchQueue=new Set();
   async function autoFetchMsdsFor(id){
@@ -3883,7 +3913,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.15 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.16 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];

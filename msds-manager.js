@@ -108,7 +108,7 @@
       const sel=E('select');for(const [v,t] of FILTERS){const o=E('option',t);o.value=v;sel.append(o);}sel.value=state.filter;sel.onchange=()=>{state.filter=sel.value;drawTable();};
       const bulk=button('MSDS 일괄 받기 (KOSHA)',bulkKosha,'primary');bulk.dataset.busyLock='1';
       const stop=button('중단',()=>{state.stop=true;});stop.id='msds-mgr-stop';stop.hidden=!state.busy;
-      tools.append(search,sel,bulk,stop,button('현황 엑셀 저장',()=>opts.exportExcel?.()),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
+      tools.append(search,sel,bulk,stop,button('목록 인쇄',async()=>{try{if(!window.inventoryMSDS?.report)throw new Error('설치형 앱에서 사용할 수 있습니다.');const html=window.GHSUI.reportHtml(items(),settings(),{org:opts.orgName||'',app:opts.appName||''});const r=await window.inventoryMSDS.report({title:'화학물질 목록 (MSDS 비치 현황)',html});if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('목록 인쇄 창 열기 실패: '+String(e.message||e),true);}}),button('현황 엑셀 저장',()=>opts.exportExcel?.()),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
       element.append(tools);
       const progress=E('p','','hint msds-mgr-progress');progress.id='msds-mgr-progress';progress.setAttribute('role','status');progress.hidden=!state.progress;progress.textContent=state.progress;element.append(progress);
       if(state.lastRun){const r=state.lastRun;const box=E('details',undefined,'msds-mgr-lastrun');box.open=r.errors.length>0;box.append(E('summary',`직전 일괄 받기 (${r.at}): 대상 ${r.total}개 · 첨부 ${r.ok}개 · GHS 채움 ${r.filled}개 · 실패 ${r.errors.length}개${r.stopped?' · 중단됨':''}`));for(const e of r.errors)box.append(E('p',e,'hint safety-warning'));element.append(box);}
@@ -117,7 +117,9 @@
       drawTable();
     }
     draw();
-    return {refresh:draw};
+    const api={refresh:draw,setFilter:(f)=>{state.filter=FILTERS.some(x=>x[0]===f)?f:'all';draw();}};
+    window.MSDSManager.current=api;
+    return api;
   }
-  window.MSDSManager={mount};
+  window.MSDSManager={mount,setFilter:(f)=>window.MSDSManager.current?.setFilter(f)};
 })();

@@ -38,6 +38,43 @@
     const g=item.ghs,h=g.hCodes.slice(0,4).map(c=>`<span>${esc(c)} ${esc(D.hText(c))}</span>`).join('');
     return `<div class="ghs-inline"><div class="ghs-inline-head"><span class="ghs-icons">${g.pictograms.map(c=>iconImg(c,34)).join('')}</span>${signalBadge(g.signalWord)}${g.hazardClasses?`<span class="ghs-inline-class">${esc(g.hazardClasses)}</span>`:''}</div>${h?`<div class="ghs-inline-h">${h}${g.hCodes.length>4?`<span>외 ${g.hCodes.length-4}개</span>`:''}</div>`:''}</div>`;
   }
+  // 상세 창 머리: 그림문자·신호어·MSDS 상태를 한 줄로
+  function headerHtml(item,settings){
+    const st=D.msdsStatus(item,reviewMonths(settings),today()),g=item?.ghs;
+    const msds=st.state==='overdue'?`<span class="ghs-msds bad">${esc(st.label)}</span>`:st.state==='due-soon'?`<span class="ghs-msds warn">MSDS ${esc(st.label)}</span>`:st.state==='unset'?`<span class="ghs-msds warn">MSDS 검토일 미입력</span>`:st.attached?`<span class="ghs-msds ok">MSDS ${st.attached}개</span>`:`<span class="ghs-msds warn">MSDS 미첨부</span>`;
+    if(!D.hasClassification(item))return `<div class="ghs-head-strip"><span class="ghs-none">GHS 미입력</span>${msds}</div>`;
+    return `<div class="ghs-head-strip" title="${esc(D.summaryText(item))}"><span class="ghs-icons">${g.pictograms.map(c=>iconImg(c,30)).join('')}</span>${signalBadge(g.signalWord)}${msds}${g.hCodes.length?`<span class="hint">${esc(g.hCodes.slice(0,6).join(' '))}${g.hCodes.length>6?' …':''}</span>`:''}</div>`;
+  }
+  // 화학물질 목록(MSDS 비치 현황) 인쇄용 문서
+  function reportHtml(items,settings,meta={}){
+    const st=r=>D.msdsStatus(r,reviewMonths(settings),today());
+    const rows=(items||[]).filter(r=>!r.archivedAt).sort((a,b)=>String(a.category||'reagent').localeCompare(String(b.category||'reagent'))||String(a.id).localeCompare(String(b.id)));
+    const tr=rows.map((r,i)=>{const g=r.ghs||{},s=st(r),has=D.hasClassification(r);
+      const pic=has&&g.pictograms.length?g.pictograms.map(c=>{const u=icon(c);return u?`<img src="${u}" alt="${esc(c)}" title="${esc(c)} ${esc(D.PICTOGRAMS[c].label)}">`:esc(c);}).join(''):'<span class="dim">-</span>';
+      const h=has?g.hCodes.join(' '):'';const docs=(r.msdsDocuments||[]);
+      const msds=docs.length?`${docs.some(d=>d.koshaChemId)?'KOSHA':'첨부'}${g.msdsIssuedAt?'<br><small>개정 '+esc(g.msdsIssuedAt)+'</small>':''}`:'<b class="bad">미첨부</b>';
+      const rv=s.state==='overdue'?`<b class="bad">${esc(s.label)}</b>`:s.state==='due-soon'?`<b class="warn">${esc(s.label)}</b>`:g.msdsReviewedAt?esc(g.msdsReviewedAt):'<span class="dim">-</span>';
+      return `<tr><td class="c">${i+1}</td><td>${esc(r.id)}</td><td><b>${esc(r.name||'')}</b>${r.nameEn?`<br><small>${esc(r.nameEn)}</small>`:''}</td><td class="mono">${esc(r.casNo||'')}</td><td>${esc(r.maker||'')}<br><small>${esc(r.spec||'')}</small></td><td class="c">${Number(r.stock)||0} ${esc(r.unit||'')}</td><td class="c">${esc(r.storage||'')}</td><td class="pic">${pic}</td><td class="c">${has&&g.signalWord?`<b class="${g.signalWord==='Danger'?'bad':''}">${esc(D.SIGNAL[g.signalWord])}</b>`:'<span class="dim">-</span>'}</td><td class="h">${esc(h)||'<span class="dim">GHS 미입력</span>'}</td><td class="c">${msds}</td><td class="c">${rv}</td></tr>`;}).join('');
+    const c=counts(rows,settings);
+    const head=`${esc(meta.org||'')} 화학물질 목록 (MSDS 비치 현황)`;
+    return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${head}</title><style>
+      @page{size:A4 landscape;margin:12mm}body{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#111;margin:0;padding:16px 20px;font-size:11px}
+      .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.bar button{font:inherit;font-size:13px;padding:8px 18px;border:1px solid #1f5fbf;background:#1f5fbf;color:#fff;border-radius:6px;cursor:pointer}.bar button.ghost{background:#fff;color:#1f5fbf}
+      h1{font-size:18px;margin:0 0 4px}.meta{color:#555;font-size:11px;margin-bottom:10px}.sum{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;font-size:11px}.sum span b{margin-left:3px}
+      table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:4px 5px;vertical-align:middle;word-break:break-word}th{background:#eef3fa;font-weight:700;font-size:10.5px}td.c,th.c{text-align:center}td.mono{font-family:Consolas,monospace}td.pic img{width:22px;height:22px;vertical-align:middle;margin:0 1px}td.h{font-size:10px;line-height:1.35}small{color:#555;font-size:9.5px}.dim{color:#999}.bad{color:#c62839}.warn{color:#b86d00}tr{page-break-inside:avoid}thead{display:table-header-group}
+      .foot{margin-top:10px;font-size:10px;color:#555;display:flex;justify-content:space-between}.sign{margin-top:14px;display:flex;gap:30px;justify-content:flex-end;font-size:11px}.sign span{display:inline-block;min-width:150px;border-bottom:1px solid #333;padding:0 6px 3px}
+      @media print{.bar{display:none}body{padding:0}}
+    </style></head><body>
+      <div class="bar"><div>미리보기를 확인한 뒤 인쇄하세요. 인쇄창에서 'PDF로 저장'을 고르면 파일로 남길 수 있습니다.</div><div><button class="ghost" onclick="window.close()">닫기</button> <button onclick="window.print()">인쇄</button></div></div>
+      <h1>${head}</h1>
+      <div class="meta">작성일 ${esc(today())} · 품목 ${rows.length}개 (시약 ${rows.filter(r=>(r.category||'reagent')!=='standard').length} · 표준물질 ${rows.filter(r=>r.category==='standard').length}) · MSDS 검토 주기 ${reviewMonths(settings)||'미설정'}${reviewMonths(settings)?'개월':''}</div>
+      <div class="sum"><span>GHS 입력<b>${rows.length-c.ghsMissing}</b></span><span>GHS 미입력<b class="${c.ghsMissing?'warn':''}">${c.ghsMissing}</b></span><span>신호어 '위험'<b>${c.danger}</b></span><span>MSDS 미첨부<b class="${c.msdsMissing?'bad':''}">${c.msdsMissing}</b></span><span>MSDS 검토 필요<b class="${c.msdsReview?'warn':''}">${c.msdsReview}</b></span></div>
+      <table><colgroup><col style="width:28px"><col style="width:58px"><col style="width:150px"><col style="width:80px"><col style="width:110px"><col style="width:56px"><col style="width:80px"><col style="width:128px"><col style="width:48px"><col><col style="width:62px"><col style="width:78px"></colgroup>
+      <thead><tr><th class="c">번호</th><th>관리번호</th><th>물질명</th><th>CAS No.</th><th>제조사 · 규격</th><th class="c">재고</th><th class="c">보관</th><th class="c">그림문자</th><th class="c">신호어</th><th>유해·위험 문구 (H코드)</th><th class="c">MSDS</th><th class="c">검토일</th></tr></thead><tbody>${tr||'<tr><td colspan="12" class="c dim">품목이 없습니다.</td></tr>'}</tbody></table>
+      <div class="foot"><span>MSDS 출처: 제조사 공급 자료 또는 안전보건공단(KOSHA) 화학물질정보. 그림문자는 GHS 기준.</span><span>${esc(meta.app||'시약 재고관리시스템')}</span></div>
+      <div class="sign"><div>작성자 <span></span></div><div>확인자 <span></span></div></div>
+    </body></html>`;
+  }
   // 라벨 인쇄용 (data URI 이미지)
   function labelHtml(item,mm){
     if(!D.hasClassification(item))return '';
@@ -74,20 +111,28 @@
   // CAS로 MSDS를 찾아 PDF로 받고 품목에 첨부한 뒤, GHS가 비어 있으면 읽어온 값으로 채워 저장한다.
   // 상세 창, MSDS 관리 일괄 받기, 등록 직후 자동 받기가 모두 이 함수를 쓴다.
   const CAS_RE=/^\d{2,7}-\d{2}-\d$/;
+  // 같은 CAS로 여러 건이 나오면: 품목의 국문명·영문명과 같은 이름 > 가장 최근 개정본 순으로 고른다.
+  function pickKoshaRow(rows,item){
+    if(!rows||rows.length<2)return rows?.[0];
+    const norm=v=>String(v||'').toLowerCase().replace(/[\s\-·,()\[\]]/g,'');
+    const names=[norm(item?.name),norm(item?.nameEn)].filter(n=>n.length>=2);
+    const score=r=>{const n=norm(r.name);let sc=0;for(const x of names){if(n===x)sc=Math.max(sc,30);else if(n.includes(x)||x.includes(n))sc=Math.max(sc,10);}return sc;};
+    return rows.slice().sort((a,b)=>score(b)-score(a)||String(b.revisedAt||'').localeCompare(String(a.revisedAt||''))||0)[0];
+  }
   async function fetchAndAttachKosha(item,{getItem,save,onStatus}={}){
     const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
     if(!window.inventorySafety?.koshaSearch)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
     onStatus?.('검색 중');
     const s=await window.inventorySafety.koshaSearch(cas);if(!s?.ok)throw new Error(String(s?.error||'검색 실패')+(s?.diagnostic?.hint?' — '+s.diagnostic.hint:''));
     const rows=(s.rows||[]).filter(r=>r.casNo===cas);if(!rows.length)throw new Error('해당 CAS의 MSDS를 찾지 못했습니다 (KOSHA).');
-    const pick=rows[0];
+    const pick=pickKoshaRow(rows,item);
     onStatus?.('PDF 저장 중');
     const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
     const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
     const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
     const old=live.msdsDocuments||[];if(!old.some(d=>d.id===rec.document.id)){if(old.length>=20)throw new Error('첨부 문서가 20개입니다.');live.msdsDocuments=[...old,rec.document];}
     let filled=false;
-    if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}live.ghs=g;filled=true;}}
+    if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}if(pick.name&&pick.name!==live.name&&pick.name!==live.nameEn)g.sourceNote=`KOSHA 물질명 '${pick.name}'${pick.revisedAt?' · 원문 개정 '+pick.revisedAt:''} · ${g.sourceNote||''}`.slice(0,200);live.ghs=g;filled=true;}}
     live.updatedAt=new Date().toISOString();
     let ok=false;try{ok=await save();}catch{}
     if(!ok){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
@@ -179,7 +224,7 @@
           const rows=r.rows||[];
           if(!rows.length){setKoshaStatus(`'${query}'의 MSDS를 찾지 못했습니다 (KOSHA). CAS 번호를 확인하거나 제조사 MSDS PDF를 첨부해주세요.`,true);return;}
           if(rows.length>1&&!r.exactCas){koshaChoices=rows.slice(0,15);setKoshaStatus('검색 결과가 여러 개입니다. 아래에서 맞는 물질을 선택하세요.');draw();return;}
-          pick=rows[0];
+          pick=pickKoshaRow(rows,getItem(itemId));
         }
         koshaChoices=null;
         setKoshaStatus(`'${pick.name}' MSDS를 PDF로 저장하는 중입니다… (10~30초)`);
@@ -379,5 +424,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha};
 })();

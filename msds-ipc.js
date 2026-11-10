@@ -72,6 +72,26 @@ function registerMSDSHandlers({ipcMain, dialog, shell, BrowserWindow, store, doc
     win.setTitle(doc.fileName);
     return {ok: true};
   });
+  // 렌더러가 만든 인쇄용 보고서(화학물질 목록 등)를 별도 창에 띄운다. 창 안의 '인쇄' 버튼이 시스템 인쇄창을 연다.
+  let reportWin = null;
+  handle('report', async (event, payload) => {
+    const html = String(payload?.html || '');
+    const title = String(payload?.title || '보고서').slice(0, 80);
+    if (!html || html.length > 4 * 1024 * 1024) throw new Error('보고서 내용이 비어 있거나 너무 큽니다.');
+    if (reportWin && !reportWin.isDestroyed()) { try { reportWin.close(); } catch {} }
+    const parent = BrowserWindow.fromWebContents(event.sender);
+    reportWin = new BrowserWindow({
+      width: 1100, height: 860, minWidth: 600, minHeight: 400, autoHideMenuBar: true, title,
+      parent: parent && !parent.isDestroyed() ? parent : undefined,
+      webPreferences: {sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true}
+    });
+    reportWin.webContents.setWindowOpenHandler(() => ({action: 'deny'}));
+    reportWin.webContents.on('will-navigate', e => e.preventDefault());
+    reportWin.setMenuBarVisibility(false);
+    await reportWin.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
+    reportWin.setTitle(title);
+    return {ok: true};
+  });
   // 첨부된 MSDS에서 GHS 항목을 읽는다. 결과는 렌더러에서 사용자가 확인한 뒤 저장한다.
   handle('extract', async (_event, doc) => {
     validateDocument(doc);

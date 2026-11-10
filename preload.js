@@ -47,7 +47,8 @@ contextBridge.exposeInMainWorld('inventoryMSDS', {
   export: (document) => ipcRenderer.invoke('inventory-msds:export', document),
   preview: (document) => ipcRenderer.invoke('inventory-msds:preview', document),
   extract: (document) => ipcRenderer.invoke('inventory-msds:extract', document),
-  folder: () => ipcRenderer.invoke('inventory-msds:folder')
+  folder: () => ipcRenderer.invoke('inventory-msds:folder'),
+  report: (payload) => ipcRenderer.invoke('inventory-msds:report', payload)
 });
 
 // Curated source IDs only. No arbitrary URL or path accepted from renderer.
