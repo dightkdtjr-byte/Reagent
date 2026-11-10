@@ -7,6 +7,14 @@ const MAX_BYTES = 25 * 1024 * 1024;
 const MAX_DOCUMENTS = 20;
 const HASH_RE = /^[a-f0-9]{64}$/;
 const OBJECT_RE = /^[a-f0-9]{64}\.pdf$/;
+// 사람이 알아볼 수 있는 저장 파일명: 품목코드_물질명_CAS.pdf (같은 이름이 이미 있으면 _2, _3…)
+const FILE_RE = /^(?!\.)[^\\/\x00-\x1f<>:"|?*]{5,150}\.pdf$/;
+function friendlyName(itemId, name, casNo) {
+  const clean = v => String(v || '').replace(/[\\/\x00-\x1f<>:"|?*]/g, '_').replace(/\s+/g, ' ').trim();
+  const parts = [clean(itemId).slice(0, 12), clean(name).slice(0, 60), clean(casNo).slice(0, 20)].filter(Boolean);
+  const stem = parts.join('_').replace(/\.+$/, '');
+  return stem ? stem + '.pdf' : '';
+}
 const errText = e => String(e && e.message || e);
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
@@ -20,6 +28,8 @@ function validateDocument(doc) {
     throw new Error('MSDS PDF는 파일당 25 MB까지 첨부할 수 있습니다.');
   if (typeof doc.addedAt !== 'string' || doc.addedAt.length > 40 || !Number.isFinite(Date.parse(doc.addedAt)))
     throw new Error('MSDS 첨부 날짜가 올바르지 않습니다.');
+  if (doc.file !== undefined && (typeof doc.file !== 'string' || !FILE_RE.test(doc.file) || doc.file !== path.basename(doc.file)))
+    throw new Error('MSDS 저장 파일명이 올바르지 않습니다.');
   return doc;
 }
 function validateDocuments(docs) {
@@ -84,15 +94,30 @@ function atomicBytes(target, bytes) {
     try { fs.unlinkSync(temp); } catch {}
   }
 }
+// 저장 파일명 후보: 사람이 읽는 이름(doc.file)이 먼저, 예전 방식의 해시 이름이 다음. 내용은 항상 SHA-256으로 확인한다.
+function candidateNames(doc) {
+  const names = [];
+  if (doc.file) names.push(doc.file);
+  names.push(doc.sha256 + '.pdf');
+  return names;
+}
+function verified(file, doc) {
+  const bytes = pdfBytes(file);
+  if (bytes.length !== doc.size || hash(bytes) !== doc.sha256) throw new Error('MSDS 파일의 크기 또는 SHA-256이 일치하지 않습니다.');
+  return bytes;
+}
 function checkedFile(base, doc) {
   validateDocument(doc);
   const dirStat = fs.lstatSync(base);
   if (!dirStat.isDirectory() || dirStat.isSymbolicLink()) throw new Error('MSDS 폴더를 확인할 수 없습니다.');
-  const file = path.join(base, doc.sha256 + '.pdf');
-  const bytes = pdfBytes(file);
-  if (bytes.length !== doc.size || hash(bytes) !== doc.sha256) throw new Error('MSDS 파일의 크기 또는 SHA-256이 일치하지 않습니다.');
-  return {file, bytes};
+  let lastError = null;
+  for (const name of candidateNames(doc)) {
+    const file = path.join(base, name);
+    try { return {file, bytes: verified(file, doc)}; } catch (e) { lastError = e; }
+  }
+  throw lastError || new Error('MSDS 파일을 찾지 못했습니다.');
 }
+const storedName = doc => doc.file || doc.sha256 + '.pdf';
 function createMSDSStore(getDataDir, options = {}) {
   const clock = options.clock || (() => new Date());
   const directory = () => ensureDirectory(path.join(getDataDir(), 'msds'));
@@ -125,6 +150,7 @@ function createMSDSStore(getDataDir, options = {}) {
     return {ok: true, files, directory: directory(), maxBytes: MAX_BYTES, maxDocuments: MAX_DOCUMENTS};
   }
   const openPath = doc => checkedFile(directory(), doc).file;
+  const openPathWithBytes = doc => checkedFile(directory(), doc);
   function exportFile(doc, target) {
     if (typeof target !== 'string' || path.extname(target).toLowerCase() !== '.pdf') throw new Error('저장 파일 확장자는 PDF로 지정해주세요.');
     const {bytes, file} = checkedFile(directory(), doc);
@@ -141,19 +167,53 @@ function createMSDSStore(getDataDir, options = {}) {
       try { checkedFile(dest, doc); continue; } catch {}
       try {
         const {bytes} = checkedFile(directory(), doc);
-        atomicBytes(path.join(dest, doc.sha256 + '.pdf'), bytes);
+        atomicBytes(path.join(dest, storedName(doc)), bytes);
         checkedFile(dest, doc);
       } catch (e) { throw new Error(`MSDS 백업 실패 (${doc.fileName}): ${errText(e)}`); }
     }
     return {documents: docs.length};
   }
+  // 백업 JSON이 가리키는 PDF 사본이 있는지 센다. 없는 파일은 이름만 모아 알리고 검사를 막지 않는다.
   function inspectBackup(inventory, base) {
-    const docs = references(inventory);
+    const docs = references(inventory), missing = [];
     for (const doc of docs) {
       try { checkedFile(base || backupDirectory(), doc); }
-      catch (e) { throw new Error(`MSDS 백업 파일 없음 또는 손상 (${doc.fileName}): ${errText(e)}`); }
+      catch { missing.push(doc.fileName); }
     }
-    return {documents: docs.length};
+    return {documents: docs.length, missing};
+  }
+  // 저장 파일을 '품목코드_물질명_CAS.pdf'로 바꾼다. 내용이 같은 파일이 그 이름으로 이미 있으면 그대로 쓰고,
+  // 다른 내용의 파일이 있으면 _2, _3을 붙인다. 백업 사본도 같은 이름으로 맞춘다. 바뀐 문서 정보를 돌려준다.
+  function relabel(doc, meta) {
+    validateDocument(doc);
+    const want = friendlyName(meta && meta.itemId, meta && meta.name, meta && meta.casNo);
+    if (!want || !FILE_RE.test(want)) return {ok: true, document: doc, changed: false};
+    const base = directory();
+    const {file, bytes} = checkedFile(base, doc);
+    let name = want, i = 1;
+    for (;;) {
+      const target = path.join(base, name);
+      if (path.resolve(target) === path.resolve(file)) break;
+      if (!fs.existsSync(target)) break;
+      try { verified(target, doc); break; } catch {}
+      name = want.replace(/\.pdf$/, `_${++i}.pdf`);
+      if (i > 50) throw new Error('같은 이름의 MSDS 파일이 너무 많습니다.');
+    }
+    const target = path.join(base, name);
+    if (path.resolve(target) !== path.resolve(file)) {
+      atomicBytes(target, bytes);
+      verified(target, doc);
+      try { fs.unlinkSync(file); } catch {}
+    }
+    const next = {...doc, file: name};
+    // 백업 사본: 새 이름이 없으면 만들고, 예전 해시 이름 사본은 지운다.
+    try {
+      const dest = backupDirectory(), old = path.join(dest, doc.sha256 + '.pdf'), nb = path.join(dest, name);
+      if (!fs.existsSync(nb)) { try { atomicBytes(nb, verified(old, doc)); } catch {} }
+      if (doc.file && doc.file !== name) { const ob = path.join(dest, doc.file); try { verified(ob, doc); fs.unlinkSync(ob); } catch {} }
+      try { if (fs.existsSync(nb)) { verified(nb, doc); if (fs.existsSync(old)) fs.unlinkSync(old); } } catch {}
+    } catch {}
+    return {ok: true, document: next, changed: name !== doc.file};
   }
   function restoreFiles(inventory, externalDirectory) {
     const docs = references(inventory), candidates = [directory(), backupDirectory()];
@@ -167,7 +227,7 @@ function createMSDSStore(getDataDir, options = {}) {
       pending.push({doc, source});
     }
     for (const {doc, source} of pending) {
-      const target = path.join(directory(), doc.sha256 + '.pdf');
+      const target = path.join(directory(), storedName(doc));
       if (path.resolve(source) !== path.resolve(target)) {
         const {bytes} = checkedFile(path.dirname(source), doc);
         atomicBytes(target, bytes);
@@ -181,7 +241,7 @@ function createMSDSStore(getDataDir, options = {}) {
       for (const file of snapshotFiles) {
         const obj = JSON.parse(fs.readFileSync(file, 'utf8'));
         if (!obj || !Array.isArray(obj.reagents)) throw new Error('백업 구조 확인 불가');
-        for (const doc of references(obj)) keep.add(doc.sha256 + '.pdf');
+        for (const doc of references(obj)) { keep.add(doc.sha256 + '.pdf'); if (doc.file) keep.add(doc.file); }
       }
     } catch (e) { return {warning: '읽을 수 없는 백업이 있어 MSDS 사본 정리를 건너뛰었습니다.'}; }
     const base = path.join(getDataDir(), 'backups', 'msds');
@@ -189,7 +249,7 @@ function createMSDSStore(getDataDir, options = {}) {
     ensureDirectory(base);
     let failed = 0;
     for (const name of fs.readdirSync(base)) {
-      if (!OBJECT_RE.test(name) || keep.has(name)) continue;
+      if (!(OBJECT_RE.test(name) || FILE_RE.test(name)) || keep.has(name)) continue;
       try {
         const file = path.join(base, name), st = fs.lstatSync(file);
         if (st.isFile() && !st.isSymbolicLink()) fs.unlinkSync(file);
@@ -224,6 +284,6 @@ function createMSDSStore(getDataDir, options = {}) {
     const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('PDF 읽기 시간이 초과되었습니다.')), timeoutMs); });
     try { return await Promise.race([work, limit]); } finally { clearTimeout(timer); }
   }
-  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles, textOf};
+  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles, textOf, relabel, openPathWithBytes};
 }
-module.exports = {createMSDSStore, validateDocument, validateDocuments, references, MAX_BYTES, MAX_DOCUMENTS};
+module.exports = {friendlyName, createMSDSStore, validateDocument, validateDocuments, references, MAX_BYTES, MAX_DOCUMENTS};

@@ -67,15 +67,37 @@
       chips.append(chip('활성 품목',list.length,'','all'),chip('MSDS 문서',docs,'','all'),chip('MSDS 없음',missing,'bad','msds-missing'),chip('검토 필요',review,'warn','msds-review'),chip('GHS 미입력',ghsMissing,'warn','ghs-missing'),chip('받은 MSDS (KOSHA)',kosha,'','kosha'));
       return chips;
     }
+    async function refetch(item,doc){
+      if(state.busy)return;state.busy=true;drawProgress();
+      try{await window.GHSUI.refetchKoshaDoc(item,doc,{getItem,save:saveItem});toast(`${item.id} ${item.name||''}: MSDS를 다시 받아 교체했습니다.`);}
+      catch(e){toast(`${item.id}: 다시 받기 실패 — ${String(e.message||e)}`,true);}
+      finally{state.busy=false;draw();}
+    }
     function docRow(item,doc,st){
       const row=E('div',undefined,'msds-mgr-doc');
       const info=E('div',undefined,'msds-mgr-doc-info');
       info.append(E('div',doc.fileName,'msds-name'));
-      const meta=[docSource(doc),doc.koshaRevisedAt?`원문 개정 ${doc.koshaRevisedAt}`:'',`첨부 ${String(doc.addedAt||'').slice(0,10)}`,`${(doc.size/1048576).toFixed(1)} MB`].filter(Boolean).join(' · ');
-      info.append(E('div',meta,'hint'));
+      const meta=[docSource(doc),doc.koshaRevisedAt?`원문 개정 ${doc.koshaRevisedAt}`:'',`첨부 ${String(doc.addedAt||'').slice(0,10)}`,`${(doc.size/1048576).toFixed(1)} MB`,doc.file?`파일 ${doc.file}`:''].filter(Boolean).join(' · ');
+      const metaEl=E('div',meta,'hint');info.append(metaEl);
       const actions=E('div',undefined,'msds-actions');
       actions.append(button('미리보기',()=>preview(doc),'primary'),button('내보내기',()=>exportDoc(doc)));
-      row.append(info,actions);return row;
+      row.append(info,actions);
+      // 원본 PDF가 없으면 버튼을 바꾼다: KOSHA 문서는 다시 받기, 직접 첨부는 안내만.
+      row.dataset.check='1';row._check=(available,error)=>{if(available)return;metaEl.textContent=`파일 없음 또는 손상 · ${meta}`;metaEl.classList.add('msds-error');metaEl.title=error||'';actions.replaceChildren();
+        if(doc.koshaChemId){const b=button('다시 받기',()=>refetch(item,doc),'primary');b.title='같은 물질의 MSDS를 다시 받아 이 문서를 교체합니다 (안전보건공단 KOSHA)';b.dataset.busyLock='1';actions.append(b);}
+        else actions.append(E('span','PDF를 다시 첨부해주세요 (품목 열기 → PDF 첨부).','hint'));};
+      return row;
+    }
+    // 표를 그린 뒤 원본 파일 유무를 확인해 없는 문서만 표시를 바꾼다.
+    async function checkFiles(table){
+      if(!window.inventoryMSDS?.list)return;
+      const rows=[...table.querySelectorAll('.msds-mgr-doc')].filter(r=>r._check);const byId=new Map();
+      for(const r of items())for(const d of r.msdsDocuments||[])byId.set(d.id,d);
+      const docs=[...byId.values()];if(!docs.length)return;
+      const res=[];for(let i=0;i<docs.length;i+=20){try{const r=await window.inventoryMSDS.list(docs.slice(i,i+20));if(r?.ok)res.push(...r.files);}catch{}}
+      if(!table.isConnected)return;
+      const avail=new Map(res.map(f=>[f.id,f]));
+      for(const row of rows){const f=avail.get(row.dataset.doc);if(f&&!f.available)row._check(false,f.error);}
     }
     function drawTable(){
       const wrap=element.querySelector('#msds-mgr-table');if(!wrap)return;wrap.replaceChildren();
@@ -87,7 +109,7 @@
         const tr=E('tr');
         const c1=E('td');const nameBtn=button(`${r.id} · ${r.name||r.nameEn||''}`,()=>openItem(r.id),'msds-mgr-link');c1.append(nameBtn,E('div',[(r.category||'reagent')==='standard'?'표준물질':'시약',r.casNo?`CAS ${r.casNo}`:'CAS 미입력',r.maker||''].filter(Boolean).join(' · '),'hint'));
         const c2=E('td');c2.innerHTML=window.GHSUI.cellHtml(r,s).replace(/<span class="ghs-msds[^"]*"[^>]*>[^<]*<\/span>/g,'');
-        const c3=E('td');const docs=r.msdsDocuments||[];if(!docs.length)c3.append(E('span','첨부된 MSDS가 없습니다.','hint'));else for(const d of docs)c3.append(docRow(r,d,st));
+        const c3=E('td');const docs=r.msdsDocuments||[];if(!docs.length)c3.append(E('span','첨부된 MSDS가 없습니다.','hint'));else for(const d of docs){const dr=docRow(r,d,st);dr.dataset.doc=d.id;c3.append(dr);}
         const g=r.ghs||{};const bits=[g.msdsIssuedAt?`작성·개정 ${g.msdsIssuedAt}`:'',g.msdsReviewedAt?`검토 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',g.source?SOURCE[g.source]:''].filter(Boolean);
         const c4=E('td');c4.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'||st.state==='none'?'warn':'ok'}">${esc(st.label)}</span><div class="hint">${esc(bits.join(' · '))}</div>`;
         const c5=E('td');const acts=E('div',undefined,'msds-mgr-acts');
@@ -96,7 +118,7 @@
         acts.append(button('품목 열기',()=>openItem(r.id)));
         c5.append(acts);tr.append(c1,c2,c3,c4,c5);body.append(tr);
       }
-      table.append(body);wrap.append(table);drawProgress();
+      table.append(body);wrap.append(table);drawProgress();checkFiles(table);
     }
     function draw(){
       element.replaceChildren();

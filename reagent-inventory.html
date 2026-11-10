@@ -1206,7 +1206,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.16</div>
+        <div class="work-version">v3.13.17</div>
       </div>
 </aside>
   </div>
@@ -1471,13 +1471,14 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="backup-directory"><span>저장 위치</span><code id="backup-directory">확인 중</code></div>
         <div class="settings-actions backup-actions">
           <button class="primary" id="settings-backup-now">지금 백업 저장</button>
+          <button class="ghost" id="settings-export-bundle" title="재고 JSON과 첨부 MSDS PDF를 zip 한 파일로 저장합니다. 다른 PC로 옮길 때 이 파일만 가져가면 됩니다.">묶음 저장 (JSON+PDF zip)</button>
           <button class="ghost" id="settings-backup-folder">백업 폴더 열기</button>
           <button class="ghost" id="settings-backup-refresh">목록 새로고침</button>
           <button class="ghost" id="settings-restore-backup">백업 불러오기</button>
         </div>
         <div id="backup-health-message" class="backup-notice" role="status" hidden></div>
         <div class="backup-table-wrap"><table class="backup-table" aria-label="백업 파일 목록"><thead><tr><th>백업 파일</th><th>종류</th><th>파일 저장 시각</th><th>크기</th><th>구조 검사</th></tr></thead><tbody id="backup-file-list"><tr><td colspan="5">백업 목록을 확인하는 중입니다.</td></tr></tbody></table></div>
-        <p class="hint" id="msds-backup-note">MSDS 첨부 파일은 backups/msds 폴더에 별도 보관합니다. 다른 PC로 옮길 때는 백업 JSON과 msds 폴더를 함께 복사해주세요. 보관 개수는 재고 백업 기준이며, MSDS는 남아 있는 백업에서 사용하는 파일만 유지합니다.</p>
+        <p class="hint" id="msds-backup-note">MSDS PDF는 backups/msds 폴더에 '품목코드_물질명_CAS.pdf' 이름으로 별도 보관합니다. 백업 JSON 파일만 복사하면 PDF는 따라가지 않으니, 다른 PC로 옮기거나 보관할 때는 「묶음 저장」으로 만든 zip 한 파일을 쓰세요. 「백업 불러오기」는 JSON과 zip 묶음 모두 받습니다. 보관 개수는 재고 백업 기준이며, MSDS는 남아 있는 백업에서 사용하는 파일만 유지합니다.</p>
         <div id="backup-inspection-result" class="backup-inspection" role="status" hidden></div>
         <div class="backup-help">검사는 파일 읽기·JSON 형식·필수 데이터 구조를 확인합니다. 프로그램이 꺼져 있을 때는 자동 백업이 실행되지 않습니다.</div>
       </div>
@@ -1535,7 +1536,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.16<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.17<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1608,7 +1609,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.16';
+  const APP_VERSION = '3.13.17';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1688,10 +1689,27 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     }catch(e){ console.error(e); }
     return newEmptyDB();
   }
+  // MSDS PDF 저장 파일명을 '품목코드_물질명_CAS.pdf'로 맞춘다. 품명·CAS가 바뀌거나 새로 첨부한 문서만 개명하며, 실패해도 저장은 계속한다.
+  // (main의 msds-store.friendlyName과 같은 규칙. 다르더라도 개명 요청이 한 번 더 갈 뿐이다.)
+  function msdsFriendlyName(itemId,name,casNo){const clean=v=>String(v||'').replace(/[\\/\x00-\x1f<>:"|?*]/g,'_').replace(/\s+/g,' ').trim();const stem=[clean(itemId).slice(0,12),clean(name).slice(0,60),clean(casNo).slice(0,20)].filter(Boolean).join('_').replace(/\.+$/,'');return stem?stem+'.pdf':'';}
+  async function syncMsdsFileNames(){
+    if(!window.inventoryMSDS?.relabel)return;
+    for(const r of DB.reagents||[]){
+      const docs=r.msdsDocuments;if(!Array.isArray(docs)||!docs.length)continue;
+      for(let i=0;i<docs.length;i++){
+        const d=docs[i];if(!d||!d.sha256)continue;
+        const want=msdsFriendlyName(r.id,r.name,r.casNo);
+        if(!want||d.file===want||(d.file&&d.file.startsWith(want.replace(/\.pdf$/,'_'))))continue;
+        try{const res=await window.inventoryMSDS.relabel(d,{itemId:r.id,name:r.name,casNo:r.casNo});if(res?.ok&&res.document)docs[i]=res.document;}
+        catch(e){console.error('msds relabel failed',r.id,e);}
+      }
+    }
+  }
   async function saveDB(){
     try{
       DB=migrateDB(DB);
       if(window.inventoryStore){
+        try{await syncMsdsFileNames();}catch(e){console.error(e);}
         const result=await window.inventoryStore.save(DB);
         if(!result?.ok)throw new Error(result?.error||'데이터 저장 실패');
         if(result.backup?.ok===false)showToast('데이터는 저장됐지만 자동 백업에 실패했습니다: '+String(result.backup.error||'원인 미확인'),true);
@@ -1753,6 +1771,21 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       showToast(r.warning?'백업은 저장됐지만 파일 정리에 문제가 있습니다. 설정에서 확인해주세요.':'백업 폴더에 저장했습니다.',!!r.warning);
     }catch(e){console.error(e);showToast('백업 저장 실패: '+String(e.message||e),true);}
     finally{manualBackupBusy=false;if(btn){btn.disabled=false;btn.textContent='지금 백업 저장';}await refreshBackupStatus();restoreKeyboardFocus();}
+  }
+  async function exportBundle(){
+    const btn=document.getElementById('settings-export-bundle');if(!btn||btn.disabled)return;
+    btn.disabled=true;const label=btn.textContent;btn.textContent='묶음 만드는 중…';
+    try{
+      if(!window.inventoryStore?.exportBundle)throw new Error('설치형 앱에서 사용할 수 있습니다.');
+      try{await syncMsdsFileNames();}catch(e){console.error(e);}
+      const r=await window.inventoryStore.exportBundle(DB);
+      if(!r||!r.ok)throw new Error(r?.error||'묶음 저장 실패');
+      if(r.canceled)return;
+      const miss=(r.missing||[]).length;
+      showToast(`묶음을 저장했습니다 · MSDS PDF ${r.documents}개 포함${miss?` · 파일 없는 PDF ${miss}개 제외`:''}`,miss>0);
+      if(miss)alert(`묶음에 넣지 못한 MSDS PDF ${miss}개 (원본 파일 없음):\n\n${r.missing.slice(0,10).join('\n')}${miss>10?`\n외 ${miss-10}개`:''}\n\nMSDS 관리 화면에서 「다시 받기」로 복구한 뒤 다시 저장하세요.`);
+    }catch(e){console.error(e);showToast('묶음 저장 실패: '+String(e.message||e),true);}
+    finally{btn.disabled=false;btn.textContent=label;restoreKeyboardFocus();}
   }
   async function importBackupText(text, sourceToken){
     const parsed=JSON.parse(text);
@@ -3879,8 +3912,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(!enabled)messages.push('자동 백업이 꺼져 있습니다. 「지금 백업 저장」은 계속 사용할 수 있습니다.');
       if(r.lastError)messages.push(`최근 백업 실패 (${formatBackupDateTime(r.lastError.at)}): ${r.lastError.message}`);
       if(r.valid===false)messages.push('최근 백업 파일을 확인해주세요: '+r.validationError);
+      if(r.msdsWarning)messages.push(r.msdsWarning+' — MSDS 관리 화면의 「다시 받기」로 복구할 수 있습니다.');
       if(r.cleanupWarning)messages.push(r.cleanupWarning);
-      notice.hidden=!messages.length;notice.textContent=messages.join('\n');notice.classList.toggle('error',!!(r.lastError||r.valid===false||r.cleanupWarning));
+      notice.hidden=!messages.length;notice.textContent=messages.join('\n');notice.classList.toggle('error',!!(r.lastError||r.valid===false||r.cleanupWarning||r.msdsWarning));
     }catch(e){
       if(token!==backupRefreshToken)return;
       value.textContent='확인 실패';detail.textContent='백업 상태를 읽지 못했습니다.';notice.hidden=false;notice.classList.add('error');notice.textContent=String(e.message||e);
@@ -3913,7 +3947,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.16 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.17 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
@@ -3984,6 +4018,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     onChange('settings-msds-review','msdsReviewMonths',Number); onCheck('settings-label-ghs','labelShowGhs'); onCheck('settings-auto-msds','autoFetchMsds');
     const ghsExport=document.getElementById('settings-ghs-export'); if(ghsExport)ghsExport.onclick=exportGhsExcel;
     document.getElementById('settings-backup-now').onclick=exportBackup;
+    const bundleBtn=document.getElementById('settings-export-bundle');if(bundleBtn)bundleBtn.onclick=exportBundle;
     document.getElementById('settings-backup-refresh').onclick=()=>refreshBackupStatus();
     document.getElementById('settings-backup-folder').onclick=async()=>{try{if(!window.inventoryStore?.openBackupFolder)throw new Error('설치형 앱에서 사용할 수 있습니다.');const r=await window.inventoryStore.openBackupFolder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){showToast('백업 폴더를 열 수 없습니다: '+String(e.message||e),true);}};
 

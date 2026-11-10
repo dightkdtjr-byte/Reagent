@@ -82,7 +82,7 @@
             const row = document.createElement('div'); row.className = 'msds-row'; row.dataset.document = doc.id;
             const info = document.createElement('div'); info.className = 'msds-info';
             const name = document.createElement('div'); name.className = 'msds-name'; name.textContent = doc.fileName;
-            const meta = document.createElement('div'); meta.className = 'hint'; meta.textContent = `${formatSize(doc.size)} · 첨부 ${stamp(doc.addedAt)} · ${doc.available ? '저장됨' : '파일 없음 또는 손상'}`;
+            const meta = document.createElement('div'); meta.className = 'hint'; meta.textContent = `${formatSize(doc.size)} · 첨부 ${stamp(doc.addedAt)} · ${doc.available ? '저장됨' + (doc.file ? ' (' + doc.file + ')' : '') : '파일 없음 또는 손상'}`;
             if (!doc.available) { meta.classList.add('msds-error'); meta.title = doc.error || ''; }
             info.append(name, meta);
             const role=window.InventorySafetyCommon?.linkRole(getItem(itemId),doc);
@@ -94,6 +94,11 @@
             const copy = button('다른 이름으로 저장', () => exportDoc(doc)); copy.dataset.msdsAction = 'export';
             const remove = button('연결 해제', () => unlink(doc)); remove.dataset.msdsAction = 'unlink';
             for (const b of [look, view, copy]) { b.dataset.unavailable = doc.available ? '0' : '1'; b.disabled = !doc.available; }
+            if (!doc.available && doc.koshaChemId) {
+              const again = button('다시 받기', () => action(async () => { await window.GHSUI.refetchKoshaDoc(getItem(itemId), doc, {getItem, save}); toast('MSDS를 다시 받아 교체했습니다.'); }), 'primary');
+              again.dataset.msdsAction = 'refetch'; again.title = '같은 물질의 MSDS를 다시 받아 이 문서를 교체합니다 (안전보건공단 KOSHA)';
+              actions.append(again, remove); row.append(info, actions); list.append(row); continue;
+            }
             actions.append(look, view, copy, remove); row.append(info, actions); list.append(row);
           }
           if (busy) lock(true);

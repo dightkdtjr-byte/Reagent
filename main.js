@@ -17,6 +17,13 @@ const kosha = require('./kosha-msds').createKoshaClient({net:()=>net, BrowserWin
 require('./safety-ipc').registerSafetyHandlers({ipcMain,shell,clipboard,store:safetyStore,documentPath:path.join(__dirname,'reagent-inventory.html'),kosha});
 const backups = createBackupStore(dataDir, {msdsStore: msds});
 const backupSourceTokens = new Map();
+const {writeZip, readZip} = require('./zip-bundle');
+// zip 묶음에서 꺼낸 임시 폴더는 복원이 끝나면 지운다.
+function dropSourceToken(token){
+  const src = backupSourceTokens.get(token); backupSourceTokens.delete(token);
+  if (src && src.temp) { try { fs.rmSync(src.temp, {recursive:true, force:true}); } catch {} }
+}
+function sourceDirectory(token){ const src = typeof token === 'string' ? backupSourceTokens.get(token) : undefined; return src ? src.msds : undefined; }
 function backupDir(){ return backups.dir(); }
 function backupMetaFile(){ return path.join(dataDir(), 'backup-status.json'); }
 function safeReadJson(p){ try { if(!fs.existsSync(p)) return null; return JSON.parse(fs.readFileSync(p,'utf8')); } catch(e){ console.error('read db failed',e); return null; } }
@@ -41,18 +48,39 @@ ipcMain.handle('inventory:open-backup-folder', async ()=> {
   catch(e) { return {ok:false,error:String(e&&e.message||e)}; }
 });
 ipcMain.handle('inventory:backup-now', async (_evt, obj)=> backups.snapshot(obj));
+// 재고 JSON과 첨부 MSDS PDF를 zip 한 파일로 내보낸다. 다른 PC로 옮기거나 보관할 때 쓴다.
+ipcMain.handle('inventory:export-bundle', async (evt, obj)=> {
+  try{
+    validateInventory(obj);
+    const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
+    const win = BrowserWindow.fromWebContents(evt.sender);
+    const result = await dialog.showSaveDialog(win, {title:'백업 묶음 저장 (재고 + MSDS PDF)', defaultPath: path.join(app.getPath('documents'), `시약재고_백업_${stamp}.zip`), filters:[{name:'zip 묶음', extensions:['zip']}]});
+    if (result.canceled || !result.filePath) return {ok:true, canceled:true};
+    const target = /\.zip$/i.test(result.filePath) ? result.filePath : result.filePath + '.zip';
+    const entries = [{name:'inventory.json', data: Buffer.from(JSON.stringify(obj, null, 2), 'utf8')}];
+    const missing = [];
+    const seen = new Set();
+    for (const item of obj.reagents || []) for (const doc of item.msdsDocuments || []) {
+      if (seen.has(doc.sha256)) continue; seen.add(doc.sha256);
+      try { const {file, bytes} = msds.openPathWithBytes(doc); entries.push({name:'msds/' + path.basename(file), data: bytes}); }
+      catch { missing.push(doc.fileName); }
+    }
+    const r = writeZip(target, entries);
+    return {ok:true, canceled:false, path:target, documents: seen.size - missing.length, missing, bytes: r.bytes};
+  }catch(e){ console.error('export bundle failed', e); return {ok:false, error:String(e && e.message || e)}; }
+});
 ipcMain.handle('inventory:restore', async (_evt, candidate, current, sourceToken)=> {
   try {
     validateInventory(candidate); validateInventory(current);
     // Preserve the user's current screen, printer and backup settings when restoring inventory.
     const restored={...candidate, settings:current.settings||{}};
-    const externalDirectory = typeof sourceToken === 'string' ? backupSourceTokens.get(sourceToken) : undefined;
+    const externalDirectory = sourceDirectory(sourceToken);
     // Immutable copies may be restored, but the inventory stays untouched on ANY missing PDF.
     const restoredMSDS = msds.restoreFiles(restored, externalDirectory);
     const safety=backups.snapshot(current, 'before_restore', current);
     if(!safety.ok) return {ok:false,error:'복원 전 안전 사본을 저장하지 못해 복원을 중단했습니다. '+safety.error};
     atomicWriteJson(dbFile(),restored);
-    if (sourceToken) backupSourceTokens.delete(sourceToken);
+    if (sourceToken) dropSourceToken(sourceToken);
     const backup=backups.automatic(restored);
     return {ok:true, backup, safetyPath:safety.path, warning:safety.warning||'', msds:restoredMSDS, data:restored};
   } catch(e) { return {ok:false,error:String(e&&e.message||e)}; }
@@ -61,7 +89,7 @@ ipcMain.handle('inventory:reset-all', async (_evt, cleanDb)=> {
   try{
     if(safetyStore.busy()) return {ok:false,error:'MSDS 자료 다운로드를 마친 뒤 초기화해주세요.'};
     safetyStore.clear();
-    backupSourceTokens.clear();
+    for (const t of [...backupSourceTokens.keys()]) dropSourceToken(t);
     fs.rmSync(msds.directory(), {recursive:true,force:true});
     const dir=dataDir();
     // 현재 DB, 이전본, 임시파일 삭제
@@ -88,17 +116,34 @@ ipcMain.handle('inventory:select-backup', async ()=> {
     defaultPath: backupDir(),
     properties: ['openFile'],
     filters: [
-      { name: '재고관리 백업 파일', extensions: ['json'] },
+      { name: '재고관리 백업 (JSON · zip 묶음)', extensions: ['json','zip'] },
       { name: '모든 파일', extensions: ['*'] }
     ]
   });
   if(result.canceled || !result.filePaths || !result.filePaths[0]) return {ok:false, canceled:true};
   const selectedPath = result.filePaths[0];
   try{
-    const text = fs.readFileSync(selectedPath, 'utf8');
     const token = require('crypto').randomBytes(24).toString('hex');
-    if (backupSourceTokens.size >= 10) backupSourceTokens.delete(backupSourceTokens.keys().next().value);
-    backupSourceTokens.set(token, path.join(path.dirname(selectedPath), 'msds'));
+    if (backupSourceTokens.size >= 10) dropSourceToken(backupSourceTokens.keys().next().value);
+    let text, source;
+    if (path.extname(selectedPath).toLowerCase() === '.zip') {
+      // zip 묶음: inventory.json과 msds/*.pdf를 임시 폴더에 꺼내 일반 복원과 같은 경로로 처리한다.
+      const entries = readZip(selectedPath);
+      const json = entries.find(e => /(^|\/)inventory[^/]*\.json$/i.test(e.name)) || entries.find(e => /\.json$/i.test(e.name));
+      if (!json) throw new Error('zip 안에 재고 백업 JSON이 없습니다.');
+      text = json.data.toString('utf8');
+      const temp = path.join(backupDir(), 'import-' + token.slice(0, 12));
+      const msdsDir = path.join(temp, 'msds'); fs.mkdirSync(msdsDir, {recursive:true});
+      for (const e of entries) {
+        const m = e.name.match(/(?:^|\/)msds\/([^/]+\.pdf)$/i); if (!m) continue;
+        fs.writeFileSync(path.join(msdsDir, m[1]), e.data, {flag:'wx'});
+      }
+      source = {msds: msdsDir, temp};
+    } else {
+      text = fs.readFileSync(selectedPath, 'utf8');
+      source = {msds: path.join(path.dirname(selectedPath), 'msds')};
+    }
+    backupSourceTokens.set(token, source);
     return {ok:true, canceled:false, path:selectedPath, text, sourceToken:token};
   }catch(e){
     console.error('backup select/read failed', e);

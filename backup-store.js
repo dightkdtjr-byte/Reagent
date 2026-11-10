@@ -161,6 +161,7 @@ function createBackupStore(getDataDir, options = {}) {
       const text = fs.readFileSync(p, 'utf8'), obj = JSON.parse(text), counts = validateInventory(obj);
       const msds = options.msdsStore ? options.msdsStore.inspectBackup(obj) : {documents: 0};
       return {ok: true, name, size: st.size, modifiedAt: st.mtime.toISOString(), counts, msds,
+        warning: msds.missing && msds.missing.length ? `MSDS PDF 사본 ${msds.missing.length}개 없음 (복원은 되지만 해당 MSDS는 다시 받거나 첨부해야 함): ${msds.missing.slice(0, 3).join(', ')}${msds.missing.length > 3 ? ' 외' : ''}` : '',
         sha256: crypto.createHash('sha256').update(text).digest('hex')};
     } catch (e) { return {ok: false, name: String(name || ''), error: errorText(e)}; }
   }
@@ -179,7 +180,7 @@ function createBackupStore(getDataDir, options = {}) {
       if (!item || (files[0] && files[0].mtime > item.mtime + 1000)) item = files[0];
       if (!item) return {ok: true, exists: false, lastError, cleanupWarning: meta.cleanupWarning || '', directory: dir()};
       const checked = inspect(item.name);
-      return {ok: true, exists: true, valid: checked.ok, validationError: checked.error || '',
+      return {ok: true, exists: true, valid: checked.ok, validationError: checked.error || '', msdsWarning: checked.warning || '',
         lastBackupAt: item.path === meta.path && meta.lastBackupAt ? meta.lastBackupAt : item.modifiedAt,
         type: item.path === meta.path && meta.type ? meta.type : item.type, path: item.path,
         lastError, cleanupWarning: meta.cleanupWarning || '', directory: dir()};

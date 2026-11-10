@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('inventoryStore', {
   openFolder: () => ipcRenderer.invoke('inventory:open-folder'),
   selectBackup: () => ipcRenderer.invoke('inventory:select-backup'),
   backupNow: (data) => ipcRenderer.invoke('inventory:backup-now', data),
+  exportBundle: (data) => ipcRenderer.invoke('inventory:export-bundle', data),
   backupStatus: () => ipcRenderer.invoke('inventory:backup-status'),
   listBackups: () => ipcRenderer.invoke('inventory:backup-list'),
   inspectBackup: (name) => ipcRenderer.invoke('inventory:inspect-backup', name),
@@ -48,7 +49,8 @@ contextBridge.exposeInMainWorld('inventoryMSDS', {
   preview: (document) => ipcRenderer.invoke('inventory-msds:preview', document),
   extract: (document) => ipcRenderer.invoke('inventory-msds:extract', document),
   folder: () => ipcRenderer.invoke('inventory-msds:folder'),
-  report: (payload) => ipcRenderer.invoke('inventory-msds:report', payload)
+  report: (payload) => ipcRenderer.invoke('inventory-msds:report', payload),
+  relabel: (document, meta) => ipcRenderer.invoke('inventory-msds:relabel', document, meta)
 });
 
 // Curated source IDs only. No arbitrary URL or path accepted from renderer.

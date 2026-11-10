@@ -138,6 +138,23 @@
     if(!ok){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
     return {name:pick.name,filled,document:rec.document,extract:rec.extract};
   }
+  // 원본 PDF가 사라진 KOSHA 문서를 같은 물질 ID로 다시 받아 교체한다. 저장까지 마치면 새 문서 정보를 돌려준다.
+  async function refetchKoshaDoc(item,doc,{getItem,save}={}){
+    if(!doc?.koshaChemId)throw new Error('직접 첨부한 PDF는 다시 받을 수 없습니다. 파일을 다시 첨부해주세요.');
+    if(!window.inventorySafety?.koshaReceive)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
+    const rec=await window.inventorySafety.koshaReceive(doc.koshaChemId,{name:item.name,casNo:item.casNo,revisedAt:doc.koshaRevisedAt||''});
+    if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
+    const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
+    const before=live.msdsDocuments,beforeUpdated=live.updatedAt;
+    const rest=(live.msdsDocuments||[]).filter(d=>d.id!==doc.id&&d.id!==rec.document.id);
+    live.msdsDocuments=[...rest,rec.document];live.updatedAt=new Date().toISOString();
+    if(live.ghs?.extractedFrom?.documentId===doc.id)live.ghs={...live.ghs,extractedFrom:{documentId:rec.document.id,at:new Date().toISOString()}};
+    // 분류가 비어 있으면 다시 받은 문서에서 읽어 채운다 (처음 받을 때와 같은 규칙).
+    if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g)live.ghs=g;}
+    let ok=false;try{ok=await save();}catch{}
+    if(!ok){if(before===undefined)delete live.msdsDocuments;else live.msdsDocuments=before;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
+    return rec.document;
+  }
   // 추출 결과를 저장 가능한 GHS 객체로 만든다 (일괄 처리용). 읽은 내용이 없으면 null.
   function ghsFromExtract(doc,r,origin,existing){
     if(!r||!r.found)return null;
@@ -424,5 +441,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha,refetchKoshaDoc};
 })();
