@@ -1,6 +1,6 @@
 {
   "name": "reagent-inventory",
-  "version": "3.13.9",
+  "version": "3.13.10",
   "main": "main.js",
   "author": "MAMO",
   "description": "시약/표준물질 재고관리 시스템",

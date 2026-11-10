@@ -1203,7 +1203,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.9</div>
+        <div class="work-version">v3.13.10</div>
       </div>
 </aside>
   </div>
@@ -1527,7 +1527,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.9<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.10<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1600,7 +1600,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.9';
+  const APP_VERSION = '3.13.10';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -2691,7 +2691,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   }
   function renderMsdsManager(){
     const el=document.getElementById('msds-manager-panel'); if(!el) return;
-    window.MSDSManager.mount({element:el,getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,settings,exportExcel:exportGhsExcel,openItem:(id)=>{const r=findReagent(id);if(!r)return;currentCategory=r.category||'reagent';enterSystem(currentCategory,{});setTimeout(()=>{selectedId=id;renderInventory();renderDetail();},80);}});
+    window.MSDSManager.mount({element:el,getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,settings,exportExcel:exportGhsExcel,openItem:(id)=>{const r=findReagent(id);if(!r)return;currentCategory=r.category||'reagent';selectedId=id;renderDetail();}});
   }
   function openForms(opts){
     opts=opts||{};
@@ -3388,6 +3388,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     document.getElementById('detail-modal-box').innerHTML = '';
     selectedId = null;
     renderInventory();
+    if(document.getElementById('tab-msds')?.classList.contains('active')){ renderMsdsManager(); return; }
     restoreKeyboardFocus('search-input');
   }
   document.getElementById('detail-modal-backdrop').addEventListener('click', (e)=>{
@@ -3847,7 +3848,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.9 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.10 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
