@@ -38,21 +38,7 @@
     async function preview(doc){try{const r=await window.inventoryMSDS.preview(doc);if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('PDF 미리보기 실패: '+String(e.message||e),true);}}
     async function exportDoc(doc){try{const r=await window.inventoryMSDS.export(doc);if(!r?.ok)throw new Error(r?.error||'저장 실패');if(!r.canceled)toast('PDF 사본을 저장했습니다.');}catch(e){toast('PDF 저장 실패: '+String(e.message||e),true);}}
     // 한 품목을 KOSHA에서 받아 첨부하고, GHS가 비어 있으면 읽어온 값으로 채운다.
-    async function koshaOne(item){
-      const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
-      const s=await window.inventorySafety.koshaSearch(cas);if(!s?.ok)throw new Error(String(s?.error||'검색 실패')+(s?.diagnostic?.hint?' — '+s.diagnostic.hint:''));
-      const rows=(s.rows||[]).filter(r=>r.casNo===cas);if(!rows.length)throw new Error('해당 CAS의 MSDS를 찾지 못했습니다 (KOSHA).');
-      const pick=rows[0];
-      const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
-      const live=getItem(item.id);if(!live)throw new Error('품목이 삭제되었습니다.');
-      const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
-      const old=live.msdsDocuments||[];if(!old.some(d=>d.id===rec.document.id)){if(old.length>=20)throw new Error('첨부 문서가 20개입니다.');live.msdsDocuments=[...old,rec.document];}
-      let filled=false;
-      if(!D.hasClassification(live)){const g=window.GHSUI.ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}live.ghs=g;filled=true;}}
-      live.updatedAt=new Date().toISOString();
-      if(!await saveItem()){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
-      return {name:pick.name,filled};
-    }
+    async function koshaOne(item){return window.GHSUI.fetchAndAttachKosha(item,{getItem,save:saveItem});}
     async function bulkKosha(){
       if(state.busy)return;
       if(!window.inventorySafety?.koshaSearch){toast('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.',true);return;}

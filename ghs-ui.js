@@ -71,6 +71,28 @@
     return {header,rows};
   }
 
+  // CAS로 MSDS를 찾아 PDF로 받고 품목에 첨부한 뒤, GHS가 비어 있으면 읽어온 값으로 채워 저장한다.
+  // 상세 창, MSDS 관리 일괄 받기, 등록 직후 자동 받기가 모두 이 함수를 쓴다.
+  const CAS_RE=/^\d{2,7}-\d{2}-\d$/;
+  async function fetchAndAttachKosha(item,{getItem,save,onStatus}={}){
+    const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
+    if(!window.inventorySafety?.koshaSearch)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
+    onStatus?.('검색 중');
+    const s=await window.inventorySafety.koshaSearch(cas);if(!s?.ok)throw new Error(String(s?.error||'검색 실패')+(s?.diagnostic?.hint?' — '+s.diagnostic.hint:''));
+    const rows=(s.rows||[]).filter(r=>r.casNo===cas);if(!rows.length)throw new Error('해당 CAS의 MSDS를 찾지 못했습니다 (KOSHA).');
+    const pick=rows[0];
+    onStatus?.('PDF 저장 중');
+    const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
+    const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
+    const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
+    const old=live.msdsDocuments||[];if(!old.some(d=>d.id===rec.document.id)){if(old.length>=20)throw new Error('첨부 문서가 20개입니다.');live.msdsDocuments=[...old,rec.document];}
+    let filled=false;
+    if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}live.ghs=g;filled=true;}}
+    live.updatedAt=new Date().toISOString();
+    let ok=false;try{ok=await save();}catch{}
+    if(!ok){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
+    return {name:pick.name,filled,document:rec.document,extract:rec.extract};
+  }
   // 추출 결과를 저장 가능한 GHS 객체로 만든다 (일괄 처리용). 읽은 내용이 없으면 null.
   function ghsFromExtract(doc,r,origin,existing){
     if(!r||!r.found)return null;
@@ -160,17 +182,22 @@
           pick=rows[0];
         }
         koshaChoices=null;
-        if(!confirm(`'${pick.name}' (CAS ${pick.casNo||'미표기'}${pick.revisedAt?', 개정 '+pick.revisedAt:''}) MSDS를 받아 이 품목에 첨부할까요? (출처: 안전보건공단 KOSHA)\n받은 뒤 GHS 항목을 자동으로 채우며, 저장을 눌러야 반영됩니다.`))return;
         setKoshaStatus(`'${pick.name}' MSDS를 PDF로 저장하는 중입니다… (10~30초)`);
         const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!alive())return;
         if(!rec?.ok)throw new Error(failText(rec,'MSDS 받기 실패'));
         await attachDocument(rec.document);
         pickedDocId=rec.document.id;
+        const hadClassification=D.hasClassification(getItem(itemId));
         const filled=applyExtract(rec.document,rec.extract,'kosha');
         if(filled&&!draft.pictograms.length&&pick.pictograms?.length){draft.pictograms=pick.pictograms.slice();if(!draft.signalWord&&pick.signalWord)draft.signalWord=pick.signalWord;}
-        setKoshaStatus(filled?`'${rec.document.fileName}' 첨부 완료. GHS 항목을 채웠으니 확인 후 저장을 누르세요.`:`'${rec.document.fileName}' 첨부 완료. GHS 항목은 읽지 못해 직접 선택해야 합니다.`,!filled);
+        if(filled&&!hadClassification){
+          // 분류가 비어 있던 품목은 읽어온 값을 바로 저장한다. 결과는 아래에 보이고 '편집'으로 고칠 수 있다.
+          busy=false;await commit(D.normalizeGHS(draft));busy=true;
+          setKoshaStatus(`'${rec.document.fileName}' 첨부 완료. 읽어온 GHS 분류를 저장했습니다. 틀린 곳이 있으면 편집에서 고치세요.`);
+          remountMsds();return;
+        }
+        setKoshaStatus(filled?`'${rec.document.fileName}' 첨부 완료. 기존 분류가 있어 읽어온 값은 저장을 눌러야 반영됩니다.`:`'${rec.document.fileName}' 첨부 완료. GHS 항목은 읽지 못해 직접 선택해야 합니다.`,!filled);
         draw();remountMsds();
-        toast(filled?'MSDS를 첨부하고 GHS 항목을 채웠습니다. 저장을 누르세요.':'MSDS를 첨부했지만 GHS 항목을 읽지 못했습니다. 직접 선택해주세요.',!filled);
       }catch(e){const msg='MSDS 받기 실패: '+String(e.message||e);setKoshaStatus(msg,true);toast(msg,true);try{alert(msg+'\n\n이 PC에서 브라우저로 https://msds.kosha.or.kr 이 열리는지 확인해보세요. 열리지 않으면 기관 네트워크에서 차단된 것이니 IT 담당자에게 문의하거나, 제조사 MSDS PDF를 직접 첨부하세요.');}catch{}}
       finally{busy=false;}
     }
@@ -274,7 +301,7 @@
       hp.querySelector('.ghs-picker-head').append(suggest);box.append(hp);
       box.append(codePicker('P',draft.pCodes,'예방조치 문구 (P코드)','선택 사항. 라벨·교육용으로 주요 문구만 입력해도 됩니다.'));
       const actions=E('div',undefined,'msds-actions ghs-actions');
-      actions.append(button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('취소',()=>{editing=false;draft=null;lastExtract=null;draw();}),button('검토 SDS 자료로 채우기',applyCatalog));
+      actions.append(button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('취소',()=>{editing=false;draft=null;lastExtract=null;reviewMode=false;draw();}),button('KOSHA 검색',()=>lookup('kosha')),button('PubChem',()=>lookup('pubchem')));
       if(item.ghs)actions.append(button('GHS 정보 지우기',()=>{if(confirm('이 품목의 GHS 분류·MSDS 정보를 모두 지울까요?\n첨부된 MSDS PDF는 지워지지 않습니다.'))commit(null);},'danger'));
       box.append(actions);
       return box;
@@ -310,12 +337,11 @@
       element.replaceChildren();
       const heading=E('div',undefined,'msds-heading'),title=E('h4','GHS 분류·표시 (유해성·위험성)'),tools=E('div',undefined,'msds-actions');
       const list=docs();
-      tools.append(button('MSDS 받기 (KOSHA)',()=>koshaAuto(),'primary'));
+      const fetchBtn=button('MSDS 받기',()=>koshaAuto(),'primary');fetchBtn.title='CAS 번호로 국문 MSDS를 받아 첨부하고 GHS를 채웁니다 (안전보건공단 KOSHA)';tools.append(fetchBtn);
       if(list.length>1){const sel=E('select');sel.className='ghs-doc-select';sel.title='자동 추출에 사용할 MSDS';for(const d of list){const o=E('option',d.fileName);o.value=d.id;sel.append(o);}sel.value=pickedDoc()?.id||'';sel.onchange=()=>{pickedDocId=sel.value;};tools.append(sel);}
-      if(list.length)tools.append(button('첨부 MSDS에서 추출',()=>extractFrom(pickedDoc())));
-      else tools.append(button('PDF 첨부 → 추출',attachThenExtract));
+      const attachBtn=button('PDF 첨부',attachThenExtract);attachBtn.title='제조사 MSDS PDF를 첨부하면 GHS를 자동으로 읽어옵니다';tools.append(attachBtn);
+      if(list.length){const re=button('다시 읽기',()=>extractFrom(pickedDoc()));re.title='첨부된 MSDS에서 GHS 항목을 다시 읽습니다';tools.append(re);}
       if(!editing){tools.append(button(D.hasClassification(item)||item.ghs?'편집':'직접 입력',()=>{startEdit();draw();}));}
-      tools.append(button('MSDS 검색 (KOSHA)',()=>lookup('kosha')),button('PubChem',()=>lookup('pubchem')));
       heading.append(title,tools);element.append(heading);
       const status=E('p',koshaStatus?koshaStatus.text:'','hint ghs-kosha-status');status.id='ghs-kosha-status';status.setAttribute('role','status');status.hidden=!koshaStatus;if(koshaStatus?.isError)status.classList.add('safety-warning');element.append(status);
       if(!icons.size)await preload();
@@ -331,8 +357,11 @@
     }
     element._ghsApi={refresh:draw,startKosha:()=>koshaAuto(),autoExtract:async doc=>{
       const item=getItem(itemId);if(!item)return;
-      if(D.hasClassification(item)&&!confirm(`새로 첨부한 MSDS '${doc.fileName}'에서 GHS 정보를 다시 읽어 기존 분류를 바꿀까요?\n읽어온 내용은 저장을 누르기 전까지 반영되지 않습니다.`))return;
+      const had=D.hasClassification(item);
+      if(had&&!confirm(`새로 첨부한 MSDS '${doc.fileName}'에서 GHS 정보를 다시 읽어 기존 분류를 바꿀까요?\n읽어온 내용은 저장을 누르기 전까지 반영되지 않습니다.`))return;
       pickedDocId=doc.id;await extractFrom(doc);
+      // 분류가 없던 품목은 읽어온 값을 바로 저장한다.
+      if(!had&&editing&&draft&&lastExtract&&!lastExtract.empty){await commit(D.normalizeGHS(draft));setKoshaStatus(`'${doc.fileName}'에서 읽어온 GHS 분류를 저장했습니다. 틀린 곳이 있으면 편집에서 고치세요.`);draw();}
       try{element.scrollIntoView({block:'start',behavior:'smooth'});}catch{}
     }};
     draw();
@@ -350,5 +379,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha};
 })();

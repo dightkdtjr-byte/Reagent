@@ -1204,7 +1204,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.14</div>
+        <div class="work-version">v3.13.15</div>
       </div>
 </aside>
   </div>
@@ -1508,6 +1508,10 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
           <div class="setting-control"><select id="settings-msds-review"><option value="0">관리 안 함</option><option value="6">6개월</option><option value="12">12개월</option><option value="24">24개월</option><option value="36">36개월</option></select></div>
         </div>
         <div class="setting-row">
+          <div class="setting-copy"><div class="setting-title">등록할 때 MSDS 자동 받기</div><div class="setting-sub">CAS 번호를 넣어 등록하면 뒤에서 국문 MSDS를 받아 첨부하고 GHS를 채웁니다 (안전보건공단 KOSHA). 인터넷이 필요합니다.</div></div>
+          <div class="setting-control"><label class="setting-switch"><input type="checkbox" id="settings-auto-msds"><span class="setting-slider"></span></label></div>
+        </div>
+        <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">QR 라벨에 GHS 그림문자·신호어 인쇄</div><div class="setting-sub">라벨 아래쪽 ID 옆에 그림문자(최대 5개)와 신호어를 함께 인쇄합니다.</div></div>
           <div class="setting-control"><label class="setting-switch"><input type="checkbox" id="settings-label-ghs"><span class="setting-slider"></span></label></div>
         </div>
@@ -1517,7 +1521,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         </div>
         <p class="hint">한국어 H·P 문구는 읽기용 요약입니다.</p>
       </div>
-      <div class="settings-card full safety-widget" id="safety-settings-card"></div>
+      <div class="settings-card full safety-widget" id="safety-settings-card" hidden></div>
       <div class="settings-card full" id="assist-settings-card">
         <h3>데이터 점검·요약</h3>
         <div class="settings-desc">등록 데이터의 누락·중복·유효기간을 점검하고 재고와 입출고를 요약합니다. 원본 데이터는 변경하지 않습니다.</div>
@@ -1528,7 +1532,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.14<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.15<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1601,11 +1605,11 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.14';
+  const APP_VERSION = '3.13.15';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
-    return { theme:'system', accent:'blue', expiryWarningDays:30, defaultSort:'id', hideExpiredOrOutDefault:false, showArchivedDefault:false, defaultStartTab:'dashboard', autoBackup:true, backupRetention:30, printerName:'', labelWidthMm:62, labelHeightMm:29, customFormTemplates:[], msdsReviewMonths:12, labelShowGhs:true };
+    return { theme:'system', accent:'blue', expiryWarningDays:30, defaultSort:'id', hideExpiredOrOutDefault:false, showArchivedDefault:false, defaultStartTab:'dashboard', autoBackup:true, backupRetention:30, printerName:'', labelWidthMm:62, labelHeightMm:29, customFormTemplates:[], msdsReviewMonths:12, labelShowGhs:true, autoFetchMsds:true };
   }
   function normalizeSettings(v){
     const d=defaultSettings(), x=Object.assign({},d,v||{});
@@ -1615,7 +1619,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!['id','name','expiry','stock','received'].includes(x.defaultSort)) x.defaultSort=d.defaultSort;
     if(!['dashboard','register'].includes(x.defaultStartTab)) x.defaultStartTab='dashboard';
     if(![7,30,60,90].includes(Number(x.backupRetention))) x.backupRetention=d.backupRetention; else x.backupRetention=Number(x.backupRetention);
-    delete x.seasonEffects; x.hideExpiredOrOutDefault=!!x.hideExpiredOrOutDefault; x.showArchivedDefault=!!x.showArchivedDefault; x.autoBackup=x.autoBackup!==false; x.printerName=String(x.printerName||''); const lw=Number(x.labelWidthMm),lh=Number(x.labelHeightMm); x.labelWidthMm=Number.isFinite(lw)?Math.max(15,Math.min(200,Math.round(lw*10)/10)):62; x.labelHeightMm=Number.isFinite(lh)?Math.max(15,Math.min(200,Math.round(lh*10)/10)):29; x.msdsReviewMonths=[0,6,12,24,36].includes(Number(x.msdsReviewMonths))?Number(x.msdsReviewMonths):12; x.labelShowGhs=x.labelShowGhs!==false;
+    delete x.seasonEffects; x.hideExpiredOrOutDefault=!!x.hideExpiredOrOutDefault; x.showArchivedDefault=!!x.showArchivedDefault; x.autoBackup=x.autoBackup!==false; x.printerName=String(x.printerName||''); const lw=Number(x.labelWidthMm),lh=Number(x.labelHeightMm); x.labelWidthMm=Number.isFinite(lw)?Math.max(15,Math.min(200,Math.round(lw*10)/10)):62; x.labelHeightMm=Number.isFinite(lh)?Math.max(15,Math.min(200,Math.round(lh*10)/10)):29; x.msdsReviewMonths=[0,6,12,24,36].includes(Number(x.msdsReviewMonths))?Number(x.msdsReviewMonths):12; x.labelShowGhs=x.labelShowGhs!==false; x.autoFetchMsds=x.autoFetchMsds!==false;
     x.customFormTemplates=Array.isArray(x.customFormTemplates)?x.customFormTemplates.slice(0,20).map((t,ti)=>({id:String(t?.id||('custom-'+Date.now()+'-'+ti)),title:String(t?.title||'사용자 서식').slice(0,30),fields:(Array.isArray(t?.fields)?t.fields:[]).slice(0,6).map((f,fi)=>({key:String(f?.key||('f'+(fi+1))),label:String(f?.label||('항목 '+(fi+1))).slice(0,30)}))})).filter(t=>t.fields.length):[];
     return x;
   }
@@ -3101,7 +3105,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>최근 수정</label><input type="text" value="${fmtDate(r.updatedAt)}" disabled></div>
       </div>
       <div class="log-list" id="ghs-panel"></div>
-      <div class="log-list safety-widget" id="safety-panel"></div>
+      <div class="log-list safety-widget" id="safety-panel" hidden></div>
       <div class="log-list" id="msds-panel"></div>
       <div class="log-list">
         <h4>입고회차 (총 ${(r.batches||[]).length}회)</h4>
@@ -3118,7 +3122,6 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     `);
     window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm});
-    window.InventorySafetyUI.mountDetail({element:document.getElementById('safety-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
     document.querySelectorAll('#detail-modal-box .history-delete-btn').forEach(btn=>{btn.onclick=async()=>{
       if(btn.disabled)return;
@@ -3183,7 +3186,18 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     document.getElementById('reg-form').reset();document.getElementById('f-stock').value=1;document.getElementById('f-received').value=todayStr();
     const labelItem=makeBatchLabelItem(reagent,createdBatch);const prev=document.getElementById('new-label-preview');prev.style.display='flex';updateLabelSizeDisplays();document.getElementById('new-label-name').textContent=reagent.nameEn?`${reagent.name} (${reagent.nameEn})`:reagent.name;document.getElementById('new-label-spec').textContent=`${reagent.spec||''}${createdBatch?.lotNo?' · '+createdBatch.lotNo:''}`;document.getElementById('new-label-id').textContent=labelItem.id;renderQR(document.getElementById('new-label-svg'),qrPayload(labelItem),90);document.getElementById('new-label-print').onclick=()=>printLabelsBrother([labelItem]);renderInventory();
     showToast(mergedIntoExisting?`${reagent.id}에 새 입고회차 추가 완료`:`${reagent.id} 발급 완료 — 라벨을 인쇄해 부착하세요.`);
+    if(!mergedIntoExisting) autoFetchMsdsFor(reagent.id);
   });
+  // 등록 직후 CAS가 있으면 뒤에서 MSDS를 받아 첨부한다. 실패해도 등록에는 영향이 없다.
+  const autoFetchQueue=new Set();
+  async function autoFetchMsdsFor(id){
+    const r=findReagent(id); if(!r||!settings().autoFetchMsds||!window.inventorySafety?.koshaSearch) return;
+    if(!/^\d{2,7}-\d{2}-\d$/.test(String(r.casNo||'').trim())||(r.msdsDocuments||[]).length||autoFetchQueue.has(id)) return;
+    autoFetchQueue.add(id);
+    try{ const res=await window.GHSUI.fetchAndAttachKosha(r,{getItem:findReagent,save:saveDB}); showToast(`${r.id} ${r.name}: MSDS를 자동으로 첨부했습니다${res.filled?' · GHS 채움':''}.`); }
+    catch(e){ showToast(`${r.id} ${r.name}: MSDS 자동 받기 실패 — ${String(e.message||e)}`,true); }
+    finally{ autoFetchQueue.delete(id); }
+  }
 
   // ---------- print ----------
   function setPrintPageStyle(css){
@@ -3869,7 +3883,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.14 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.15 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
@@ -3913,12 +3927,11 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     val('settings-theme',s.theme); val('settings-accent',s.accent);
     val('settings-expiry-days',s.expiryWarningDays); val('settings-default-sort',s.defaultSort);
     chk('settings-hide-expired',s.hideExpiredOrOutDefault); chk('settings-show-archived',s.showArchivedDefault);
-    val('settings-msds-review',s.msdsReviewMonths); chk('settings-label-ghs',s.labelShowGhs); renderGhsSettingsSummary();
+    val('settings-msds-review',s.msdsReviewMonths); chk('settings-label-ghs',s.labelShowGhs); chk('settings-auto-msds',s.autoFetchMsds); renderGhsSettingsSummary();
     val('settings-start-tab',s.defaultStartTab); chk('settings-auto-backup',s.autoBackup); val('settings-backup-retention',s.backupRetention); val('settings-label-width',s.labelWidthMm); val('settings-label-height',s.labelHeightMm); updateLabelSizeDisplays();
     renderSettingsLabelPreview();
     refreshPrinterList();
     refreshBackupStatus();
-    window.InventorySafetyUI.mountSettings({element:document.getElementById('safety-settings-card'),getItems:()=>DB.reagents,getItem:findReagent,save:saveDB,toast:showToast,confirm:safeConfirm,openItem:openRecentItemDetail});
   }
   async function updateSetting(key,value){
     settings()[key]=value; DB.settings=normalizeSettings(DB.settings); await saveDB();
@@ -3938,7 +3951,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const testPrint=document.getElementById('settings-test-print'); if(testPrint)testPrint.onclick=()=>printLabelsBrother([testLabelItem()]);
     const onCheck=(id,key)=>{const el=document.getElementById(id);if(el)el.onchange=async e=>updateSetting(key,!!e.target.checked);};
     onCheck('settings-hide-expired','hideExpiredOrOutDefault'); onCheck('settings-show-archived','showArchivedDefault'); onCheck('settings-auto-backup','autoBackup');
-    onChange('settings-msds-review','msdsReviewMonths',Number); onCheck('settings-label-ghs','labelShowGhs');
+    onChange('settings-msds-review','msdsReviewMonths',Number); onCheck('settings-label-ghs','labelShowGhs'); onCheck('settings-auto-msds','autoFetchMsds');
     const ghsExport=document.getElementById('settings-ghs-export'); if(ghsExport)ghsExport.onclick=exportGhsExcel;
     document.getElementById('settings-backup-now').onclick=exportBackup;
     document.getElementById('settings-backup-refresh').onclick=()=>refreshBackupStatus();
