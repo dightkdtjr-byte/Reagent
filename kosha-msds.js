@@ -106,7 +106,11 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       const document = {...imported.documents[0], fileName: `KOSHA_MSDS_${safeName}${cas ? '_' + cas : ''}_${stamp}.pdf`, sourceURL: DETAIL_URL, sourcePublisher: '안전보건공단(KOSHA) 화학물질정보', koshaChemId: String(chemId), koshaRevisedAt: clean(meta.revisedAt || '')};
       const ghs = typeof extract === 'function' ? extract(info.text) : null;
       // 2절의 그림문자 이미지가 가장 정확하다. 글자로 못 읽은 경우를 이미지로 보완한다.
-      if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) { ghs.pictograms = toStandard(info.pictograms); ghs.pictogramSource = 'explicit'; ghs.found = true; }
+      if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) {
+        ghs.pictograms = toStandard(info.pictograms); ghs.pictogramSource = 'explicit'; ghs.found = true;
+        // 요약 문구도 이미지 기준으로 고쳐 쓴다 (추출 단계에서 만든 'H코드 기준' 표시를 지움).
+        if (typeof ghs.summary === 'string') ghs.summary = ghs.summary.replace(/그림문자 [^·]*?(?= · |$)/, '그림문자 ' + ghs.pictograms.join('·') + ' (원문 그림 기준)');
+      }
       if (ghs && !ghs.signalWord && info.signalWord) ghs.signalWord = info.signalWord;
       return {ok: true, document, extract: ghs, title: info.title, pages: null};
     } finally {

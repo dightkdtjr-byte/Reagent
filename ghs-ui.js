@@ -88,7 +88,7 @@
   function mountDetail(opts){
     const {element,itemId,getItem,save,toast,confirm}=opts;if(!element)return;
     panels.set(element,opts);
-    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null,koshaStatus=null;
+    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null,koshaStatus=null,reviewMode=false;
     // 진행 상황을 패널 안에 계속 보여준다. 토스트는 금방 사라져 실패 사유를 놓치기 쉽다.
     function setKoshaStatus(text,isError){koshaStatus=text?{text,isError:!!isError}:null;const el=element.querySelector('#ghs-kosha-status');if(el){el.textContent=text||'';el.hidden=!text;el.classList.toggle('safety-warning',!!isError);}}
     const failText=(r,fallback)=>String(r?.error||fallback)+(r?.diagnostic?.hint?' — '+r.diagnostic.hint:'')+(r?.diagnostic?.code&&r.diagnostic.code!=='UNKNOWN'?' ['+r.diagnostic.code+']':'');
@@ -127,7 +127,7 @@
       draft.sourceNote=`${doc.fileName}에서 자동 추출 (${today()})`;
       if(r.issuedAt)draft.msdsIssuedAt=r.issuedAt;if(r.revision)draft.msdsRevision=r.revision;if(!draft.msdsReviewedAt)draft.msdsReviewedAt=today();
       draft.extractedFrom={documentId:doc.id,at:new Date().toISOString()};
-      lastExtract={doc,result:r};return true;
+      lastExtract={doc,result:r};reviewMode=true;return true;
     }
     // 품목에 문서를 연결하고 저장한다. 실패하면 되돌린다.
     async function attachDocument(doc){
@@ -203,7 +203,7 @@
         item.updatedAt=new Date().toISOString();
         let ok=false;try{ok=await save();}catch{}
         if(!ok){const live=getItem(itemId);if(live){if(before===undefined)delete live.ghs;else live.ghs=before;live.updatedAt=beforeUpdated;}throw new Error('저장하지 못해 GHS 정보를 되돌렸습니다.');}
-        editing=false;draft=null;lastExtract=null;toast(next?'GHS 분류를 저장했습니다.':'GHS 분류를 지웠습니다.');
+        editing=false;draft=null;lastExtract=null;reviewMode=false;toast(next?'GHS 분류를 저장했습니다.':'GHS 분류를 지웠습니다.');
         opts.onSaved?.();
       }catch(e){toast(String(e.message||e),true);}
       finally{busy=false;draw();}
@@ -224,7 +224,27 @@
       let onChange=()=>{};wrap.setOnChange=fn=>{onChange=fn;};drawChips();return wrap;
     }
     function field(label,control,full){const d=E('div',undefined,full?'full':'');const l=E('label',label);d.append(l,control);return d;}
+    // 추출 직후에는 읽어온 내용의 요약과 저장 버튼만 보여준다. 그림문자 선택판은 '수정'을 눌렀을 때만 연다.
+    function reviewView(item){
+      const box=E('div',undefined,'ghs-editor'),r=lastExtract.result;
+      const info=E('div',undefined,'ghs-extract-box');
+      info.append(E('strong',`'${lastExtract.doc.fileName}'에서 읽어온 내용입니다. 맞으면 저장을 누르세요.`));
+      info.append(E('p',r.summary||'','hint'));
+      box.append(info);
+      const head=E('div',undefined,'ghs-view-head'),sym=E('div',undefined,'safety-symbols ghs-symbols');
+      for(const code of draft.pictograms){const tile=E('div',undefined,'safety-symbol');tile.innerHTML=iconImg(code,60)+`<small>${esc(code)} ${esc(D.PICTOGRAMS[code].label)}</small>`;sym.append(tile);}
+      if(!draft.pictograms.length)sym.append(E('span','그림문자 없음','hint'));
+      const meta=E('div',undefined,'ghs-view-meta');meta.innerHTML=`<div>신호어: ${signalBadge(draft.signalWord)||'<span class="hint">미지정</span>'}</div>${draft.hazardClasses?`<div class="ghs-classes">${esc(draft.hazardClasses)}</div>`:''}${draft.msdsIssuedAt?`<div class="hint">MSDS 작성·개정일 ${esc(draft.msdsIssuedAt)}${draft.msdsRevision?' ('+esc(draft.msdsRevision)+')':''}</div>`:''}`;
+      head.append(sym,meta);box.append(head);
+      if(draft.hCodes.length){const d=E('details',undefined,'safety-hazards');d.open=true;d.append(E('summary',`유해·위험 문구 ${draft.hCodes.length}개`));const l=E('div');for(const c of draft.hCodes)l.append(E('p',`${c} · ${D.hText(c)}`));d.append(l);box.append(d);}
+      if(draft.pCodes.length){const d=E('details',undefined,'safety-hazards');d.append(E('summary',`예방조치 문구 ${draft.pCodes.length}개`));const l=E('div');for(const c of draft.pCodes)l.append(E('p',`${c} · ${D.pText(c)}`));d.append(l);box.append(d);}
+      if(r.pictogramSource==='from-h')box.append(E('p','문서에 그림문자가 글자로 없어 H코드 규칙으로 정했습니다. 원문과 다르면 수정에서 바꾸세요.','hint'));
+      const actions=E('div',undefined,'msds-actions ghs-actions');
+      actions.append(button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('수정',()=>{reviewMode=false;draw(true);}),button('취소',()=>{editing=false;draft=null;lastExtract=null;reviewMode=false;draw();}));
+      box.append(actions);return box;
+    }
     function editor(item){
+      if(reviewMode&&lastExtract&&!lastExtract.empty&&draft)return reviewView(item);
       const box=E('div',undefined,'ghs-editor');
       if(lastExtract){
         const r=lastExtract.result,info=E('div',undefined,'ghs-extract-box'+(lastExtract.empty?' empty':''));
@@ -309,7 +329,7 @@
       element.append(editing?editor(item):viewer(item));
       if(y!==null&&scroller)scroller.scrollTop=y;
     }
-    element._ghsApi={refresh:draw,autoExtract:async doc=>{
+    element._ghsApi={refresh:draw,startKosha:()=>koshaAuto(),autoExtract:async doc=>{
       const item=getItem(itemId);if(!item)return;
       if(D.hasClassification(item)&&!confirm(`새로 첨부한 MSDS '${doc.fileName}'에서 GHS 정보를 다시 읽어 기존 분류를 바꿀까요?\n읽어온 내용은 저장을 누르기 전까지 반영되지 않습니다.`))return;
       pickedDocId=doc.id;await extractFrom(doc);
@@ -319,6 +339,8 @@
     return element._ghsApi;
   }
   function refreshAll(){for(const [el,opts] of panels){if(!el.isConnected)panels.delete(el);else mountDetail(opts);}}
+  // MSDS 관리 등 다른 화면에서 상세 창을 연 뒤 같은 'MSDS 받기' 흐름을 시작한다.
+  function startKosha(itemId){for(const [el,opts] of panels){if(el.isConnected&&opts.itemId===itemId&&el._ghsApi){el._ghsApi.startKosha();try{el.scrollIntoView({block:'start'});}catch{}return true;}}return false;}
   // MSDS가 새로 첨부되면 해당 품목의 GHS 패널에서 자동 추출을 시작한다.
   function onDocumentsAttached(itemId,documents){
     const doc=(documents||[]).slice(-1)[0];if(!doc)return;
@@ -328,5 +350,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha};
 })();
