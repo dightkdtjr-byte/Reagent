@@ -158,12 +158,12 @@ function createMSDSStore(getDataDir, options = {}) {
   function restoreFiles(inventory, externalDirectory) {
     const docs = references(inventory), candidates = [directory(), backupDirectory()];
     if (externalDirectory) candidates.push(externalDirectory);
-    // Check ALL sources before copying; never replace inventory with broken references.
-    const pending = [];
+    // 찾을 수 있는 PDF는 모두 복사하고, 없는 파일은 이름을 모아 알린다. PDF가 없다고 재고 복원을 막지 않는다.
+    const pending = [], missing = [];
     for (const doc of docs) {
       let source = null;
       for (const base of candidates) { try { source = checkedFile(base, doc).file; break; } catch {} }
-      if (!source) throw new Error(`MSDS 파일을 찾을 수 없거나 손상되었습니다 (${doc.fileName}). 백업 JSON과 같은 위치의 msds 폴더를 함께 가져와주세요.`);
+      if (!source) { missing.push(doc.fileName); continue; }
       pending.push({doc, source});
     }
     for (const {doc, source} of pending) {
@@ -173,7 +173,7 @@ function createMSDSStore(getDataDir, options = {}) {
         atomicBytes(target, bytes);
       }
     }
-    return {documents: docs.length};
+    return {documents: docs.length, restored: pending.length, missing};
   }
   function pruneBackupFiles(snapshotFiles) {
     const keep = new Set();
