@@ -11,6 +11,10 @@ const HIDE_CSS = '#Header,#Footer,#LeftMenuArea,.ViewBtnArea,.ViewBtn,.skip,.ski
   + '#Container,#Contents,.ListBoard,.tableListWrap{width:auto!important;max-width:none!important;margin:0!important;padding:0 8px!important;float:none!important}'
   + '.ListConts{display:block!important}.ListTit{page-break-after:avoid}table{page-break-inside:auto}tr{page-break-inside:avoid}body{background:#fff!important}';
 const CAS_RE = /^\d{2,7}-\d{2}-\d$/;
+// KOSHA 사이트의 그림문자 이미지 파일명은 국제 GHS 번호와 다르다 (2026-11 확인):
+// KOSHA GHS03.gif = 고압가스(국제 GHS04), KOSHA GHS04.gif = 산화성(국제 GHS03). 나머지는 같다.
+const KOSHA_PICTOGRAM = {GHS01: 'GHS01', GHS02: 'GHS02', GHS03: 'GHS04', GHS04: 'GHS03', GHS05: 'GHS05', GHS06: 'GHS06', GHS07: 'GHS07', GHS08: 'GHS08', GHS09: 'GHS09'};
+const toStandard = codes => [...new Set((codes || []).map(c => KOSHA_PICTOGRAM[String(c).toUpperCase()] || String(c).toUpperCase()))].sort();
 const clean = s => String(s || '').replace(/\s+/g, ' ').trim();
 
 // 검색 결과 표에서 물질 ID·물질명·CAS·개정일을 뽑는다.
@@ -23,7 +27,7 @@ function parseList(html) {
     const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(m => clean(m[1].replace(/<[^>]+>/g, ' ')));
     const casNo = cells.find(c => CAS_RE.test(c)) || '';
     const revisedAt = (row.match(/\d{4}-\d{2}-\d{2}/) || [''])[0];
-    const pictograms = [...new Set([...row.matchAll(/ghs\/(GHS0[1-9])\.gif/gi)].map(m => m[1].toUpperCase()))];
+    const pictograms = toStandard([...row.matchAll(/ghs\/(GHS0[1-9])\.gif/gi)].map(m => m[1]));
     const signal = (row.match(/layerPopup\('[^']*','(위험|경고)'/) || [])[1] || '';
     const entry = {chemId: id[1], name: clean(id[2]), casNo, revisedAt, pictograms, signalWord: signal === '위험' ? 'Danger' : signal === '경고' ? 'Warning' : ''};
     if (!rows.some(r => r.chemId === entry.chemId)) rows.push(entry);
@@ -99,7 +103,7 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       const document = {...imported.documents[0], fileName: `KOSHA_MSDS_${safeName}${cas ? '_' + cas : ''}_${stamp}.pdf`, sourceURL: DETAIL_URL, sourcePublisher: '안전보건공단(KOSHA) 화학물질정보', koshaChemId: String(chemId), koshaRevisedAt: clean(meta.revisedAt || '')};
       const ghs = typeof extract === 'function' ? extract(info.text) : null;
       // 2절의 그림문자 이미지가 가장 정확하다. 글자로 못 읽은 경우를 이미지로 보완한다.
-      if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) { ghs.pictograms = info.pictograms; ghs.pictogramSource = 'explicit'; ghs.found = true; }
+      if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) { ghs.pictograms = toStandard(info.pictograms); ghs.pictogramSource = 'explicit'; ghs.found = true; }
       if (ghs && !ghs.signalWord && info.signalWord) ghs.signalWord = info.signalWord;
       return {ok: true, document, extract: ghs, title: info.title, pages: null};
     } finally {
@@ -108,4 +112,4 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
   }
   return {search, receive, parseList};
 }
-module.exports = {createKoshaClient, parseList, HOST};
+module.exports = {createKoshaClient, parseList, toStandard, KOSHA_PICTOGRAM, HOST};

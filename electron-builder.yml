@@ -18,7 +18,8 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: 시약 재고관리 시스템
+  shortcutName: ReagentInventory
+  include: build/installer.nsh
   installerLanguages:
     - ko_KR
   language: 1042

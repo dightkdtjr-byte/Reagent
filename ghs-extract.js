@@ -49,11 +49,16 @@
   }
   function pictograms(section){
     const found=[];
-    for(const m of section.matchAll(/GHS\s?0([1-9])/gi)){const c='GHS0'+m[1];if(!found.includes(c))found.push(c);}
+    // 'GHS02' 같은 코드가 글자로 적힌 경우만 확정으로 본다.
+    for(const m of section.matchAll(/\bGHS\s?0([1-9])\b/gi)){const c='GHS0'+m[1];if(!found.includes(c))found.push(c);}
     if(found.length)return {codes:found,how:'explicit'};
-    // 그림문자 항목 바로 뒤 몇 줄에서 이름으로 찾는다. 다른 절의 '환경', '부식' 같은 일반 단어는 보지 않는다.
-    const m=section.match(/(?:pictograms?|그림\s*문자|심벌|symbols?)\s*[:：]?([\s\S]{0,400})/i);
-    if(m){const near=m[1].split(/\n/).slice(0,8).join('\n');for(const [code,re] of PICTO_WORDS){if(re.test(near)&&!found.includes(code))found.push(code);}}
+    // 이름(화염·해골 등)은 '그림문자' 항목 바로 다음 짧은 줄에서만 찾는다. 뒤따르는 문장의 '환경', '부식' 같은 일반 단어는 보지 않는다.
+    const m=section.match(/(?:pictograms?|그림\s*문자|심벌|symbols?)\s*[:：]?([\s\S]{0,300})/i);
+    if(m){
+      const lines=m[1].split(/\n/).map(l=>l.trim()).filter(Boolean).slice(0,3).filter(l=>l.length<=60&&!/^(?:신호어|signal|유해|hazard|H\d{3})/i.test(l));
+      const near=lines.join('\n');
+      for(const [code,re] of PICTO_WORDS){if(re.test(near)&&!found.includes(code))found.push(code);}
+    }
     return {codes:found,how:found.length?'named':'none'};
   }
   function hazardClasses(section){
@@ -79,13 +84,9 @@
     let signal=signalWord(section)||signalWord(t);
     const picto=pictograms(section);
     const suggested=D.suggestFromH(hCodes);
+    // 우선순위: 글자로 적힌 GHS 코드 > H코드에서 유도 > 이름 단어. H코드가 있으면 이름 단어는 쓰지 않는다 (오인식이 잦다).
     let pictos=picto.codes,pictoHow=picto.how;
-    if(!pictos.length&&hCodes.length){pictos=suggested.pictograms;pictoHow='from-h';}
-    else if(pictoHow==='named'&&suggested.pictograms.some(p=>!pictos.includes(p))){
-      // 이름으로 일부만 읽힌 경우 H코드로 보완한다 (예: '화염' 뒤 다른 그림문자 이름을 못 읽은 경우).
-      const order=['GHS01','GHS02','GHS03','GHS04','GHS05','GHS06','GHS07','GHS08','GHS09'];
-      pictos=[...new Set([...pictos,...suggested.pictograms])].filter(p=>!(p==='GHS07'&&!suggested.pictograms.includes('GHS07'))).sort((a,b)=>order.indexOf(a)-order.indexOf(b));pictoHow='named+from-h';
-    }
+    if(pictoHow!=='explicit'&&hCodes.length){pictos=suggested.pictograms;pictoHow='from-h';}
     if(!signal&&hCodes.length){signal=suggested.signalWord;}
     const issuedAt=findDate(t,'revision\\s*date|date\\s*of\\s*(?:last\\s*)?revision|last\\s*revised|revised\\s*(?:on|date)?|개정\\s*일자?|최종\\s*개정일?|수정일')||findDate(t,'issue\\s*date|date\\s*of\\s*issue|issued|date\\s*prepared|preparation\\s*date|version\\s*date|작성\\s*일자?|제정일|발행일');
     const revM=t.match(/(?:revision\s*(?:number|no\.?|#)|version(?:\s*(?:number|no\.?))?|개정\s*(?:번호|차수|횟수)|버전)\s*[:：]?\s*(?:ver\.?|v\.?|rev\.?)?\s*([0-9]+(?:\.[0-9]+)*)/i);
@@ -93,7 +94,7 @@
     const classes=hazardClasses(section);
     const found=hCodes.length>0||!!signal||pictos.length>0;
     return {ok:true,found,sectioned,textLength:t.length,hCodes,pCodes,signalWord:signal,pictograms:pictos,pictogramSource:pictoHow,hazardClasses:classes,issuedAt,revision,
-      summary:[`H코드 ${hCodes.length}개`,`P코드 ${pCodes.length}개`,`신호어 ${signal?D.SIGNAL[signal]:'미확인'}`,`그림문자 ${pictos.length?pictos.join('·')+(pictoHow==='from-h'?' (H코드로 추정)':pictoHow==='named+from-h'?' (일부 H코드로 보완)':''):'미확인'}`,issuedAt?`작성·개정일 ${issuedAt}`:'작성·개정일 미확인',sectioned?'2절 범위에서 추출':'절 구분을 찾지 못해 문서 앞부분에서 추출'].join(' · ')};
+      summary:[`H코드 ${hCodes.length}개`,`P코드 ${pCodes.length}개`,`신호어 ${signal?D.SIGNAL[signal]:'미확인'}`,`그림문자 ${pictos.length?pictos.join('·')+(pictoHow==='from-h'?' (H코드 기준)':pictoHow==='named'?' (이름으로 추정)':''):'미확인'}`,issuedAt?`작성·개정일 ${issuedAt}`:'작성·개정일 미확인',sectioned?'2절 범위에서 추출':'절 구분을 찾지 못해 문서 앞부분에서 추출'].join(' · ')};
   }
   return {extract,parseDate};
 });
