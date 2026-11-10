@@ -88,7 +88,10 @@
   function mountDetail(opts){
     const {element,itemId,getItem,save,toast,confirm}=opts;if(!element)return;
     panels.set(element,opts);
-    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null;
+    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null,koshaStatus=null;
+    // 진행 상황을 패널 안에 계속 보여준다. 토스트는 금방 사라져 실패 사유를 놓치기 쉽다.
+    function setKoshaStatus(text,isError){koshaStatus=text?{text,isError:!!isError}:null;const el=element.querySelector('#ghs-kosha-status');if(el){el.textContent=text||'';el.hidden=!text;el.classList.toggle('safety-warning',!!isError);}}
+    const failText=(r,fallback)=>String(r?.error||fallback)+(r?.diagnostic?.hint?' — '+r.diagnostic.hint:'')+(r?.diagnostic?.code&&r.diagnostic.code!=='UNKNOWN'?' ['+r.diagnostic.code+']':'');
     const alive=()=>element.isConnected&&!!getItem(itemId);
     const settings=()=>opts.settings?.()||{};
     async function lookup(kind){
@@ -148,26 +151,27 @@
       try{
         let pick=choice;
         if(!pick){
-          toast(`'${query}' MSDS 검색 중… (KOSHA)`);
+          setKoshaStatus(`'${query}' MSDS 검색 중… (안전보건공단 KOSHA)`);
           const r=await window.inventorySafety.koshaSearch(query);if(!alive())return;
-          if(!r?.ok)throw new Error(r?.error||'검색 실패');
+          if(!r?.ok)throw new Error(failText(r,'검색 실패'));
           const rows=r.rows||[];
-          if(!rows.length){toast(`'${query}'의 MSDS를 찾지 못했습니다 (KOSHA). 제조사 MSDS PDF를 첨부해주세요.`,true);return;}
-          if(rows.length>1&&!r.exactCas){koshaChoices=rows.slice(0,15);draw();toast('검색 결과가 여러 개입니다. 아래에서 맞는 물질을 선택하세요.');return;}
+          if(!rows.length){setKoshaStatus(`'${query}'의 MSDS를 찾지 못했습니다 (KOSHA). CAS 번호를 확인하거나 제조사 MSDS PDF를 첨부해주세요.`,true);return;}
+          if(rows.length>1&&!r.exactCas){koshaChoices=rows.slice(0,15);setKoshaStatus('검색 결과가 여러 개입니다. 아래에서 맞는 물질을 선택하세요.');draw();return;}
           pick=rows[0];
         }
         koshaChoices=null;
         if(!confirm(`'${pick.name}' (CAS ${pick.casNo||'미표기'}${pick.revisedAt?', 개정 '+pick.revisedAt:''}) MSDS를 받아 이 품목에 첨부할까요? (출처: 안전보건공단 KOSHA)\n받은 뒤 GHS 항목을 자동으로 채우며, 저장을 눌러야 반영됩니다.`))return;
-        toast('MSDS를 PDF로 저장하는 중입니다… (10~30초)');
+        setKoshaStatus(`'${pick.name}' MSDS를 PDF로 저장하는 중입니다… (10~30초)`);
         const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!alive())return;
-        if(!rec?.ok)throw new Error(rec?.error||'MSDS 받기 실패');
+        if(!rec?.ok)throw new Error(failText(rec,'MSDS 받기 실패'));
         await attachDocument(rec.document);
         pickedDocId=rec.document.id;
         const filled=applyExtract(rec.document,rec.extract,'kosha');
         if(filled&&!draft.pictograms.length&&pick.pictograms?.length){draft.pictograms=pick.pictograms.slice();if(!draft.signalWord&&pick.signalWord)draft.signalWord=pick.signalWord;}
+        setKoshaStatus(filled?`'${rec.document.fileName}' 첨부 완료. GHS 항목을 채웠으니 확인 후 저장을 누르세요.`:`'${rec.document.fileName}' 첨부 완료. GHS 항목은 읽지 못해 직접 선택해야 합니다.`,!filled);
         draw();remountMsds();
         toast(filled?'MSDS를 첨부하고 GHS 항목을 채웠습니다. 저장을 누르세요.':'MSDS를 첨부했지만 GHS 항목을 읽지 못했습니다. 직접 선택해주세요.',!filled);
-      }catch(e){toast('MSDS 받기 실패: '+String(e.message||e),true);}
+      }catch(e){const msg='MSDS 받기 실패: '+String(e.message||e);setKoshaStatus(msg,true);toast(msg,true);try{alert(msg+'\n\n이 PC에서 브라우저로 https://msds.kosha.or.kr 이 열리는지 확인해보세요. 열리지 않으면 기관 네트워크에서 차단된 것이니 IT 담당자에게 문의하거나, 제조사 MSDS PDF를 직접 첨부하세요.');}catch{}}
       finally{busy=false;}
     }
     // 첨부된 MSDS PDF에서 GHS 항목을 읽어 입력란을 채운다. 저장은 사용자가 확인한 뒤 누른다.
@@ -293,6 +297,7 @@
       if(!editing){tools.append(button(D.hasClassification(item)||item.ghs?'편집':'직접 입력',()=>{startEdit();draw();}));}
       tools.append(button('MSDS 검색 (KOSHA)',()=>lookup('kosha')),button('PubChem',()=>lookup('pubchem')));
       heading.append(title,tools);element.append(heading);
+      const status=E('p',koshaStatus?koshaStatus.text:'','hint ghs-kosha-status');status.id='ghs-kosha-status';status.setAttribute('role','status');status.hidden=!koshaStatus;if(koshaStatus?.isError)status.classList.add('safety-warning');element.append(status);
       if(!icons.size)await preload();
       if(!alive())return;
       if(koshaChoices){

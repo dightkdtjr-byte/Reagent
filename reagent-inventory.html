@@ -1107,6 +1107,7 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 .ghs-td{white-space:normal}
 .ghs-extract-box{margin:4px 0 10px;padding:10px 12px;border:1px solid var(--teal-dark);border-radius:10px;background:var(--teal-tint)}.ghs-extract-box.empty{border-color:var(--amber);background:var(--amber-tint)}.ghs-extract-box p{margin:4px 0 0}
 .ghs-doc-select{max-width:220px;font-size:12px;padding:5px 8px}
+.ghs-kosha-status{margin:6px 0 2px;padding:8px 10px;border-radius:8px;background:var(--teal-tint);font-size:12.5px;font-weight:600}.ghs-kosha-status.safety-warning{background:var(--red-tint)}
 .ghs-kosha-list{display:flex;flex-direction:column;gap:4px;margin-top:6px}.ghs-kosha-list .ghs-picker-hit{background:var(--surface);border:1px solid var(--line)}
 .stat-chips .chip.clickable{cursor:pointer}.stat-chips .chip.clickable:hover{border-color:var(--teal-dark)}
 #ghs-filter{max-width:190px}
@@ -1203,7 +1204,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.12</div>
+        <div class="work-version">v3.13.13</div>
       </div>
 </aside>
   </div>
@@ -1527,7 +1528,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.12<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.13<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1600,7 +1601,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.12';
+  const APP_VERSION = '3.13.13';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -3868,7 +3869,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.12 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.13 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];

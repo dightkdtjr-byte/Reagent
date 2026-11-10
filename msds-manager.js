@@ -40,10 +40,10 @@
     // 한 품목을 KOSHA에서 받아 첨부하고, GHS가 비어 있으면 읽어온 값으로 채운다.
     async function koshaOne(item){
       const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
-      const s=await window.inventorySafety.koshaSearch(cas);if(!s?.ok)throw new Error(s?.error||'검색 실패');
+      const s=await window.inventorySafety.koshaSearch(cas);if(!s?.ok)throw new Error(String(s?.error||'검색 실패')+(s?.diagnostic?.hint?' — '+s.diagnostic.hint:''));
       const rows=(s.rows||[]).filter(r=>r.casNo===cas);if(!rows.length)throw new Error('해당 CAS의 MSDS를 찾지 못했습니다 (KOSHA).');
       const pick=rows[0];
-      const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(rec?.error||'받기 실패');
+      const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
       const live=getItem(item.id);if(!live)throw new Error('품목이 삭제되었습니다.');
       const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
       const old=live.msdsDocuments||[];if(!old.some(d=>d.id===rec.document.id)){if(old.length>=20)throw new Error('첨부 문서가 20개입니다.');live.msdsDocuments=[...old,rec.document];}
@@ -105,7 +105,7 @@
         const g=r.ghs||{};const bits=[g.msdsIssuedAt?`작성·개정 ${g.msdsIssuedAt}`:'',g.msdsReviewedAt?`검토 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',g.source?SOURCE[g.source]:''].filter(Boolean);
         const c4=E('td');c4.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'||st.state==='none'?'warn':'ok'}">${esc(st.label)}</span><div class="hint">${esc(bits.join(' · '))}</div>`;
         const c5=E('td');const acts=E('div',undefined,'msds-mgr-acts');
-        if(!docs.length){const hasCas=CAS_RE.test(String(r.casNo||'').trim());const b=button('MSDS 받기',async()=>{if(state.busy)return;if(!hasCas){toast(`${r.id}: CAS 번호가 없어 자동으로 찾을 수 없습니다. 품목 열기에서 CAS를 입력하거나, 상세 화면의 'MSDS 받기'로 품명 검색을 하거나, PDF를 직접 첨부하세요.`,true);return;}state.busy=true;drawProgress();try{const res=await koshaOne(r);toast(`${r.id}: MSDS 첨부${res.filled?' · GHS 채움':''}`);}catch(e){toast(`${r.id}: ${String(e.message||e)}`,true);}finally{state.busy=false;draw();}},hasCas?'primary':'ghost');b.title=hasCas?'안전보건공단(KOSHA) 화학물질정보에서 CAS로 받기':'CAS 번호가 없어 자동으로 받을 수 없습니다';if(!hasCas)b.style.opacity='.6';b.dataset.busyLock='1';acts.append(b);}
+        if(!docs.length){const hasCas=CAS_RE.test(String(r.casNo||'').trim());const b=button('MSDS 받기',async()=>{if(state.busy)return;if(!hasCas){toast(`${r.id}: CAS 번호가 없어 자동으로 찾을 수 없습니다. 품목 열기에서 CAS를 입력하거나, 상세 화면의 'MSDS 받기'로 품명 검색을 하거나, PDF를 직접 첨부하세요.`,true);return;}state.busy=true;drawProgress();try{const res=await koshaOne(r);toast(`${r.id}: MSDS 첨부${res.filled?' · GHS 채움':''}`);}catch(e){const msg=`${r.id} ${r.name||''}: ${String(e.message||e)}`;toast(msg,true);try{alert('MSDS 받기 실패\n\n'+msg+'\n\n이 PC에서 브라우저로 https://msds.kosha.or.kr 이 열리는지 확인해보세요. 열리지 않으면 기관 네트워크에서 차단된 것입니다.');}catch{}}finally{state.busy=false;draw();}},hasCas?'primary':'ghost');b.title=hasCas?'안전보건공단(KOSHA) 화학물질정보에서 CAS로 받기':'CAS 번호가 없어 자동으로 받을 수 없습니다';if(!hasCas)b.style.opacity='.6';b.dataset.busyLock='1';acts.append(b);}
         if(docs.length){const b=button('검토 완료',()=>markReviewed(r));b.title='오늘 날짜로 MSDS 검토일 기록';b.dataset.busyLock='1';acts.append(b);}
         acts.append(button('품목 열기',()=>openItem(r.id)));
         c5.append(acts);tr.append(c1,c2,c3,c4,c5);body.append(tr);
