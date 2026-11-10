@@ -1194,15 +1194,16 @@ body{font-family:var(--sans)!important;font-size:13px;}
 #reader-el,.camera-fallback{border-radius:0!important;}
 .home-recent,.home-recent-list,.home-recent-card,.home-recent-box{border-radius:0!important;box-shadow:none!important;}
 .home-cards{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;}
-.home-module{height:auto!important;min-height:0!important;border-radius:0!important;border:1px solid var(--line)!important;background:var(--surface)!important;box-shadow:none!important;padding:18px 20px!important;transform:none!important;}
+.home-module{border-radius:0!important;border:1px solid var(--line)!important;background:var(--surface)!important;box-shadow:none!important;padding:0!important;transform:none!important;display:flex!important;flex-direction:row!important;align-items:stretch!important;overflow:hidden!important;}
 .home-module:hover{background:#F7F8F9!important;border-color:var(--line-strong)!important;}
-.home-module-photo,.home-module-shade{display:none!important;}
-.home-module-content{position:static!important;width:auto!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:14px!important;}
-.home-module-symbol{width:28px!important;height:28px!important;margin:0!important;color:var(--teal)!important;flex:none;}
+.home-module-shade{display:none!important;}
+.home-module-photo{display:block!important;position:static!important;inset:auto!important;order:2;flex:0 0 46%!important;width:46%!important;height:auto!important;align-self:stretch!important;background:#F5F6F7!important;border-left:1px solid var(--line);}
+.home-module-photo img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;}
+.home-module-content{position:static!important;order:1;flex:1 1 auto!important;min-width:0;width:auto!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:6px!important;padding:22px 24px!important;}
+.home-module-symbol{width:26px!important;height:26px!important;margin:0 0 4px!important;color:var(--teal)!important;flex:none;}
 .home-module h2{font-size:17px!important;font-weight:700!important;letter-spacing:0!important;color:var(--ink)!important;}
 .home-module p{margin:2px 0 0!important;font-size:12.5px!important;font-weight:400!important;color:var(--ink-soft)!important;}
-.home-module-content>h2+p{flex:1;}
-.home-go{margin:0 0 0 auto!important;width:30px!important;height:30px!important;border-radius:3px!important;background:transparent!important;color:var(--teal)!important;border:1px solid var(--line-strong);box-shadow:none!important;}
+.home-go{margin:14px 0 0!important;width:30px!important;height:30px!important;border-radius:3px!important;background:transparent!important;color:var(--teal)!important;border:1px solid var(--line-strong);box-shadow:none!important;}
 .home-go svg{width:18px!important;height:18px!important;}
 .home-summary{border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;box-shadow:none!important;}
 .home-summary-grid{gap:12px!important;}
@@ -1258,9 +1259,8 @@ button.danger{border:1px solid var(--red)!important;color:var(--red)!important;f
 .msds-mgr-tbl th{border-top:2px solid var(--ink)!important;background:#F5F6F7;color:var(--ink)!important;}
 .safety-symbol img,.ghs-ico,.ghs-picto-img{border-radius:0!important;}
 #toast{border-radius:3px!important;box-shadow:none!important;}
-.work-agency-logo{filter:grayscale(1);opacity:.85;}
 .home-cards{align-items:start!important;flex:0 0 auto!important;}
-.home-cards .home-module,.home-cards-after-scan .home-module{height:auto!important;min-height:0!important;max-height:none!important;align-self:start!important;}
+.home-cards .home-module,.home-cards-after-scan .home-module{height:190px!important;min-height:0!important;max-height:none!important;align-self:start!important;}
 .home-cards-after-scan .home-module-content{position:static!important;}
 .home-scan-recent,.home-scan-recent-list,.home-scan-recent-empty,.home-scan-recent-grid>div{border-radius:0!important;box-shadow:none!important;}
 .home-scan-recent-head{font-size:12.5px!important;font-weight:700!important;color:var(--ink)!important;border-bottom:1px solid var(--line)!important;}
@@ -1320,7 +1320,7 @@ button.danger{border:1px solid var(--red)!important;color:var(--red)!important;f
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.4</div>
+        <div class="work-version">v3.13.5</div>
       </div>
 </aside>
   </div>
@@ -1644,7 +1644,7 @@ button.danger{border:1px solid var(--red)!important;color:var(--red)!important;f
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.4<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.5<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1717,7 +1717,7 @@ button.danger{border:1px solid var(--red)!important;color:var(--red)!important;f
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.4';
+  const APP_VERSION = '3.13.5';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -3964,7 +3964,7 @@ button.danger{border:1px solid var(--red)!important;color:var(--red)!important;f
     finally{btn.disabled=false;}
   });
 
-  // v3.13.4 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.5 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
