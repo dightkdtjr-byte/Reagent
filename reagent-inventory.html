@@ -841,9 +841,9 @@ html[data-theme="dark"] .home-camera-head h2{color:#e9f2ff}html[data-theme="dark
 html.forms-mode header.top,html.forms-mode nav.tabs,html.msds-mode header.top,html.msds-mode nav.tabs{display:none!important;}
 html.msds-mode #app{padding-top:8px;}
 .msds-mgr-head h3{margin:0 0 4px;font-size:18px}.msds-mgr-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;align-items:center}.msds-mgr-tools input[type=search]{flex:1;min-width:220px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.msds-mgr-tools select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
-.msds-mgr-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}.msds-mgr-tbl td{white-space:normal!important;vertical-align:top!important;overflow-wrap:anywhere}.msds-mgr-tbl th{text-align:left;font-size:11.5px;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line)}.msds-mgr-tbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.msds-mgr-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}.msds-mgr-tbl td{white-space:normal!important;vertical-align:middle!important;overflow-wrap:anywhere;padding:10px 8px!important}.msds-mgr-tbl th{text-align:left;font-size:11.5px;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line)}.msds-mgr-tbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .msds-mgr-link{border:0;background:transparent;color:var(--ink);font-weight:700;padding:0;cursor:pointer;text-align:left;font-size:13px}.msds-mgr-link:hover{text-decoration:underline}
-.msds-mgr-doc{display:block;padding:4px 0}.msds-mgr-doc+.msds-mgr-doc{border-top:1px dashed var(--line);margin-top:4px}.msds-mgr-doc-info{min-width:0}.msds-mgr-doc .msds-actions{margin-top:5px}.msds-mgr-doc .msds-name{font-size:12px}.msds-mgr-doc .msds-actions button{font-size:12px;height:28px;padding:0 10px;line-height:26px;white-space:nowrap}.msds-mgr-acts{display:flex;flex-direction:column;align-items:stretch;gap:6px}.msds-mgr-acts button{width:100%;min-width:0;height:32px;padding:0 8px;font-size:12.5px;line-height:30px;white-space:nowrap;text-align:center;box-sizing:border-box;margin:0}.msds-mgr-progress{font-weight:700}.msds-mgr-lastrun{margin:8px 0}.msds-mgr-lastrun summary{cursor:pointer;font-size:12.5px}
+.msds-mgr-doc{display:block;padding:4px 0}.msds-mgr-doc+.msds-mgr-doc{border-top:1px dashed var(--line);margin-top:4px}.msds-mgr-doc-info{min-width:0}.msds-mgr-doc .msds-actions{margin-top:5px}.msds-mgr-doc .msds-name{font-size:12px}.msds-mgr-doc .msds-actions button{font-size:12px;height:28px;padding:0 10px;line-height:26px;white-space:nowrap}.msds-mgr-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-items:center;margin:0;padding:0}.msds-mgr-acts button{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12px;line-height:28px;white-space:nowrap;text-align:center;box-sizing:border-box;margin:0;overflow:hidden;text-overflow:ellipsis}.msds-mgr-acts button:only-child{grid-column:1/-1}.msds-mgr-progress{font-weight:700}.msds-mgr-lastrun{margin:8px 0}.msds-mgr-lastrun summary{cursor:pointer;font-size:12.5px}
 html.forms-mode #app{padding-top:8px;}
 .form-template-panel{padding:18px 18px 20px;}
 .form-template-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
@@ -1203,7 +1203,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.8</div>
+        <div class="work-version">v3.13.9</div>
       </div>
 </aside>
   </div>
@@ -1527,7 +1527,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.8<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.9<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1600,7 +1600,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.8';
+  const APP_VERSION = '3.13.9';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -3847,7 +3847,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     finally{btn.disabled=false;}
   });
 
-  // v3.13.8 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // v3.13.9 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
   async function fixKoshaPictogramNumbers(){
     if(settings().koshaPictogramFixed) return;
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];

@@ -95,7 +95,7 @@
       const wrap=element.querySelector('#msds-mgr-table');if(!wrap)return;wrap.replaceChildren();
       const s=settings(),rows=items().map(r=>({r,st:rowState(r,s)})).filter(x=>matches(x.r,x.st,s)).sort((a,b)=>severity(a.r,a.st)-severity(b.r,b.st)||a.r.id.localeCompare(b.r.id));
       if(!rows.length){wrap.append(E('p','해당하는 품목이 없습니다.','hint'));return;}
-      const table=E('table',undefined,'msds-mgr-tbl');table.innerHTML='<thead><tr><th style="width:24%">품목</th><th style="width:15%">GHS</th><th>MSDS 문서</th><th style="width:170px">상태</th><th style="width:124px">작업</th></tr></thead>';
+      const table=E('table',undefined,'msds-mgr-tbl');table.innerHTML='<thead><tr><th style="width:24%">품목</th><th style="width:15%">GHS</th><th>MSDS 문서</th><th style="width:160px">상태</th><th style="width:196px">작업</th></tr></thead>';
       const body=E('tbody');
       for(const {r,st} of rows){
         const tr=E('tr');
@@ -104,7 +104,7 @@
         const c3=E('td');const docs=r.msdsDocuments||[];if(!docs.length)c3.append(E('span','첨부된 MSDS가 없습니다.','hint'));else for(const d of docs)c3.append(docRow(r,d,st));
         const g=r.ghs||{};const bits=[g.msdsIssuedAt?`작성·개정 ${g.msdsIssuedAt}`:'',g.msdsReviewedAt?`검토 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',g.source?SOURCE[g.source]:''].filter(Boolean);
         const c4=E('td');c4.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'||st.state==='none'?'warn':'ok'}">${esc(st.label)}</span><div class="hint">${esc(bits.join(' · '))}</div>`;
-        const c5=E('td');const acts=E('div',undefined,'msds-actions msds-mgr-acts');
+        const c5=E('td');const acts=E('div',undefined,'msds-mgr-acts');
         if(!docs.length&&CAS_RE.test(String(r.casNo||'').trim())){const b=button('MSDS 받기',async()=>{if(state.busy)return;state.busy=true;drawProgress();try{const res=await koshaOne(r);toast(`${r.id}: KOSHA MSDS 첨부${res.filled?' · GHS 채움':''}`);}catch(e){toast(`${r.id}: ${String(e.message||e)}`,true);}finally{state.busy=false;draw();}},'primary');b.title='안전보건공단(KOSHA) 화학물질정보에서 받기';b.dataset.busyLock='1';acts.append(b);}
         if(docs.length){const b=button('검토 완료',()=>markReviewed(r));b.title='오늘 날짜로 MSDS 검토일 기록';b.dataset.busyLock='1';acts.append(b);}
         acts.append(button('품목 열기',()=>openItem(r.id)));
