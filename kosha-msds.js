@@ -109,7 +109,7 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) {
         ghs.pictograms = toStandard(info.pictograms); ghs.pictogramSource = 'explicit'; ghs.found = true;
         // 요약 문구도 이미지 기준으로 고쳐 쓴다 (추출 단계에서 만든 'H코드 기준' 표시를 지움).
-        if (typeof ghs.summary === 'string') ghs.summary = ghs.summary.replace(/그림문자 [^·]*?(?= · |$)/, '그림문자 ' + ghs.pictograms.join('·') + ' (원문 그림 기준)');
+        if (typeof ghs.summary === 'string') ghs.summary = ghs.summary.replace(/그림문자 .*?(?= · 작성| · 2절| · 절 구분|$)/, '그림문자 ' + ghs.pictograms.join('·') + ' (원문 그림 기준)');
       }
       if (ghs && !ghs.signalWord && info.signalWord) ghs.signalWord = info.signalWord;
       return {ok: true, document, extract: ghs, title: info.title, pages: null};
