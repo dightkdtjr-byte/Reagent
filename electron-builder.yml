@@ -2,6 +2,8 @@ appId: kr.mamo.reagent-inventory
 productName: ReagentInventory
 directories:
   output: dist/installer
+# 앱 파일을 app.asar로 묶지 않고 resources/app 폴더로 둔다. 업데이트 zip을 덮어써서 갱신할 수 있게 하기 위함.
+asar: false
 files:
   - "**/*"
   - "!dist/**"
