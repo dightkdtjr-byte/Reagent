@@ -49,7 +49,7 @@
    const heading=E('h3',title);heading.id='safety-download-title';
    const note=E('p','이 창은 자동으로 사라지지 않습니다. 실패한 다운로드는 문서 연결 완료로 처리하지 않습니다.','hint');
    const report=E('textarea');report.id='safety-download-report';report.readOnly=true;report.setAttribute('aria-label','복사 가능한 다운로드 진단 내역');
-   report.value='시약 재고관리시스템 v3.13.2 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
+   report.value='시약 재고관리시스템 v3.13.3 · '+title+'\n\n'+(entries.length?entries.map(entryText).join('\n\n────────────────────\n\n'):'저장된 다운로드 결과가 없습니다.');
    const status=E('p','','hint');status.setAttribute('role','status');const actions=E('div',undefined,'msds-actions');
    actions.append(button('오류 내용 복사',()=>copyText(report.value,status)),button('닫기',()=>dialog.close(),'primary'));
    dialog.append(heading,note,report,status,actions);document.body.append(dialog);
@@ -240,7 +240,7 @@
   try{const cat=await catalog();if(!element.isConnected||element._safetyToken!==token)return;element.replaceChildren(E('h3','제조사 검토 SDS 연결 (내장 자료)'));if(!cat){element.append(E('p','설치형 앱에서 사용할 수 있습니다.','hint'));return;}
    const items=getItems(),counts={ready:0,reference:0,composition:0,review:0,unresolved:0};for(const r of items)counts[state(cat,r).status]++;
    element.append(E('p',`현재 ${items.length}개 품목 · 제품번호 일치 ${counts.ready}개 · 참고자료 연결 가능 ${counts.reference}개 · 조성 확인 필요 ${counts.composition}개 · 제품 정보 확인 필요 ${counts.review}개 · 미확인 ${counts.unresolved}개`,'settings-desc'));
-   element.append(E('p',`확인 기준 ${cat.reviewedAt}. 제품번호가 일치하는 자료와 같은 물질 참고자료를 구분해 연결합니다. MSDS를 받는 더 쉬운 방법은 왼쪽 'MSDS 관리'의 KOSHA 일괄 받기입니다.`,'hint'));
+   element.append(E('p',`확인 기준 ${cat.reviewedAt}. 제품번호가 일치하는 자료와 같은 물질 참고자료를 구분해 연결합니다. MSDS를 받는 더 쉬운 방법은 왼쪽 'MSDS 관리'의 MSDS 일괄 받기입니다.`,'hint'));
    const actions=E('div',undefined,'settings-actions'),receive=button('확인된 제조사 자료 받기',()=>bulk(opts),'primary');receive.id='safety-bulk-receive';receive.dataset.safetyReceive='1';const stopButton=button('현재 파일 후 중단',()=>{stop=true;stopButton.disabled=true;});stopButton.id='safety-stop';stopButton.hidden=!busy;
    const referenceButton=button('참고 MSDS 받기',()=>bulk(opts,'reference'));referenceButton.id='safety-bulk-reference';referenceButton.dataset.safetyReceive='1';const historyButton=button('최근 다운로드 결과',()=>showHistory(opts.toast));historyButton.id='safety-download-history';actions.append(receive,referenceButton,stopButton,button('문서 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'문서 폴더 열기 실패');}catch(e){opts.toast(safeError(e),true);}}),button('목록 새로고침',()=>drawSettings(opts)),historyButton);element.append(actions);
    const progress=E('p','받은 PDF는 문서 폴더에 저장되고 품목에 연결됩니다.','hint');progress.id='safety-progress';progress.setAttribute('role','status');element.append(progress);

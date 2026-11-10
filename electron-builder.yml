@@ -19,7 +19,7 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: ReagentInventory
-  include: build/installer.nsh
+  include: installer.nsh
   installerLanguages:
     - ko_KR
   language: 1042

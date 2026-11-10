@@ -87,7 +87,7 @@
             info.append(name, meta);
             const role=window.InventorySafetyCommon?.linkRole(getItem(itemId),doc);
             const badge=document.createElement('p');badge.className='hint';badge.dataset.msdsRole=role||'manual';
-            badge.textContent=doc.koshaChemId?'KOSHA 국문 MSDS'+(doc.koshaRevisedAt?' · 개정 '+doc.koshaRevisedAt:''):({reference:'같은 물질 참고 SDS (다른 제품)',product:'제품번호 일치 SDS',stale:'품목 정보 변경 후 재확인 필요',unverified:'제조사 문서',manual:'직접 첨부'})[role||'manual'];info.append(badge);
+            badge.textContent=doc.koshaChemId?'받은 MSDS (KOSHA)'+(doc.koshaRevisedAt?' · 개정 '+doc.koshaRevisedAt:''):({reference:'같은 물질 참고 SDS (다른 제품)',product:'제품번호 일치 SDS',stale:'품목 정보 변경 후 재확인 필요',unverified:'제조사 문서',manual:'직접 첨부'})[role||'manual'];info.append(badge);
             const actions = document.createElement('div'); actions.className = 'msds-actions';
             const look = button('미리보기', () => preview(doc), 'primary'); look.dataset.msdsAction = 'preview';
             const view = button('외부 프로그램으로 열기', () => open(doc)); view.dataset.msdsAction = 'open';

@@ -42,11 +42,14 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await n.fetch(url, {credentials: 'omit', signal: ctrl.signal, headers: {'Accept': 'text/html', 'User-Agent': 'ReagentInventory (KOSHA MSDS)'}});
-      if (!res.ok) throw new Error(`KOSHA 서버 응답 ${res.status}`);
+      // 공단 서버가 가끔 502/504를 돌려준다. 5xx는 2초 뒤 한 번 더 시도한다.
+      const opts = {credentials: 'omit', signal: ctrl.signal, headers: {'Accept': 'text/html'}};
+      let res = await n.fetch(url, opts);
+      if (res.status >= 500) { await new Promise(r => setTimeout(r, 2000)); res = await n.fetch(url, opts); }
+      if (!res.ok) throw new Error(`MSDS 서버 응답 ${res.status} (KOSHA). 잠시 후 다시 시도해주세요.`);
       return await res.text();
     } catch (e) {
-      if (e && e.name === 'AbortError') throw new Error('KOSHA 서버 응답이 늦어 검색을 중단했습니다.');
+      if (e && e.name === 'AbortError') throw new Error('MSDS 서버(KOSHA) 응답이 늦어 검색을 중단했습니다.');
       throw e;
     } finally { clearTimeout(timer); }
   }
