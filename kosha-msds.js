@@ -22,11 +22,15 @@ const CLEAN_CSS = `
   .kdoc h2{font-size:11.5px;margin:8px 0 3px;padding:3px 7px;background:#eef3fa;border-left:3px solid #1b5e9e;color:#0f3b6e;page-break-after:avoid;break-after:avoid}
   .kdoc ul,.kdoc dl{margin:0;padding:0;list-style:none}
   .kdoc .List01>li{font-weight:700;margin:4px 0 1px 2px}
-  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:1px 0 2px 10px;display:grid;grid-template-columns:minmax(6em,max-content) 1fr;column-gap:8px;row-gap:0}
-  .kdoc dt{grid-column:1;font-weight:700;color:#1b5e9e;margin:0;padding:1px 0}
-  .kdoc dd{grid-column:2;margin:0;padding:1px 0;color:#222}
+  /* 항목명(dt)은 왼쪽에 띄우고 내용(dd)은 오른쪽에. grid는 쪽 나눔이 안 돼 float로 둔다. */
+  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:1px 0 2px 10px;overflow:visible}
+  .kdoc .List02::after,.kdoc .List03::after,.kdoc .List04::after{content:'';display:block;clear:both}
+  .kdoc dt{float:left;clear:left;min-width:7.5em;white-space:nowrap;font-weight:700;color:#1b5e9e;margin:0;padding:1px 8px 1px 0;break-after:avoid;page-break-after:avoid}
+  .kdoc dd{margin:0 0 0 7.5em;padding:1px 0;color:#222;min-height:1.3em}
+  .kdoc dd dl{margin-left:0}
   .kdoc dd:empty{display:none}
-  .kdoc dt,.kdoc .List01>li{break-after:avoid}
+  .kdoc .kh{font-weight:700;break-after:avoid;page-break-after:avoid}
+  .kdoc .List01>li{break-inside:auto}
   .kdoc img[src*="/ghs/"]{width:44px;height:44px;margin:2px 6px 1px 0;vertical-align:middle}
   .kdoc table{border-collapse:collapse;width:100%;margin:3px 0 4px;font-size:10px}
   .kdoc th,.kdoc td{border:1px solid #b9c3d0;padding:2px 6px;text-align:left;vertical-align:top}
@@ -46,6 +50,8 @@ const BUILD_DOC = `(() => {
     const body = h.nextElementSibling; if (!body || !body.classList.contains('ListConts')) return;
     body.querySelectorAll('.ViewBtnArea, script').forEach(e => e.remove());
     body.querySelectorAll('a').forEach(a => { const t = document.createTextNode(a.textContent); a.replaceWith(t); });
+    // 항목 제목(가./나.)을 블록으로 감싸 다음 쪽으로 홀로 밀리지 않게 한다.
+    body.querySelectorAll('.List01 > li').forEach(li => { const head = document.createElement('div'); head.className = 'kh'; while (li.firstChild && !(li.firstChild.nodeType === 1 && /^(DL|UL|DIV|TABLE)$/.test(li.firstChild.tagName))) head.appendChild(li.firstChild); if (head.textContent.trim()) li.insertBefore(head, li.firstChild); });
     sections.push('<section><h2>' + esc(h.textContent.trim()) + '</h2><div class="kbody">' + body.innerHTML + '</div></section>');
   });
   if (!sections.length) return false;
