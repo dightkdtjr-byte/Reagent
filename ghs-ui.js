@@ -342,13 +342,23 @@
         if(!lastExtract.empty)info.append(E('p',(r.pictogramSource==='from-h'?'그림문자는 H코드로 추정했습니다. ':'')+'저장 전에 MSDS 2절과 한 번 비교하세요.','hint'));
         box.append(info);
       }
-      // 그림문자
+      // 꼭 필요한 것만 위에: 저장/취소, 그림문자, 신호어, H코드. 나머지는 '자세한 정보'로 접는다.
+      const topActions=E('div',undefined,'msds-actions ghs-actions ghs-actions-top');
+      const cancel=()=>{editing=false;draft=null;lastExtract=null;reviewMode=false;draw();};
+      topActions.append(E('strong','GHS 편집','ghs-edit-title'),button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('취소',cancel));
+      box.append(topActions);
       box.append(E('p','그림문자 (해당하는 것을 모두 선택)','ghs-section-title'));
       const grid=E('div',undefined,'ghs-picto-grid');
-      for(const code of CODES){const b=E('button',undefined,'ghs-picto');b.type='button';b.dataset.code=code;b.innerHTML=iconImg(code,46,'ghs-picto-img')+`<span>${esc(code)}</span><small>${esc(D.PICTOGRAMS[code].label)}</small>`;b.title=D.PICTOGRAMS[code].desc;const sync=()=>{const on=draft.pictograms.includes(code);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));};sync();b.onclick=()=>{const i=draft.pictograms.indexOf(code);if(i>=0)draft.pictograms.splice(i,1);else draft.pictograms.push(code);draft.pictograms.sort((a,b)=>CODES.indexOf(a)-CODES.indexOf(b));sync();};grid.append(b);}
+      for(const code of CODES){const b=E('button',undefined,'ghs-picto');b.type='button';b.dataset.code=code;b.innerHTML=iconImg(code,40,'ghs-picto-img')+`<span>${esc(code)}</span><small>${esc(D.PICTOGRAMS[code].label)}</small>`;b.title=D.PICTOGRAMS[code].desc||D.PICTOGRAMS[code].label;const sync=()=>{const on=draft.pictograms.includes(code);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));};sync();b.onclick=()=>{const i=draft.pictograms.indexOf(code);if(i>=0)draft.pictograms.splice(i,1);else draft.pictograms.push(code);draft.pictograms.sort((a,b)=>CODES.indexOf(a)-CODES.indexOf(b));sync();};grid.append(b);}
       box.append(grid);
-      const fg=E('div',undefined,'field-grid ghs-field-grid');
       const signal=E('select');for(const [v,t] of [['','(미지정)'],['Danger','위험 (Danger)'],['Warning','경고 (Warning)'],['None','신호어 없음']]){const o=E('option',t);o.value=v;signal.append(o);}signal.value=draft.signalWord;signal.onchange=()=>{draft.signalWord=signal.value;};
+      const core=E('div',undefined,'field-grid ghs-field-grid');core.append(field('신호어',signal));box.append(core);
+      const hp=codePicker('H',draft.hCodes,'유해·위험 문구 (H코드)','코드나 문구로 검색해 추가합니다.');
+      const suggest=button('H코드로 그림문자·신호어 제안',()=>{if(!draft.hCodes.length){toast('먼저 H코드를 추가하세요.',true);return;}const s=D.suggestFromH(draft.hCodes);draft.pictograms=s.pictograms;draft.signalWord=s.signalWord;draw();toast(`그림문자 ${s.pictograms.length}개 · 신호어 ${D.SIGNAL[s.signalWord]||'미지정'}으로 채웠습니다.`);});
+      hp.querySelector('.ghs-picker-head').append(suggest);box.append(hp);
+      // 자세한 정보 (접힘)
+      const more=E('details',undefined,'ghs-more');const filled=[draft.hazardClasses,draft.sourceNote,draft.msdsRevision,draft.note].some(v=>String(v||'').trim())||draft.pCodes.length;more.open=false;
+      more.append(E('summary',`자세한 정보 — P코드 ${draft.pCodes.length}개 · MSDS 날짜·출처·메모${filled?' (입력 있음)':''}`));
       const source=E('select');for(const [v,t] of [['','(선택)'],['supplier','공급자(제조사) MSDS'],['kosha','받은 MSDS (안전보건공단 KOSHA)'],['catalog','검토 SDS 자료(프로그램 내장)'],['other','기타']]){const o=E('option',t);o.value=v;source.append(o);}source.value=draft.source;source.onchange=()=>{draft.source=source.value;};
       const sourceNote=E('input');sourceNote.type='text';sourceNote.value=draft.sourceNote;sourceNote.placeholder='예: Sigma-Aldrich SDS 2024-03 개정본';sourceNote.maxLength=200;sourceNote.oninput=()=>{draft.sourceNote=sourceNote.value;};
       const classes=E('input');classes.type='text';classes.value=draft.hazardClasses;classes.placeholder='예: 인화성 액체 구분 2; 눈 자극성 구분 2A';classes.maxLength=500;classes.oninput=()=>{draft.hazardClasses=classes.value;};
@@ -356,15 +366,16 @@
       const rev=E('input');rev.type='text';rev.value=draft.msdsRevision;rev.placeholder='예: Rev. 6';rev.maxLength=40;rev.oninput=()=>{draft.msdsRevision=rev.value;};
       const reviewedWrap=E('div',undefined,'ghs-date-row'),reviewed=E('input');reviewed.type='date';reviewed.value=draft.msdsReviewedAt;reviewed.onchange=()=>{draft.msdsReviewedAt=reviewed.value;};reviewedWrap.append(reviewed,button('오늘',()=>{reviewed.value=today();draft.msdsReviewedAt=reviewed.value;}));
       const note=E('textarea');note.rows=2;note.value=draft.note;note.placeholder='예: 보관 시 산화제와 분리, 국소배기 하에서 취급';note.maxLength=1000;note.oninput=()=>{draft.note=note.value;};
-      fg.append(field('신호어',signal),field('유해·위험성 분류 (MSDS 2절)',classes),field('GHS 정보 출처',source),field('출처 메모',sourceNote),field('MSDS 작성·개정일',issued),field('MSDS 개정번호',rev),field('MSDS 검토일 (비치 자료 확인일)',reviewedWrap),field('취급·보관 메모',note,true));
-      box.append(fg);
-      const hp=codePicker('H',draft.hCodes,'유해·위험 문구 (H코드)','코드나 문구로 검색해 추가합니다.');
-      const suggest=button('H코드로 그림문자·신호어 제안',()=>{if(!draft.hCodes.length){toast('먼저 H코드를 추가하세요.',true);return;}const s=D.suggestFromH(draft.hCodes);draft.pictograms=s.pictograms;draft.signalWord=s.signalWord;draw(true);toast(`제안: ${s.pictograms.join(', ')||'그림문자 없음'} · ${D.SIGNAL[s.signalWord]||'신호어 미지정'}. 혼합물·구분에 따라 다를 수 있으니 MSDS와 대조하세요.`);});
-      hp.querySelector('.ghs-picker-head').append(suggest);box.append(hp);
-      box.append(codePicker('P',draft.pCodes,'예방조치 문구 (P코드)','선택 사항. 라벨·교육용으로 주요 문구만 입력해도 됩니다.'));
+      more.append(codePicker('P',draft.pCodes,'예방조치 문구 (P코드)','선택 사항. 라벨·교육용으로 주요 문구만 입력해도 됩니다.'));
+      const fg=E('div',undefined,'field-grid ghs-field-grid');
+      fg.append(field('유해·위험성 분류 (MSDS 2절)',classes,true),field('MSDS 작성·개정일',issued),field('MSDS 검토일 (비치 자료 확인일)',reviewedWrap),field('MSDS 개정번호',rev),field('GHS 정보 출처',source),field('출처 메모',sourceNote,true),field('취급·보관 메모',note,true));
+      more.append(fg);
+      const extra=E('div',undefined,'msds-actions ghs-actions');
+      extra.append(button('KOSHA 검색',()=>lookup('kosha')),button('PubChem',()=>lookup('pubchem')));
+      if(item.ghs)extra.append(button('GHS 정보 지우기',()=>{if(confirm('이 품목의 GHS 분류·MSDS 정보를 모두 지울까요?\n첨부된 MSDS PDF는 지워지지 않습니다.'))commit(null);},'danger'));
+      more.append(extra);box.append(more);
       const actions=E('div',undefined,'msds-actions ghs-actions');
-      actions.append(button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('취소',()=>{editing=false;draft=null;lastExtract=null;reviewMode=false;draw();}),button('KOSHA 검색',()=>lookup('kosha')),button('PubChem',()=>lookup('pubchem')));
-      if(item.ghs)actions.append(button('GHS 정보 지우기',()=>{if(confirm('이 품목의 GHS 분류·MSDS 정보를 모두 지울까요?\n첨부된 MSDS PDF는 지워지지 않습니다.'))commit(null);},'danger'));
+      actions.append(button('저장',()=>commit(D.normalizeGHS(draft)),'primary'),button('취소',cancel));
       box.append(actions);
       return box;
     }

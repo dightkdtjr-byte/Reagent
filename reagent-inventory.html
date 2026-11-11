@@ -278,6 +278,13 @@
 
   .log-list{margin-top:16px;}
   .log-list h4{font-size:12.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin:0 0 8px;}
+  /* 상세 창: 기본 정보 · GHS · MSDS · 입고회차 · 입출고 내역을 칸으로 나눠 구분한다 */
+  #detail-modal-box .detail-section-title,#detail-modal-box .log-list>h4,#detail-modal-box .log-list .msds-heading h4{font-size:13.5px;font-weight:800;color:var(--ink);text-transform:none;letter-spacing:0;margin:0 0 10px;padding:0 0 0 10px;border-left:4px solid var(--teal);line-height:1.25}
+  #detail-modal-box .detail-section-title{margin-top:16px}
+  #detail-modal-box .field-grid{margin-top:10px}
+  #detail-modal-box .log-list{margin-top:16px;padding:14px 14px 12px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--surface) 94%,var(--line))}
+  #detail-modal-box .log-list[hidden]{display:none}
+  #detail-modal-box .detail-actions{margin-top:18px;padding-top:14px;border-top:2px solid var(--line)}
   .log-item{
     display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0;
     border-bottom:1px solid var(--line); color:var(--ink-soft);
@@ -1084,11 +1091,14 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 .ghs-inline-class{font-size:12px;color:var(--ink-soft)}
 .ghs-inline-h{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:12px;color:var(--ink-soft)}
 .ghs-section-title{margin:8px 0 6px;font-size:12px;font-weight:700;color:var(--ink-soft)}
-.ghs-picto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
-.ghs-picto{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:2px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--ink)}
+.ghs-picto-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px}
+@media(max-width:700px){.ghs-picto-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.ghs-actions-top{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}.ghs-actions-top .ghs-edit-title{margin-right:auto;font-size:13px}
+.ghs-more{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface)}.ghs-more>summary{cursor:pointer;font-weight:700;font-size:12.5px;color:var(--ink-soft);padding:4px 0}.ghs-more[open]>summary{margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:8px}.ghs-more .ghs-picker{margin-top:6px}
+.ghs-picto{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border:2px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--ink)}
 .ghs-picto.on{border-color:var(--red);background:var(--red-tint);box-shadow:0 0 0 2px rgba(229,72,77,.15)}
 .ghs-picto img{opacity:.5}.ghs-picto.on img{opacity:1}
-.ghs-picto span{font-size:11px;font-weight:700}.ghs-picto small{font-size:10.5px;color:var(--ink-soft)}
+.ghs-picto span{font-size:10px;font-weight:700}.ghs-picto small{font-size:9.5px;color:var(--ink-soft);white-space:nowrap}
 .ghs-field-grid{margin-top:10px}
 .ghs-field-grid input,.ghs-field-grid select,.ghs-field-grid textarea{width:100%;box-sizing:border-box}
 .ghs-date-row{display:flex;gap:6px;align-items:center}.ghs-date-row input{flex:1}.ghs-date-row button{padding:6px 10px;font-size:12px;white-space:nowrap}
@@ -1206,7 +1216,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.19</div>
+        <div class="work-version">v3.13.20</div>
       </div>
 </aside>
   </div>
@@ -1536,7 +1546,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.19<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.20<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1609,7 +1619,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.19';
+  const APP_VERSION = '3.13.20';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -3126,6 +3136,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
           ${window.GHSUI.headerHtml(r,settings())}
         </div>
       </div>
+      <h4 class="detail-section-title">기본 정보</h4>
       <div class="field-grid">
         <div><label>${catLabel(r.category)}명</label><input type="text" id="d-name" value="${escapeHtml(r.name)}"></div>
         <div><label>영문명</label><input type="text" id="d-name-en" value="${escapeHtml(r.nameEn||'')}"></div>
