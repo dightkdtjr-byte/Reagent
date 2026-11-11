@@ -80,12 +80,13 @@
       const meta=[docSource(doc),doc.koshaRevisedAt?`원문 개정 ${doc.koshaRevisedAt}`:'',`첨부 ${String(doc.addedAt||'').slice(0,10)}`,`${(doc.size/1048576).toFixed(1)} MB`,doc.file?`파일 ${doc.file}`:''].filter(Boolean).join(' · ');
       const metaEl=E('div',meta,'hint');info.append(metaEl);
       const actions=E('div',undefined,'msds-actions');
-      actions.append(button('미리보기',()=>preview(doc),'primary'),button('내보내기',()=>exportDoc(doc)));
+      const del=button('삭제',async()=>{if(state.busy)return;if(!confirm(`이 MSDS를 삭제할까요?\n\n${doc.fileName}\n\n품목에서 떼어내고, 다른 품목이 쓰지 않는 파일이면 PDF 원본과 백업 사본도 지웁니다.`))return;try{const r=await window.MSDSUI.removeDocument(item,doc,{getItems:items,save:saveItem});toast(r.fileDeleted?`${item.id}: MSDS를 삭제했습니다 (PDF 파일 포함).`:`${item.id}: MSDS를 뗐습니다. 다른 품목이 쓰는 파일이라 PDF는 남겨두었습니다.`);}catch(e){toast('MSDS 삭제 실패: '+String(e.message||e),true);}draw();},'danger');del.dataset.busyLock='1';
+      actions.append(button('미리보기',()=>preview(doc),'primary'),button('내보내기',()=>exportDoc(doc)),del);
       row.append(info,actions);
       // 원본 PDF가 없으면 버튼을 바꾼다: KOSHA 문서는 다시 받기, 직접 첨부는 안내만.
       row.dataset.check='1';row._check=(available,error)=>{if(available)return;metaEl.textContent=`파일 없음 또는 손상 · ${meta}`;metaEl.classList.add('msds-error');metaEl.title=error||'';actions.replaceChildren();
         if(doc.koshaChemId){const b=button('다시 받기',()=>refetch(item,doc),'primary');b.title='같은 물질의 MSDS를 다시 받아 이 문서를 교체합니다 (안전보건공단 KOSHA)';b.dataset.busyLock='1';actions.append(b);}
-        else actions.append(E('span','PDF를 다시 첨부해주세요 (품목 열기 → PDF 첨부).','hint'));};
+        else actions.append(E('span','PDF를 다시 첨부해주세요 (품목 열기 → PDF 첨부).','hint'));actions.append(del);};
       return row;
     }
     // 표를 그린 뒤 원본 파일 유무를 확인해 없는 문서만 표시를 바꾼다.

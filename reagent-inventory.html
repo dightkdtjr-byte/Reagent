@@ -1206,7 +1206,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v3.13.18</div>
+        <div class="work-version">v3.13.19</div>
       </div>
 </aside>
   </div>
@@ -1536,7 +1536,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v3.13.18<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v3.13.19<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1609,7 +1609,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '3.13.18';
+  const APP_VERSION = '3.13.19';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1700,8 +1700,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         const d=docs[i];if(!d||!d.sha256)continue;
         const want=msdsFriendlyName(r.id,r.name,r.casNo);
         if(!want||d.file===want||(d.file&&d.file.startsWith(want.replace(/\.pdf$/,'_'))))continue;
-        try{const res=await window.inventoryMSDS.relabel(d,{itemId:r.id,name:r.name,casNo:r.casNo});if(res?.ok&&res.document)docs[i]=res.document;}
-        catch(e){console.error('msds relabel failed',r.id,e);}
+        // 같은 PDF를 여러 품목이 쓰면 파일은 하나다. 다른 품목 이름이 이미 붙어 있으면 그대로 둔다 (이름이 번갈아 바뀌는 것을 막음).
+        if(d.file&&!d.file.startsWith(r.id+'_'))continue;
+        try{
+          const res=await window.inventoryMSDS.relabel(d,{itemId:r.id,name:r.name,casNo:r.casNo});
+          if(res?.ok&&res.document){docs[i]=res.document;for(const o of DB.reagents||[])for(const od of o.msdsDocuments||[])if(od.sha256===d.sha256&&od.file!==res.document.file)od.file=res.document.file;}
+        }catch(e){console.error('msds relabel failed',r.id,e);}
       }
     }
   }
@@ -3159,7 +3163,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </div>
     `);
     window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();}});
-    window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm});
+    window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
     document.querySelectorAll('#detail-modal-box .history-delete-btn').forEach(btn=>{btn.onclick=async()=>{
       if(btn.disabled)return;

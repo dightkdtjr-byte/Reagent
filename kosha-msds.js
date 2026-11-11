@@ -9,31 +9,31 @@ const SEARCH_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdssearchMsds.do?sea
 const DETAIL_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdsdetail.do';
 // 받은 페이지를 우리 서식으로 다시 그린다. 사이트의 메뉴·배경선·버튼을 걷어내고 16개 절만 A4 문서로 만든다.
 const CLEAN_CSS = `
-  @page{size:A4;margin:0}
+  @page{size:A4;margin:11mm 11mm 12mm}
   html,body{margin:0;padding:0;background:#fff!important;color:#111}
-  body{font:11.5px/1.55 "Malgun Gothic","맑은 고딕",NanumGothic,"Apple SD Gothic Neo",sans-serif}
-  .kdoc{padding:4mm 2mm}
-  .kdoc header{border-bottom:2px solid #1b5e9e;padding:0 0 8px;margin:0 0 14px}
-  .kdoc .ksrc{font-size:10.5px;color:#555;margin-bottom:6px}
-  .kdoc h1{font-size:20px;margin:0 0 6px;color:#0f3b6e}
-  .kdoc .kids{font-size:11px;color:#333}.kdoc .kids span{display:inline-block;margin-right:14px}.kdoc .kids b{color:#1b5e9e;margin-right:4px}
-  .kdoc .kstamp{font-size:10.5px;color:#666;margin-top:4px}
-  .kdoc section{margin:0 0 12px;page-break-inside:auto}
-  .kdoc h2{font-size:13.5px;margin:14px 0 6px;padding:5px 8px;background:#eef3fa;border-left:4px solid #1b5e9e;color:#0f3b6e;page-break-after:avoid;break-after:avoid}
+  body{font:10px/1.42 "Malgun Gothic","맑은 고딕",NanumGothic,"Apple SD Gothic Neo",sans-serif}
+  .kdoc{padding:0}
+  .kdoc header{border-bottom:2px solid #1b5e9e;padding:0 0 6px;margin:0 0 8px}
+  .kdoc .ksrc{font-size:9.5px;color:#555;margin-bottom:3px}
+  .kdoc h1{font-size:17px;margin:0 0 4px;color:#0f3b6e}
+  .kdoc .kids{font-size:10px;color:#333}.kdoc .kids span{display:inline-block;margin-right:12px}.kdoc .kids b{color:#1b5e9e;margin-right:3px}
+  .kdoc .kstamp{font-size:9.5px;color:#666;margin-top:3px}
+  .kdoc section{margin:0 0 4px;page-break-inside:auto}
+  .kdoc h2{font-size:11.5px;margin:8px 0 3px;padding:3px 7px;background:#eef3fa;border-left:3px solid #1b5e9e;color:#0f3b6e;page-break-after:avoid;break-after:avoid}
   .kdoc ul,.kdoc dl{margin:0;padding:0;list-style:none}
-  .kdoc .List01>li{font-weight:700;margin:8px 0 2px 2px}
-  .kdoc dt,.kdoc .List01>li>dl{break-after:avoid}.kdoc dd{orphans:2;widows:2}
-  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:2px 0 4px 16px}
-  .kdoc dt{font-weight:700;color:#1b5e9e;margin:5px 0 1px}
-  .kdoc dd{margin:0 0 1px 12px;color:#222}
+  .kdoc .List01>li{font-weight:700;margin:4px 0 1px 2px}
+  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:1px 0 2px 10px;display:grid;grid-template-columns:minmax(6em,max-content) 1fr;column-gap:8px;row-gap:0}
+  .kdoc dt{grid-column:1;font-weight:700;color:#1b5e9e;margin:0;padding:1px 0}
+  .kdoc dd{grid-column:2;margin:0;padding:1px 0;color:#222}
   .kdoc dd:empty{display:none}
-  .kdoc img[src*="/ghs/"]{width:58px;height:58px;margin:4px 8px 2px 0;vertical-align:middle}
-  .kdoc table{border-collapse:collapse;width:100%;margin:4px 0 6px;font-size:11px}
-  .kdoc th,.kdoc td{border:1px solid #b9c3d0;padding:4px 7px;text-align:left;vertical-align:top}
+  .kdoc dt,.kdoc .List01>li{break-after:avoid}
+  .kdoc img[src*="/ghs/"]{width:44px;height:44px;margin:2px 6px 1px 0;vertical-align:middle}
+  .kdoc table{border-collapse:collapse;width:100%;margin:3px 0 4px;font-size:10px}
+  .kdoc th,.kdoc td{border:1px solid #b9c3d0;padding:2px 6px;text-align:left;vertical-align:top}
   .kdoc th{background:#f3f6fa;font-weight:700;white-space:nowrap}
   .kdoc tr{page-break-inside:avoid}
   .kdoc .ViewBtnArea,.kdoc .ViewBtn,.kdoc script,.kdoc iframe{display:none!important}
-  .kdoc footer{margin-top:16px;padding-top:6px;border-top:1px solid #ccc;font-size:10px;color:#666}
+  .kdoc footer{margin-top:10px;padding-top:4px;border-top:1px solid #ccc;font-size:9px;color:#666}
 `;
 // 페이지 안에서 실행: 절 제목과 내용을 모아 새 본문을 만든다.
 const BUILD_DOC = `(() => {
@@ -139,7 +139,7 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       await win.webContents.insertCSS(CLEAN_CSS);
       await new Promise(r => setTimeout(r, 400));
       const pdf = await Promise.race([
-        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'custom', top: 0.55, bottom: 0.55, left: 0.6, right: 0.6}, preferCSSPageSize: false}),
+        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'none'}, preferCSSPageSize: true}),
         timeout(60000, 'PDF 변환이 끝나지 않았습니다.')
       ]);
       if (!Buffer.isBuffer(pdf) || pdf.length < 1000 || !/^%PDF-/.test(pdf.subarray(0, 5).toString('ascii'))) throw new Error('PDF 변환 결과가 올바르지 않습니다.');

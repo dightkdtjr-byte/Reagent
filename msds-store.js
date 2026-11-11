@@ -159,21 +159,44 @@ function createMSDSStore(getDataDir, options = {}) {
     atomicBytes(target, bytes);
     return {ok: true, path: target};
   }
+  // 첨부 PDF 사본을 backups/msds에 맞춘다. 원본이 없는 문서는 건너뛰고(이미 '파일 없음'으로 표시됨) 나머지는 계속 복사한다.
+  // 복사 자체가 실패한 경우(디스크·권한 문제)에만 오류를 낸다.
   function ensureBackup(inventory) {
     const docs = references(inventory);
-    if (!docs.length) return {documents: 0};
+    if (!docs.length) return {documents: 0, copied: 0, missing: [], failed: []};
     const dest = backupDirectory();
+    const missing = [], failed = [];
+    let copied = 0;
     for (const doc of docs) {
       try { checkedFile(dest, doc); continue; } catch {}
+      let source;
+      try { source = checkedFile(directory(), doc); } catch { missing.push(doc.fileName); continue; }
       try {
-        const {bytes} = checkedFile(directory(), doc);
-        atomicBytes(path.join(dest, storedName(doc)), bytes);
+        atomicBytes(path.join(dest, storedName(doc)), source.bytes);
         checkedFile(dest, doc);
-      } catch (e) { throw new Error(`MSDS 백업 실패 (${doc.fileName}): ${errText(e)}`); }
+        copied++;
+      } catch (e) { failed.push(`${doc.fileName}: ${errText(e)}`); }
     }
-    return {documents: docs.length};
+    if (failed.length) throw new Error(`MSDS 사본 복사 실패 ${failed.length}개 — ${failed.slice(0, 2).join(' / ')}`);
+    return {documents: docs.length, copied, missing, failed};
   }
   // 백업 JSON이 가리키는 PDF 사본이 있는지 센다. 없는 파일은 이름만 모아 알리고 검사를 막지 않는다.
+  // 문서 파일을 지운다 (원본과 백업 사본 모두). 다른 품목이 같은 문서를 쓰는지는 호출하는 쪽에서 확인한다.
+  function deleteFile(doc) {
+    validateDocument(doc);
+    const removed = [], failed = [];
+    for (const base of [directory(), backupDirectory()]) {
+      for (const name of candidateNames(doc)) {
+        const file = path.join(base, name);
+        try { const st = fs.lstatSync(file); if (!st.isFile() || st.isSymbolicLink()) continue; }
+        catch { continue; }
+        try { verified(file, doc); } catch { continue; } // 내용이 다른 파일은 건드리지 않는다
+        try { fs.unlinkSync(file); removed.push(file); } catch (e) { failed.push(`${name}: ${errText(e)}`); }
+      }
+    }
+    if (failed.length) throw new Error('MSDS 파일 삭제 실패: ' + failed.join(' / '));
+    return {ok: true, removed: removed.length};
+  }
   function inspectBackup(inventory, base) {
     const docs = references(inventory), missing = [];
     for (const doc of docs) {
@@ -284,6 +307,6 @@ function createMSDSStore(getDataDir, options = {}) {
     const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('PDF 읽기 시간이 초과되었습니다.')), timeoutMs); });
     try { return await Promise.race([work, limit]); } finally { clearTimeout(timer); }
   }
-  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles, textOf, relabel, openPathWithBytes};
+  return {directory, backupDirectory, importFiles, list, openPath, exportFile, ensureBackup, inspectBackup, restoreFiles, pruneBackupFiles, textOf, relabel, openPathWithBytes, deleteFile};
 }
 module.exports = {friendlyName, createMSDSStore, validateDocument, validateDocuments, references, MAX_BYTES, MAX_DOCUMENTS};
