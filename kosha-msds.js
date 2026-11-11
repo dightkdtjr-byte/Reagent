@@ -191,4 +191,4 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
   }
   return {search, receive, parseList};
 }
-module.exports = {createKoshaClient, parseList, toStandard, KOSHA_PICTOGRAM, HOST};
+module.exports = {createKoshaClient, parseList, toStandard, KOSHA_PICTOGRAM, HOST, BUILD_DOC, CLEAN_CSS, DETAIL_URL};
