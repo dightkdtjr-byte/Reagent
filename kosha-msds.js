@@ -9,10 +9,10 @@ const SEARCH_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdssearchMsds.do?sea
 const DETAIL_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdsdetail.do';
 // 받은 페이지를 우리 서식으로 다시 그린다. 사이트의 메뉴·배경선·버튼을 걷어내고 16개 절만 A4 문서로 만든다.
 const CLEAN_CSS = `
-  @page{size:A4;margin:10mm 10mm 11mm}
+  /* @page 규칙은 쓰지 않는다: Windows에서 쪽 크기 지정이 있으면 내용이 위로 밀려 잘렸다. 여백은 인쇄 기본값(1cm)을 쓴다. */
   html,body{margin:0;padding:0;background:#fff!important;color:#111}
   body{font:10px/1.42 "Malgun Gothic","맑은 고딕",NanumGothic,"Apple SD Gothic Neo",sans-serif}
-  .kdoc{padding:5mm 0 2mm}
+  .kdoc{padding:2mm 0 2mm}
   .kdoc header{border-bottom:2px solid #1b5e9e;padding:0 0 6px;margin:0 0 8px}
   .kdoc .ksrc{font-size:9.5px;color:#555;margin-bottom:3px}
   .kdoc h1{font-size:17px;margin:0 0 4px;color:#0f3b6e}
@@ -163,7 +163,7 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       await win.webContents.insertCSS(CLEAN_CSS);
       await new Promise(r => setTimeout(r, 400));
       const pdf = await Promise.race([
-        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'default'}, preferCSSPageSize: true}),
+        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'default'}, preferCSSPageSize: false}),
         timeout(60000, 'PDF 변환이 끝나지 않았습니다.')
       ]);
       if (!Buffer.isBuffer(pdf) || pdf.length < 1000 || !/^%PDF-/.test(pdf.subarray(0, 5).toString('ascii'))) throw new Error('PDF 변환 결과가 올바르지 않습니다.');
