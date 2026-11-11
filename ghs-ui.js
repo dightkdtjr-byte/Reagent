@@ -172,7 +172,7 @@
   function mountDetail(opts){
     const {element,itemId,getItem,save,toast,confirm}=opts;if(!element)return;
     panels.set(element,opts);
-    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null,koshaStatus=null,reviewMode=false;
+    let editing=false,draft=null,busy=false,lastExtract=null,pickedDocId='',koshaChoices=null,koshaStatus=null,reviewMode=false,foldOpen=false;
     // 진행 상황을 패널 안에 계속 보여준다. 토스트는 금방 사라져 실패 사유를 놓치기 쉽다.
     function setKoshaStatus(text,isError){koshaStatus=text?{text,isError:!!isError}:null;const el=element.querySelector('#ghs-kosha-status');if(el){el.textContent=text||'';el.hidden=!text;el.classList.toggle('safety-warning',!!isError);}}
     const failText=(r,fallback)=>String(r?.error||fallback)+(r?.diagnostic?.hint?' — '+r.diagnostic.hint:'')+(r?.diagnostic?.code&&r.diagnostic.code!=='UNKNOWN'?' ['+r.diagnostic.code+']':'');
@@ -390,18 +390,28 @@
         if(!g.pictograms.length)sym.append(E('span','그림문자 없음','hint'));
         head.append(sym);
         const meta=E('div',undefined,'ghs-view-meta');
-        meta.innerHTML=`<div>신호어: ${signalBadge(g.signalWord)||'<span class="hint">미지정</span>'}</div>${g.hazardClasses?`<div class="ghs-classes">${esc(g.hazardClasses)}</div>`:''}`;
+        meta.innerHTML=`<div>신호어: ${signalBadge(g.signalWord)||'<span class="hint">미지정</span>'}</div>`;
         head.append(meta);box.append(head);
-        if(g.hCodes.length){const d=E('details',undefined,'safety-hazards');d.open=true;d.append(E('summary',`유해·위험 문구 ${g.hCodes.length}개`));const l=E('div');for(const c of g.hCodes)l.append(E('p',`${c} · ${D.hText(c)}`));d.append(l);box.append(d);}
-        if(g.pCodes.length){const d=E('details',undefined,'safety-hazards');d.append(E('summary',`예방조치 문구 ${g.pCodes.length}개`));const l=E('div');for(const c of g.pCodes)l.append(E('p',`${c} · ${D.pText(c)}`));d.append(l);box.append(d);}
-        if(g.note)box.append(E('p','메모: '+g.note,'hint'));
+        // 접기: 기본은 그림문자·신호어만 보이고, 펼치면 분류·H/P 문구·메모·MSDS 정보가 나온다.
+        const fold=E('details',undefined,'ghs-fold');fold.open=foldOpen;fold.ontoggle=()=>{foldOpen=fold.open;};
+        const parts=[g.hazardClasses?'분류':'',g.hCodes.length?`H ${g.hCodes.length}`:'',g.pCodes.length?`P ${g.pCodes.length}`:'',g.note?'메모':'','MSDS 정보'].filter(Boolean);
+        fold.append(E('summary',`자세히 (${parts.join(' · ')})`));
+        if(g.hazardClasses)fold.append(E('div',g.hazardClasses,'ghs-classes'));
+        if(g.hCodes.length){const d=E('details',undefined,'safety-hazards');d.open=true;d.append(E('summary',`유해·위험 문구 ${g.hCodes.length}개`));const l=E('div');for(const c of g.hCodes)l.append(E('p',`${c} · ${D.hText(c)}`));d.append(l);fold.append(d);}
+        if(g.pCodes.length){const d=E('details',undefined,'safety-hazards');d.append(E('summary',`예방조치 문구 ${g.pCodes.length}개`));const l=E('div');for(const c of g.pCodes)l.append(E('p',`${c} · ${D.pText(c)}`));d.append(l);fold.append(d);}
+        if(g.note)fold.append(E('p','메모: '+g.note,'hint'));
+        fold.append(msdsInfo(item,g,st));box.append(fold);
+        return box;
       }
+      box.append(msdsInfo(item,g,st));
+      return box;
+    }
+    function msdsInfo(item,g,st){
       const src={supplier:'공급자(제조사) MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS 자료',other:'기타'}[g?.source]||'';
       const info=E('div',undefined,'ghs-msds-info');
       const bits=[`MSDS 첨부 ${st.attached}개`,g?.msdsIssuedAt?`작성·개정일 ${g.msdsIssuedAt}${g.msdsRevision?' ('+g.msdsRevision+')':''}`:'',g?.msdsReviewedAt?`검토일 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',src?`출처 ${src}${g.sourceNote?' · '+g.sourceNote:''}`:''].filter(Boolean);
       info.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'?'warn':st.state==='none'?'':'ok'}">${esc(st.label)}</span> <span class="hint">${esc(bits.join(' · '))}</span>`;
-      box.append(info);
-      return box;
+      return info;
     }
     async function draw(keepScroll){
       if(!alive())return;
