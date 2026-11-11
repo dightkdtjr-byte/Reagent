@@ -1,0 +1,43 @@
+name: MSDS Windows 테스트
+
+# Windows에서 실제로 KOSHA MSDS를 받아 PDF를 만들고 아티팩트로 올린다 (서식 확인용).
+on:
+  workflow_dispatch:
+    inputs:
+      cas:
+        description: 'CAS 번호'
+        required: false
+        default: '7722-64-7'
+      name:
+        description: '물질명'
+        required: false
+        default: '과망간산칼륨'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        shell: bash
+        run: |
+          for i in 1 2 3; do npm ci && break; echo "retry $i"; rm -rf node_modules; sleep 20; done
+          npm install --no-save playwright@1.63.0
+      - name: Run MSDS fetch
+        shell: bash
+        env:
+          CAS: ${{ github.event.inputs.cas }}
+          NAME: ${{ github.event.inputs.name }}
+        run: |
+          node scripts/win-msds-test.js node_modules/electron/dist/electron.exe . "$CAS" "$NAME" out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msds-pdf
+          path: out/pdf/*.pdf
+          if-no-files-found: error
