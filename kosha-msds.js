@@ -77,6 +77,11 @@ const BUILD_DOC = `(() => {
   const html = '<div class="kdoc"><header><div class="ksrc">물질안전보건자료 (MSDS) · 출처: 안전보건공단 화학물질정보 (msds.kosha.or.kr)</div><h1>' + esc(name.trim()) + '</h1><div class="kids">' + ids.join('') + '</div><div class="kstamp">받은 날짜 ' + stamp + ' · 본 자료는 안전보건공단이 제공하는 물질 기준 MSDS입니다. 제품 고유 정보는 제조사 MSDS를 확인하세요.</div></header>' + sections.join('') + '<footer>안전보건공단 화학물질정보 · ' + esc(name.trim()) + ' · 받은 날짜 ' + stamp + '</footer></div>';
   document.querySelectorAll('link[rel=stylesheet], style').forEach(e => e.remove());
   document.body.innerHTML = html; document.body.removeAttribute('class'); document.body.removeAttribute('style');
+  // 그림문자 등 이미지를 문서 안에 심는다 (새 창에서 인쇄할 때 네트워크 없이도 보이도록). 실패하면 절대 주소로 둔다.
+  document.body.querySelectorAll('img').forEach(img => {
+    const abs = img.src; img.setAttribute('src', abs);
+    try { if (img.complete && img.naturalWidth > 0) { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0); img.setAttribute('src', c.toDataURL('image/png')); } } catch (e) {}
+  });
   return true;
 })()`;
 const CAS_RE = /^\d{2,7}-\d{2}-\d$/;
@@ -132,6 +137,19 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
     return {ok: true, query: q, rows: exact.length ? exact : rows, exactCas: exact.length > 0, total: rows.length};
   }
   function timeout(ms, message) { return new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms)); }
+  // 정리된 HTML 문서를 깨끗한 숨김 창에 띄워 A4 PDF로 만든다.
+  async function printDocument(docHtml) {
+    const docWin = new BrowserWindow({show: false, width: 960, height: 900, webPreferences: {sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: false, images: true, webSecurity: true, backgroundThrottling: false}});
+    try {
+      docWin.webContents.setWindowOpenHandler(() => ({action: 'deny'}));
+      await Promise.race([docWin.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(docHtml)), timeout(30000, 'MSDS 문서를 여는 데 시간이 너무 오래 걸립니다.')]);
+      await new Promise(r => setTimeout(r, 300));
+      return await Promise.race([
+        docWin.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'default'}, preferCSSPageSize: false}),
+        timeout(60000, 'PDF 변환이 끝나지 않았습니다.')
+      ]);
+    } finally { try { if (!docWin.isDestroyed()) docWin.destroy(); } catch {} }
+  }
   // 상세 페이지를 숨김 창에 띄워 16개 절을 모두 펼친 뒤 A4 PDF로 저장하고, 본문 텍스트에서 GHS 항목을 읽는다.
   async function receive(chemId, meta = {}) {
     if (!/^\d{1,12}$/.test(String(chemId || ''))) throw new Error('KOSHA 물질 ID가 올바르지 않습니다.');
@@ -160,12 +178,11 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       // 사이트 서식 대신 우리 서식으로 본문을 다시 만든 뒤 PDF로 저장한다.
       const rebuilt = await Promise.race([win.webContents.executeJavaScript(BUILD_DOC, true), timeout(15000, 'KOSHA 페이지를 문서로 정리하지 못했습니다.')]);
       if (!rebuilt) throw new Error('KOSHA MSDS 절 구성을 찾지 못했습니다. 사이트 구조가 바뀌었을 수 있습니다.');
-      await win.webContents.insertCSS(CLEAN_CSS);
-      await new Promise(r => setTimeout(r, 400));
-      const pdf = await Promise.race([
-        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'default'}, preferCSSPageSize: false}),
-        timeout(60000, 'PDF 변환이 끝나지 않았습니다.')
-      ]);
+      // 정리한 본문을 새 창에 따로 띄워 인쇄한다. KOSHA 페이지 창에서 바로 인쇄하면 Windows에서 창 크기 축소·스크롤 때문에
+      // 쪽 내용이 밀려 잘리는 일이 있었다 (새 창 방식은 Windows·Linux 모두에서 확인됨).
+      const bodyHtml = await Promise.race([win.webContents.executeJavaScript('document.body.innerHTML', true), timeout(15000, 'KOSHA 문서를 읽지 못했습니다.')]);
+      const docHtml = '<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>' + String(info.title || 'MSDS').replace(/[<>&]/g, '') + '</title><style>' + CLEAN_CSS + '</style></head><body>' + bodyHtml + '</body></html>';
+      const pdf = await printDocument(docHtml);
       if (!Buffer.isBuffer(pdf) || pdf.length < 1000 || !/^%PDF-/.test(pdf.subarray(0, 5).toString('ascii'))) throw new Error('PDF 변환 결과가 올바르지 않습니다.');
       const temp = path.join(msds.directory(), 'kosha-' + crypto.randomBytes(5).toString('hex') + '.pdf');
       let imported;
