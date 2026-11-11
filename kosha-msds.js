@@ -22,13 +22,13 @@ const CLEAN_CSS = `
   .kdoc h2{font-size:11.5px;margin:8px 0 3px;padding:3px 7px;background:#eef3fa;border-left:3px solid #1b5e9e;color:#0f3b6e;page-break-after:avoid;break-after:avoid}
   .kdoc ul,.kdoc dl{margin:0;padding:0;list-style:none}
   .kdoc .List01>li{font-weight:700;margin:4px 0 1px 2px}
-  /* 항목명(dt)은 왼쪽에 띄우고 내용(dd)은 오른쪽에. grid는 쪽 나눔이 안 돼 float로 둔다. */
-  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:1px 0 2px 10px;overflow:visible}
-  .kdoc .List02::after,.kdoc .List03::after,.kdoc .List04::after{content:'';display:block;clear:both}
-  .kdoc dt{float:left;clear:left;min-width:7.5em;white-space:nowrap;font-weight:700;color:#1b5e9e;margin:0;padding:1px 8px 1px 0;break-after:avoid;page-break-after:avoid}
-  .kdoc dd{margin:0 0 0 7.5em;padding:1px 0;color:#222;min-height:1.3em}
-  .kdoc dd dl{margin-left:0}
-  .kdoc dd:empty{display:none}
+  /* 항목명/내용은 표로 바꿔 놓는다 (grid·float는 쪽 나눔에서 내용이 밀리거나 사라졌음). */
+  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:1px 0 2px 10px}
+  .kdoc table.kdl{border-collapse:collapse;width:100%;margin:0;font-size:10px}
+  .kdoc table.kdl th,.kdoc table.kdl td{border:0;padding:1px 6px 1px 0;text-align:left;vertical-align:top;background:none;font-weight:400;white-space:normal}
+  .kdoc table.kdl th{width:7.5em;font-weight:700;color:#1b5e9e;white-space:nowrap}
+  .kdoc table.kdl td table.kdl{margin:0}
+  .kdoc table.kdl tr{page-break-inside:avoid;break-inside:avoid}
   .kdoc .kh{font-weight:700;break-after:avoid;page-break-after:avoid}
   .kdoc .List01>li{break-inside:auto}
   .kdoc img[src*="/ghs/"]{width:44px;height:44px;margin:2px 6px 1px 0;vertical-align:middle}
@@ -51,6 +51,24 @@ const BUILD_DOC = `(() => {
     body.querySelectorAll('.ViewBtnArea, script').forEach(e => e.remove());
     body.querySelectorAll('a').forEach(a => { const t = document.createTextNode(a.textContent); a.replaceWith(t); });
     // 항목 제목(가./나.)을 블록으로 감싸 다음 쪽으로 홀로 밀리지 않게 한다.
+    // dl(dt/dd) → 표. dt는 항목명 칸, 이어지는 dd는 같은 항목의 내용 줄. dt 없이 시작하는 dd는 두 칸을 합친다.
+    const toTable = dl => {
+      const t = document.createElement('table'); t.className = 'kdl'; const tb = document.createElement('tbody'); t.appendChild(tb);
+      let pending = null;
+      for (const ch of [...dl.children]) {
+        if (ch.tagName === 'DT') { pending = ch; continue; }
+        if (ch.tagName !== 'DD') continue;
+        if (!ch.textContent.trim() && !ch.querySelector('img,table,dl')) { continue; }
+        const tr = document.createElement('tr');
+        if (pending) { const th = document.createElement('th'); th.textContent = pending.textContent.trim(); tr.appendChild(th); const td = document.createElement('td'); while (ch.firstChild) td.appendChild(ch.firstChild); tr.appendChild(td); pending = null; }
+        else { const td = document.createElement('td'); td.colSpan = 2; while (ch.firstChild) td.appendChild(ch.firstChild); tr.appendChild(td); }
+        tb.appendChild(tr);
+      }
+      if (pending) { const tr = document.createElement('tr'); const th = document.createElement('th'); th.textContent = pending.textContent.trim(); const td = document.createElement('td'); tr.appendChild(th); tr.appendChild(td); tb.appendChild(tr); }
+      dl.replaceWith(t);
+    };
+    // 안쪽 dl부터 바꾼다.
+    const dls = [...body.querySelectorAll('dl')].reverse(); dls.forEach(toTable);
     body.querySelectorAll('.List01 > li').forEach(li => { const head = document.createElement('div'); head.className = 'kh'; while (li.firstChild && !(li.firstChild.nodeType === 1 && /^(DL|UL|DIV|TABLE)$/.test(li.firstChild.tagName))) head.appendChild(li.firstChild); if (head.textContent.trim()) li.insertBefore(head, li.firstChild); });
     sections.push('<section><h2>' + esc(h.textContent.trim()) + '</h2><div class="kbody">' + body.innerHTML + '</div></section>');
   });

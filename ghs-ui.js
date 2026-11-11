@@ -414,7 +414,9 @@
       if(list.length>1){const sel=E('select');sel.className='ghs-doc-select';sel.title='자동 추출에 사용할 MSDS';for(const d of list){const o=E('option',d.fileName);o.value=d.id;sel.append(o);}sel.value=pickedDoc()?.id||'';sel.onchange=()=>{pickedDocId=sel.value;};tools.append(sel);}
       const attachBtn=button('PDF 첨부',attachThenExtract);attachBtn.title='제조사 MSDS PDF를 첨부하면 GHS를 자동으로 읽어옵니다';tools.append(attachBtn);
       if(list.length){const re=button('다시 읽기',()=>extractFrom(pickedDoc()));re.title='첨부된 MSDS에서 GHS 항목을 다시 읽습니다';tools.append(re);}
-      if(!editing){tools.append(button(D.hasClassification(item)||item.ghs?'편집':'직접 입력',()=>{startEdit();draw();}));}
+      if(!editing){tools.append(button(D.hasClassification(item)||item.ghs?'편집':'직접 입력',()=>{startEdit();draw();}));
+        // 불러온 GHS 분류를 지운다. 첨부 PDF는 그대로 두고 분류·신호어·문구·MSDS 날짜만 비운다.
+        if(D.hasClassification(item)||item.ghs){const clear=button('GHS 지우기',()=>{if(confirm('이 품목의 GHS 분류·신호어·H/P 문구·MSDS 날짜 정보를 지울까요?\n첨부된 MSDS PDF는 지워지지 않습니다. 다시 받거나 읽으면 다시 채워집니다.'))commit(null);},'danger');clear.title='불러온 GHS 분류를 지웁니다 (PDF는 유지)';tools.append(clear);}}
       heading.append(title,tools);element.append(heading);
       const status=E('p',koshaStatus?koshaStatus.text:'','hint ghs-kosha-status');status.id='ghs-kosha-status';status.setAttribute('role','status');status.hidden=!koshaStatus;if(koshaStatus?.isError)status.classList.add('safety-warning');element.append(status);
       if(!icons.size)await preload();
