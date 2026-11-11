@@ -7,9 +7,54 @@ const crypto = require('crypto');
 const HOST = 'msds.kosha.or.kr';
 const SEARCH_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdssearchMsds.do?searchKeyword=';
 const DETAIL_URL = 'https://msds.kosha.or.kr/MSDSInfo/kcic/msdsdetail.do';
-const HIDE_CSS = '#Header,#Footer,#LeftMenuArea,.ViewBtnArea,.ViewBtn,.skip,.skipNav,.GnbAreaWrap,.TopMenuArea,.SubsInfoArea,.SubImg01,.main-bottom-mydatasafe,.megDivInfo,.BtnMore,.FootTxt,.FootLogo{display:none!important}'
-  + '#Container,#Contents,.ListBoard,.tableListWrap{width:auto!important;max-width:none!important;margin:0!important;padding:0 8px!important;float:none!important}'
-  + '.ListConts{display:block!important}.ListTit{page-break-after:avoid}table{page-break-inside:auto}tr{page-break-inside:avoid}body{background:#fff!important}';
+// 받은 페이지를 우리 서식으로 다시 그린다. 사이트의 메뉴·배경선·버튼을 걷어내고 16개 절만 A4 문서로 만든다.
+const CLEAN_CSS = `
+  @page{size:A4;margin:0}
+  html,body{margin:0;padding:0;background:#fff!important;color:#111}
+  body{font:11.5px/1.55 "Malgun Gothic","맑은 고딕",NanumGothic,"Apple SD Gothic Neo",sans-serif}
+  .kdoc{padding:4mm 2mm}
+  .kdoc header{border-bottom:2px solid #1b5e9e;padding:0 0 8px;margin:0 0 14px}
+  .kdoc .ksrc{font-size:10.5px;color:#555;margin-bottom:6px}
+  .kdoc h1{font-size:20px;margin:0 0 6px;color:#0f3b6e}
+  .kdoc .kids{font-size:11px;color:#333}.kdoc .kids span{display:inline-block;margin-right:14px}.kdoc .kids b{color:#1b5e9e;margin-right:4px}
+  .kdoc .kstamp{font-size:10.5px;color:#666;margin-top:4px}
+  .kdoc section{margin:0 0 12px;page-break-inside:auto}
+  .kdoc h2{font-size:13.5px;margin:14px 0 6px;padding:5px 8px;background:#eef3fa;border-left:4px solid #1b5e9e;color:#0f3b6e;page-break-after:avoid;break-after:avoid}
+  .kdoc ul,.kdoc dl{margin:0;padding:0;list-style:none}
+  .kdoc .List01>li{font-weight:700;margin:8px 0 2px 2px}
+  .kdoc dt,.kdoc .List01>li>dl{break-after:avoid}.kdoc dd{orphans:2;widows:2}
+  .kdoc .List02,.kdoc .List03,.kdoc .List04{font-weight:400;margin:2px 0 4px 16px}
+  .kdoc dt{font-weight:700;color:#1b5e9e;margin:5px 0 1px}
+  .kdoc dd{margin:0 0 1px 12px;color:#222}
+  .kdoc dd:empty{display:none}
+  .kdoc img[src*="/ghs/"]{width:58px;height:58px;margin:4px 8px 2px 0;vertical-align:middle}
+  .kdoc table{border-collapse:collapse;width:100%;margin:4px 0 6px;font-size:11px}
+  .kdoc th,.kdoc td{border:1px solid #b9c3d0;padding:4px 7px;text-align:left;vertical-align:top}
+  .kdoc th{background:#f3f6fa;font-weight:700;white-space:nowrap}
+  .kdoc tr{page-break-inside:avoid}
+  .kdoc .ViewBtnArea,.kdoc .ViewBtn,.kdoc script,.kdoc iframe{display:none!important}
+  .kdoc footer{margin-top:16px;padding-top:6px;border-top:1px solid #ccc;font-size:10px;color:#666}
+`;
+// 페이지 안에서 실행: 절 제목과 내용을 모아 새 본문을 만든다.
+const BUILD_DOC = `(() => {
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const name = (document.querySelector('h3.BodyTit01') || {}).textContent || document.title;
+  const ids = []; const dts = document.querySelectorAll('.SubsInfo dt');
+  dts.forEach(dt => { const dd = dt.nextElementSibling; const k = dt.textContent.replace(/[:\s]+$/, '').trim(), v = dd ? dd.textContent.replace(/\u00a0/g, ' ').trim() : ''; if (k && v) ids.push('<span><b>' + esc(k) + '</b>' + esc(v) + '</span>'); });
+  const sections = [];
+  document.querySelectorAll('.ListContsStart h3.ListTit').forEach(h => {
+    const body = h.nextElementSibling; if (!body || !body.classList.contains('ListConts')) return;
+    body.querySelectorAll('.ViewBtnArea, script').forEach(e => e.remove());
+    body.querySelectorAll('a').forEach(a => { const t = document.createTextNode(a.textContent); a.replaceWith(t); });
+    sections.push('<section><h2>' + esc(h.textContent.trim()) + '</h2><div class="kbody">' + body.innerHTML + '</div></section>');
+  });
+  if (!sections.length) return false;
+  const today = new Date(), p = n => String(n).padStart(2, '0'), stamp = today.getFullYear() + '-' + p(today.getMonth() + 1) + '-' + p(today.getDate());
+  const html = '<div class="kdoc"><header><div class="ksrc">물질안전보건자료 (MSDS) · 출처: 안전보건공단 화학물질정보 (msds.kosha.or.kr)</div><h1>' + esc(name.trim()) + '</h1><div class="kids">' + ids.join('') + '</div><div class="kstamp">받은 날짜 ' + stamp + ' · 본 자료는 안전보건공단이 제공하는 물질 기준 MSDS입니다. 제품 고유 정보는 제조사 MSDS를 확인하세요.</div></header>' + sections.join('') + '<footer>안전보건공단 화학물질정보 · ' + esc(name.trim()) + ' · 받은 날짜 ' + stamp + '</footer></div>';
+  document.querySelectorAll('link[rel=stylesheet], style').forEach(e => e.remove());
+  document.body.innerHTML = html; document.body.removeAttribute('class'); document.body.removeAttribute('style');
+  return true;
+})()`;
 const CAS_RE = /^\d{2,7}-\d{2}-\d$/;
 // KOSHA 사이트의 그림문자 이미지 파일명은 국제 GHS 번호와 다르다 (2026-11 확인):
 // KOSHA GHS03.gif = 고압가스(국제 GHS04), KOSHA GHS04.gif = 산화성(국제 GHS03). 나머지는 같다.
@@ -88,10 +133,13 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
         timeout(15000, 'KOSHA 페이지 내용을 읽지 못했습니다.')
       ]);
       if (!info || !info.ok) throw new Error('KOSHA MSDS 본문(1절·2절)을 찾지 못했습니다. 사이트 구조가 바뀌었을 수 있습니다.');
-      await win.webContents.insertCSS(HIDE_CSS);
-      await new Promise(r => setTimeout(r, 250));
+      // 사이트 서식 대신 우리 서식으로 본문을 다시 만든 뒤 PDF로 저장한다.
+      const rebuilt = await Promise.race([win.webContents.executeJavaScript(BUILD_DOC, true), timeout(15000, 'KOSHA 페이지를 문서로 정리하지 못했습니다.')]);
+      if (!rebuilt) throw new Error('KOSHA MSDS 절 구성을 찾지 못했습니다. 사이트 구조가 바뀌었을 수 있습니다.');
+      await win.webContents.insertCSS(CLEAN_CSS);
+      await new Promise(r => setTimeout(r, 400));
       const pdf = await Promise.race([
-        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'default'}, preferCSSPageSize: false}),
+        win.webContents.printToPDF({printBackground: true, pageSize: 'A4', margins: {marginType: 'custom', top: 0.55, bottom: 0.55, left: 0.6, right: 0.6}, preferCSSPageSize: false}),
         timeout(60000, 'PDF 변환이 끝나지 않았습니다.')
       ]);
       if (!Buffer.isBuffer(pdf) || pdf.length < 1000 || !/^%PDF-/.test(pdf.subarray(0, 5).toString('ascii'))) throw new Error('PDF 변환 결과가 올바르지 않습니다.');
