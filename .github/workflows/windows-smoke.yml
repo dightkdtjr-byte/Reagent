@@ -1,0 +1,31 @@
+name: Windows 전 화면 점검
+
+# Windows에서 앱을 실제로 띄워 모든 탭·창과 MSDS 받기·백업·복원·삭제를 점검한다. 결과는 아티팩트(report.json, 화면, PDF).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        shell: bash
+        run: |
+          for i in 1 2 3; do npm ci && break; echo "retry $i"; rm -rf node_modules; sleep 20; done
+          npm install --no-save playwright@1.63.0
+      - name: Run smoke
+        shell: bash
+        run: node scripts/win-smoke.js node_modules/electron/dist/electron.exe . out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-smoke
+          path: out/pdf/*
+          if-no-files-found: warn
