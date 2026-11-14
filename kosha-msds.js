@@ -192,7 +192,7 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
       const safeName = clean(meta.name || 'MSDS').replace(/[\\/\x00-\x1f<>:"|?*]/g, '_').slice(0, 60) || 'MSDS';
       const cas = CAS_RE.test(clean(meta.casNo)) ? clean(meta.casNo) : '';
       const stamp = new Date().toISOString().slice(0, 10);
-      const document = {...imported.documents[0], fileName: `KOSHA_MSDS_${safeName}${cas ? '_' + cas : ''}_${stamp}.pdf`, sourceURL: DETAIL_URL, sourcePublisher: '안전보건공단(KOSHA) 화학물질정보', koshaChemId: String(chemId), koshaRevisedAt: clean(meta.revisedAt || '')};
+      const document = {...imported.documents[0], fileName: `KOSHA_MSDS_${safeName}${cas ? '_' + cas : ''}_${stamp}.pdf`, sourceURL: DETAIL_URL, sourcePublisher: '안전보건공단(KOSHA) 화학물질정보', koshaChemId: String(chemId), koshaRevisedAt: clean(meta.revisedAt || ''), koshaFormat: 2};
       const ghs = typeof extract === 'function' ? extract(info.text) : null;
       // 2절의 그림문자 이미지가 가장 정확하다. 글자로 못 읽은 경우를 이미지로 보완한다.
       if (ghs && Array.isArray(info.pictograms) && info.pictograms.length) {
@@ -208,4 +208,4 @@ function createKoshaClient({net, BrowserWindow, msds, extract, logger = console}
   }
   return {search, receive, parseList};
 }
-module.exports = {createKoshaClient, parseList, toStandard, KOSHA_PICTOGRAM, HOST, BUILD_DOC, CLEAN_CSS, DETAIL_URL};
+module.exports = {createKoshaClient, parseList, toStandard, KOSHA_PICTOGRAM, HOST};

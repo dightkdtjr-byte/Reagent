@@ -37,7 +37,7 @@ function registerMSDSHandlers({ipcMain, dialog, shell, BrowserWindow, store, doc
   handle('list', (_event, docs) => store.list(docs));
   // 저장 파일명을 품목코드_물질명_CAS.pdf로 맞춘다 (렌더러가 저장 직전에 호출).
   handle('relabel', (_event, doc, meta) => store.relabel(doc, meta && typeof meta === 'object' ? {itemId: String(meta.itemId || '').slice(0, 12), name: String(meta.name || '').slice(0, 60), casNo: String(meta.casNo || '').slice(0, 20)} : {}));
-  handle('delete', (_event, doc) => store.deleteFile(doc));
+  handle('delete', (_event, doc, opts) => store.deleteFile(doc, {originalOnly: !!(opts && opts.originalOnly)}));
   handle('open', async (_event, doc) => {
     validateDocument(doc);
     const file = store.openPath(doc);

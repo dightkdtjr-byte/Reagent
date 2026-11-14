@@ -9,7 +9,8 @@
   const CAS_RE=/^\d{2,7}-\d{2}-\d$/;
   const SOURCE={supplier:'공급자 MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS',other:'기타'};
   let state={filter:'all',query:'',busy:false,stop:false,progress:'',lastRun:null};
-  const FILTERS=[['all','전체'],['msds-missing','MSDS 없음'],['msds-review','검토 필요·기한 경과'],['ghs-missing','GHS 미입력'],['kosha','받은 MSDS (KOSHA)'],['supplier','직접 첨부 자료'],['ok','정상']];
+  const FILTERS=[['all','전체'],['msds-missing','MSDS 없음'],['msds-review','검토 필요·기한 경과'],['ghs-missing','GHS 미입력'],['kosha','받은 MSDS (KOSHA)'],['kosha-old','이전 방식으로 받은 MSDS'],['supplier','직접 첨부 자료'],['ok','정상']];
+  const isOld=doc=>window.GHSUI?.isOldKosha?.(doc);
   function docSource(doc){return doc.koshaChemId?'받은 MSDS (KOSHA)':doc.sourceId?'검토 SDS':'직접 첨부';}
   function rowState(item,settings){return D.msdsStatus(item,window.GHSUI.reviewMonths(settings),today());}
   function matches(item,st,settings){
@@ -18,6 +19,7 @@
     if(f==='msds-review'&&!(st.state==='overdue'||st.state==='due-soon'||st.state==='unset'))return false;
     if(f==='ghs-missing'&&D.hasClassification(item))return false;
     if(f==='kosha'&&!docs.some(d=>d.koshaChemId))return false;
+    if(f==='kosha-old'&&!docs.some(isOld))return false;
     if(f==='supplier'&&!docs.some(d=>!d.koshaChemId&&!d.sourceId))return false;
     if(f==='ok'&&!(docs.length&&st.state==='ok'&&D.hasClassification(item)))return false;
     const q=state.query.trim().toLowerCase();
@@ -38,7 +40,7 @@
     async function preview(doc){try{const r=await window.inventoryMSDS.preview(doc);if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('PDF 미리보기 실패: '+String(e.message||e),true);}}
     async function exportDoc(doc){try{const r=await window.inventoryMSDS.export(doc);if(!r?.ok)throw new Error(r?.error||'저장 실패');if(!r.canceled)toast('PDF 사본을 저장했습니다.');}catch(e){toast('PDF 저장 실패: '+String(e.message||e),true);}}
     // 한 품목을 KOSHA에서 받아 첨부하고, GHS가 비어 있으면 읽어온 값으로 채운다.
-    async function koshaOne(item){return window.GHSUI.fetchAndAttachKosha(item,{getItem,save:saveItem});}
+    async function koshaOne(item){return window.GHSUI.fetchAndAttachKosha(item,{getItem,getItems,save:saveItem});}
     async function bulkKosha(){
       if(state.busy)return;
       if(!window.inventorySafety?.koshaSearch){toast('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.',true);return;}
@@ -58,6 +60,24 @@
       }finally{state.busy=false;state.progress='';state.lastRun={...result,at:new Date().toLocaleString('ko-KR',{hour12:false}),stopped:state.stop,total:targets.length};draw();}
       toast(`MSDS ${result.ok}개 첨부${result.filled?` · GHS ${result.filled}개 채움`:''}${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?' · 중단됨':''}`,result.errors.length>0);
     }
+    // 이전 방식(화면 캡처)으로 받은 KOSHA MSDS를 새 서식으로 한꺼번에 다시 받는다. 예전 문서는 새 것으로 바뀐다.
+    async function bulkRefresh(){
+      if(state.busy)return;
+      const targets=[];for(const r of items())for(const d of r.msdsDocuments||[])if(isOld(d))targets.push({id:r.id,doc:d});
+      if(!targets.length){toast('다시 받을 이전 방식 MSDS가 없습니다.');return;}
+      if(!confirm(`이전 방식으로 받은 MSDS ${targets.length}개를 새 서식으로 다시 받을까요?\n품목당 10~30초 걸리며 중간에 중단할 수 있습니다. 예전 PDF는 새 PDF로 바뀝니다 (백업 사본은 남습니다).`))return;
+      state.busy=true;state.stop=false;const result={ok:0,filled:0,errors:[]};
+      try{
+        for(let i=0;i<targets.length;i++){
+          if(state.stop)break;const item=getItem(targets[i].id);if(!item)continue;
+          state.progress=`${i+1} / ${targets.length} · ${item.id} ${item.name||''} 새 서식으로 받는 중…`;drawProgress();
+          try{await window.GHSUI.refetchKoshaDoc(item,targets[i].doc,{getItem,getItems,save:saveItem});result.ok++;}
+          catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(/서버 응답이 늦어|네트워크|인터넷|CERT|ENOTFOUND/.test(String(e.message||e))&&result.errors.length>=2)state.stop=true;}
+          drawTable();
+        }
+      }finally{state.busy=false;state.progress='';state.lastRun={...result,at:new Date().toLocaleString('ko-KR',{hour12:false}),stopped:state.stop,total:targets.length,kind:'새 서식으로 다시 받기'};draw();}
+      toast(`MSDS ${result.ok}개를 새 서식으로 바꿨습니다${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?' · 중단됨':''}`,result.errors.length>0);
+    }
     function drawProgress(){const p=element.querySelector('#msds-mgr-progress');if(p){p.textContent=state.progress;p.hidden=!state.progress;}const stop=element.querySelector('#msds-mgr-stop');if(stop){stop.hidden=!state.busy;}element.querySelectorAll('[data-busy-lock]').forEach(b=>b.disabled=state.busy);}
     function summaryChips(){
       const list=items(),s=settings();let missing=0,review=0,ghsMissing=0,kosha=0,docs=0;
@@ -69,7 +89,7 @@
     }
     async function refetch(item,doc){
       if(state.busy)return;state.busy=true;drawProgress();
-      try{await window.GHSUI.refetchKoshaDoc(item,doc,{getItem,save:saveItem});toast(`${item.id} ${item.name||''}: MSDS를 다시 받아 교체했습니다.`);}
+      try{await window.GHSUI.refetchKoshaDoc(item,doc,{getItem,getItems,save:saveItem});toast(`${item.id} ${item.name||''}: MSDS를 다시 받아 교체했습니다.`);}
       catch(e){toast(`${item.id}: 다시 받기 실패 — ${String(e.message||e)}`,true);}
       finally{state.busy=false;draw();}
     }
@@ -79,9 +99,11 @@
       info.append(E('div',doc.fileName,'msds-name'));
       const meta=[docSource(doc),doc.koshaRevisedAt?`원문 개정 ${doc.koshaRevisedAt}`:'',`첨부 ${String(doc.addedAt||'').slice(0,10)}`,`${(doc.size/1048576).toFixed(1)} MB`,doc.file?`파일 ${doc.file}`:''].filter(Boolean).join(' · ');
       const metaEl=E('div',meta,'hint');info.append(metaEl);
+      if(isOld(doc))info.append(E('div','이전 방식으로 받은 PDF입니다. 쪽이 잘려 보이면 \'새 서식으로\'를 누르세요.','hint msds-old-note'));
       const actions=E('div',undefined,'msds-actions');
-      const del=button('삭제',async()=>{if(state.busy)return;if(!confirm(`이 MSDS를 삭제할까요?\n\n${doc.fileName}\n\n품목에서 떼어내고, 다른 품목이 쓰지 않는 파일이면 PDF 원본과 백업 사본도 지웁니다.`))return;try{const r=await window.MSDSUI.removeDocument(item,doc,{getItems:items,save:saveItem});toast(r.fileDeleted?`${item.id}: MSDS를 삭제했습니다 (PDF 파일 포함).`:`${item.id}: MSDS를 뗐습니다. 다른 품목이 쓰는 파일이라 PDF는 남겨두었습니다.`);}catch(e){toast('MSDS 삭제 실패: '+String(e.message||e),true);}draw();},'danger');del.dataset.busyLock='1';
+      const del=button('삭제',async()=>{if(state.busy)return;if(!confirm(`이 MSDS를 삭제할까요?\n\n${doc.fileName}\n\n품목에서 떼어내고, 다른 품목이 쓰지 않는 파일이면 PDF 원본과 백업 사본도 지웁니다.`))return;try{const r=await window.MSDSUI.removeDocument(item,doc,{getItems,save:saveItem});toast(r.fileDeleted?`${item.id}: MSDS를 삭제했습니다 (PDF 파일 포함).`:`${item.id}: MSDS를 뗐습니다. 다른 품목이 쓰는 파일이라 PDF는 남겨두었습니다.`);}catch(e){toast('MSDS 삭제 실패: '+String(e.message||e),true);}draw();},'danger');del.dataset.busyLock='1';
       actions.append(button('미리보기',()=>preview(doc),'primary'),button('내보내기',()=>exportDoc(doc)),del);
+      if(isOld(doc)){const nb=button('새 서식으로',()=>refetch(item,doc));nb.title='같은 물질의 MSDS를 새 서식으로 다시 받아 바꿉니다 (안전보건공단 KOSHA)';nb.dataset.busyLock='1';actions.prepend(nb);}
       row.append(info,actions);
       // 원본 PDF가 없으면 버튼을 바꾼다: KOSHA 문서는 다시 받기, 직접 첨부는 안내만.
       row.dataset.check='1';row._check=(available,error)=>{if(available)return;metaEl.textContent=`파일 없음 또는 손상 · ${meta}`;metaEl.classList.add('msds-error');metaEl.title=error||'';actions.replaceChildren();
@@ -131,10 +153,12 @@
       const sel=E('select');for(const [v,t] of FILTERS){const o=E('option',t);o.value=v;sel.append(o);}sel.value=state.filter;sel.onchange=()=>{state.filter=sel.value;drawTable();};
       const bulk=button('MSDS 일괄 받기 (KOSHA)',bulkKosha,'primary');bulk.dataset.busyLock='1';
       const stop=button('중단',()=>{state.stop=true;});stop.id='msds-mgr-stop';stop.hidden=!state.busy;
-      tools.append(search,sel,bulk,stop,button('목록 인쇄',async()=>{try{if(!window.inventoryMSDS?.report)throw new Error('설치형 앱에서 사용할 수 있습니다.');const html=window.GHSUI.reportHtml(items(),settings(),{org:opts.orgName||'',app:opts.appName||''});const r=await window.inventoryMSDS.report({title:'화학물질 목록 (MSDS 비치 현황)',html});if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('목록 인쇄 창 열기 실패: '+String(e.message||e),true);}}),button('현황 엑셀 저장',()=>opts.exportExcel?.()),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
+      const oldCount=items().reduce((n,r)=>n+(r.msdsDocuments||[]).filter(isOld).length,0);
+      const refresh=button(`이전 방식 MSDS 새로 받기 (${oldCount})`,bulkRefresh);refresh.dataset.busyLock='1';refresh.hidden=!oldCount;refresh.title='예전 버전에서 받은 KOSHA MSDS(화면 캡처 방식)를 새 서식으로 다시 받습니다';
+      tools.append(search,sel,bulk,refresh,stop,button('목록 인쇄',async()=>{try{if(!window.inventoryMSDS?.report)throw new Error('설치형 앱에서 사용할 수 있습니다.');const html=window.GHSUI.reportHtml(items(),settings(),{org:opts.orgName||'',app:opts.appName||''});const r=await window.inventoryMSDS.report({title:'화학물질 목록 (MSDS 비치 현황)',html});if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('목록 인쇄 창 열기 실패: '+String(e.message||e),true);}}),button('현황 엑셀 저장',()=>opts.exportExcel?.()),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
       element.append(tools);
       const progress=E('p','','hint msds-mgr-progress');progress.id='msds-mgr-progress';progress.setAttribute('role','status');progress.hidden=!state.progress;progress.textContent=state.progress;element.append(progress);
-      if(state.lastRun){const r=state.lastRun;const box=E('details',undefined,'msds-mgr-lastrun');box.open=r.errors.length>0;box.append(E('summary',`직전 일괄 받기 (${r.at}): 대상 ${r.total}개 · 첨부 ${r.ok}개 · GHS 채움 ${r.filled}개 · 실패 ${r.errors.length}개${r.stopped?' · 중단됨':''}`));for(const e of r.errors)box.append(E('p',e,'hint safety-warning'));element.append(box);}
+      if(state.lastRun){const r=state.lastRun;const box=E('details',undefined,'msds-mgr-lastrun');box.open=r.errors.length>0;box.append(E('summary',`직전 ${r.kind||'일괄 받기'} (${r.at}): 대상 ${r.total}개 · 완료 ${r.ok}개${r.kind?'':` · GHS 채움 ${r.filled}개`} · 실패 ${r.errors.length}개${r.stopped?' · 중단됨':''}`));for(const e of r.errors)box.append(E('p',e,'hint safety-warning'));element.append(box);}
       const wrap=E('div',undefined,'msds-mgr-table');wrap.id='msds-mgr-table';element.append(wrap);
       element.append(E('p','받은 MSDS는 안전보건공단(KOSHA)의 물질 기준 국문 자료입니다. 검토 주기는 설정에서 바꿀 수 있습니다.','hint safety-notice'));
       drawTable();

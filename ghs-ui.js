@@ -111,6 +111,8 @@
   // CAS로 MSDS를 찾아 PDF로 받고 품목에 첨부한 뒤, GHS가 비어 있으면 읽어온 값으로 채워 저장한다.
   // 상세 창, MSDS 관리 일괄 받기, 등록 직후 자동 받기가 모두 이 함수를 쓴다.
   const CAS_RE=/^\d{2,7}-\d{2}-\d$/;
+  // v4.0.3 이전에 KOSHA에서 받은 PDF(사이트 화면 캡처 방식, Windows에서 쪽이 잘림)인지.
+  const isOldKosha=doc=>!!doc?.koshaChemId&&doc.koshaFormat!==2;
   // 같은 CAS로 여러 건이 나오면: 품목의 국문명·영문명과 같은 이름 > 가장 최근 개정본 순으로 고른다.
   function pickKoshaRow(rows,item){
     if(!rows||rows.length<2)return rows?.[0];
@@ -119,7 +121,28 @@
     const score=r=>{const n=norm(r.name);let sc=0;for(const x of names){if(n===x)sc=Math.max(sc,30);else if(n.includes(x)||x.includes(n))sc=Math.max(sc,10);}return sc;};
     return rows.slice().sort((a,b)=>score(b)-score(a)||String(b.revisedAt||'').localeCompare(String(a.revisedAt||''))||0)[0];
   }
-  async function fetchAndAttachKosha(item,{getItem,save,onStatus}={}){
+  // KOSHA 문서를 품목 문서 목록에 넣는다. 같은 KOSHA 물질의 예전 문서(및 extra로 넘긴 문서)는 새 문서로 바꾼다.
+  // 바뀐(빠진) 문서 목록을 돌려준다. 저장은 호출한 쪽에서 한다.
+  function placeKoshaDoc(live,doc,extra){
+    const old=live.msdsDocuments||[];
+    const out=old.filter(d=>d.id!==doc.id&&((d.koshaChemId&&d.koshaChemId===doc.koshaChemId)||(extra&&d.id===extra.id)));
+    const rest=old.filter(d=>d.id!==doc.id&&!out.includes(d));
+    if(rest.length>=20)throw new Error('이 품목의 첨부 문서가 이미 20개입니다.');
+    live.msdsDocuments=[...rest,doc];
+    if(live.ghs?.extractedFrom&&out.some(d=>d.id===live.ghs.extractedFrom.documentId))live.ghs={...live.ghs,extractedFrom:{documentId:doc.id,at:new Date().toISOString()}};
+    for(const key of ['safetyInfo','safetyReferenceInfo'])if(live[key]&&out.some(d=>d.id===live[key].documentId))delete live[key];
+    return out;
+  }
+  // 바뀐 문서의 원본 PDF를 지우고(다른 품목이 안 쓸 때만, 백업 사본은 남김) 새 문서 파일 이름을 다시 맞춘다.
+  async function finishKoshaReplace(live,doc,out,{getItems,save}={}){
+    if(!out.length||!getItems||!window.inventoryMSDS?.delete)return;
+    const all=getItems();
+    for(const d of out){if(all.some(r=>(r.msdsDocuments||[]).some(x=>x.sha256===d.sha256)))continue;try{await window.inventoryMSDS.delete(d,{originalOnly:true});}catch{}}
+    // 예전 파일이 '품목코드_물질명_CAS.pdf' 이름을 쓰고 있었으면 새 문서는 '_2'가 붙었을 수 있다. 비었으니 다시 맞춘다.
+    const cur=(live.msdsDocuments||[]).find(d=>d.id===doc.id);
+    if(cur&&window.inventoryMSDS?.relabel){try{const r=await window.inventoryMSDS.relabel(cur,{itemId:live.id,name:live.name,casNo:live.casNo});if(r?.ok&&r.document&&r.document.file!==cur.file){const i=live.msdsDocuments.indexOf(cur);live.msdsDocuments[i]=r.document;try{await save();}catch{}}}catch{}}
+  }
+  async function fetchAndAttachKosha(item,{getItem,getItems,save,onStatus}={}){
     const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
     if(!window.inventorySafety?.koshaSearch)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
     onStatus?.('검색 중');
@@ -130,29 +153,29 @@
     const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
     const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
     const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
-    const old=live.msdsDocuments||[];if(!old.some(d=>d.id===rec.document.id)){if(old.length>=20)throw new Error('첨부 문서가 20개입니다.');live.msdsDocuments=[...old,rec.document];}
+    const out=placeKoshaDoc(live,rec.document);
     let filled=false;
     if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}if(pick.name&&pick.name!==live.name&&pick.name!==live.nameEn)g.sourceNote=`KOSHA 물질명 '${pick.name}'${pick.revisedAt?' · 원문 개정 '+pick.revisedAt:''} · ${g.sourceNote||''}`.slice(0,200);live.ghs=g;filled=true;}}
     live.updatedAt=new Date().toISOString();
     let ok=false;try{ok=await save();}catch{}
     if(!ok){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
-    return {name:pick.name,filled,document:rec.document,extract:rec.extract};
+    await finishKoshaReplace(live,rec.document,out,{getItems,save});
+    return {name:pick.name,filled,document:rec.document,extract:rec.extract,replaced:out.length};
   }
   // 원본 PDF가 사라진 KOSHA 문서를 같은 물질 ID로 다시 받아 교체한다. 저장까지 마치면 새 문서 정보를 돌려준다.
-  async function refetchKoshaDoc(item,doc,{getItem,save}={}){
+  async function refetchKoshaDoc(item,doc,{getItem,getItems,save}={}){
     if(!doc?.koshaChemId)throw new Error('직접 첨부한 PDF는 다시 받을 수 없습니다. 파일을 다시 첨부해주세요.');
     if(!window.inventorySafety?.koshaReceive)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
     const rec=await window.inventorySafety.koshaReceive(doc.koshaChemId,{name:item.name,casNo:item.casNo,revisedAt:doc.koshaRevisedAt||''});
     if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
     const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
-    const before=live.msdsDocuments,beforeUpdated=live.updatedAt;
-    const rest=(live.msdsDocuments||[]).filter(d=>d.id!==doc.id&&d.id!==rec.document.id);
-    live.msdsDocuments=[...rest,rec.document];live.updatedAt=new Date().toISOString();
-    if(live.ghs?.extractedFrom?.documentId===doc.id)live.ghs={...live.ghs,extractedFrom:{documentId:rec.document.id,at:new Date().toISOString()}};
+    const before=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
+    const out=placeKoshaDoc(live,rec.document,doc);live.updatedAt=new Date().toISOString();
     // 분류가 비어 있으면 다시 받은 문서에서 읽어 채운다 (처음 받을 때와 같은 규칙).
     if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g)live.ghs=g;}
     let ok=false;try{ok=await save();}catch{}
-    if(!ok){if(before===undefined)delete live.msdsDocuments;else live.msdsDocuments=before;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
+    if(!ok){if(before===undefined)delete live.msdsDocuments;else live.msdsDocuments=before;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
+    await finishKoshaReplace(live,rec.document,out,{getItems,save});
     return rec.document;
   }
   // 추출 결과를 저장 가능한 GHS 객체로 만든다 (일괄 처리용). 읽은 내용이 없으면 null.
@@ -214,17 +237,22 @@
       lastExtract={doc,result:r};reviewMode=true;return true;
     }
     // 품목에 문서를 연결하고 저장한다. 실패하면 되돌린다.
+    // KOSHA 문서는 같은 물질의 예전 문서를 새 것으로 바꾼다 (다시 받을 때 중복으로 쌓이지 않게).
     async function attachDocument(doc){
       const item=getItem(itemId);if(!item)throw new Error('품목을 찾을 수 없습니다.');
-      const before=item.msdsDocuments,beforeUpdated=item.updatedAt,old=item.msdsDocuments||[];
-      if(old.some(d=>d.id===doc.id))return doc;
-      if(old.length>=20)throw new Error('이 품목의 첨부 문서가 이미 20개입니다.');
-      item.msdsDocuments=[...old,doc];item.updatedAt=new Date().toISOString();
+      const before=item.msdsDocuments,beforeGhs=item.ghs,beforeUpdated=item.updatedAt,old=item.msdsDocuments||[];
+      if(old.some(d=>d.id===doc.id))return {doc,replaced:0};
+      let out=[];
+      if(doc.koshaChemId)out=placeKoshaDoc(item,doc);
+      else{if(old.length>=20)throw new Error('이 품목의 첨부 문서가 이미 20개입니다.');item.msdsDocuments=[...old,doc];}
+      item.updatedAt=new Date().toISOString();
       let ok=false;try{ok=await save();}catch{}
-      if(!ok){const live=getItem(itemId);if(live){if(before===undefined)delete live.msdsDocuments;else live.msdsDocuments=before;live.updatedAt=beforeUpdated;}throw new Error('문서 연결을 저장하지 못했습니다.');}
-      return doc;
+      if(!ok){const live=getItem(itemId);if(live){if(before===undefined)delete live.msdsDocuments;else live.msdsDocuments=before;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;}throw new Error('문서 연결을 저장하지 못했습니다.');}
+      await finishKoshaReplace(item,doc,out,{getItems:opts.getItems,save});
+      opts.onSaved?.();
+      return {doc,replaced:out.length};
     }
-    function remountMsds(){const el=document.getElementById('msds-panel');if(el&&window.MSDSUI)window.MSDSUI.mount({element:el,itemId,getItem,save,toast,confirm});}
+    function remountMsds(){const el=document.getElementById('msds-panel');if(el&&window.MSDSUI)window.MSDSUI.mount({element:el,itemId,getItem,getItems:opts.getItems,save,toast,confirm});}
     // KOSHA 화학물질정보에서 CAS로 MSDS를 찾아 PDF로 받고, 첨부한 뒤 GHS 항목까지 채운다.
     async function koshaAuto(choice){
       if(busy||!alive())return;
@@ -247,7 +275,7 @@
         setKoshaStatus(`'${pick.name}' MSDS를 PDF로 저장하는 중입니다… (10~30초)`);
         const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!alive())return;
         if(!rec?.ok)throw new Error(failText(rec,'MSDS 받기 실패'));
-        await attachDocument(rec.document);
+        const placed=await attachDocument(rec.document);const replacedNote=placed.replaced?' (예전에 받은 MSDS는 새 것으로 바꿨습니다)':'';
         pickedDocId=rec.document.id;
         const hadClassification=D.hasClassification(getItem(itemId));
         const filled=applyExtract(rec.document,rec.extract,'kosha');
@@ -255,10 +283,10 @@
         if(filled&&!hadClassification){
           // 분류가 비어 있던 품목은 읽어온 값을 바로 저장한다. 결과는 아래에 보이고 '편집'으로 고칠 수 있다.
           busy=false;await commit(D.normalizeGHS(draft));busy=true;
-          setKoshaStatus(`'${rec.document.fileName}' 첨부 완료. 읽어온 GHS 분류를 저장했습니다. 틀린 곳이 있으면 편집에서 고치세요.`);
+          setKoshaStatus(`'${rec.document.fileName}' 첨부 완료${replacedNote}. 읽어온 GHS 분류를 저장했습니다. 틀린 곳이 있으면 편집에서 고치세요.`);
           remountMsds();return;
         }
-        setKoshaStatus(filled?`'${rec.document.fileName}' 첨부 완료. 기존 분류가 있어 읽어온 값은 저장을 눌러야 반영됩니다.`:`'${rec.document.fileName}' 첨부 완료. GHS 항목은 읽지 못해 직접 선택해야 합니다.`,!filled);
+        setKoshaStatus(filled?`'${rec.document.fileName}' 첨부 완료${replacedNote}. 기존 분류가 있어 읽어온 값은 저장을 눌러야 반영됩니다.`:`'${rec.document.fileName}' 첨부 완료${replacedNote}. GHS 항목은 읽지 못해 직접 선택해야 합니다.`,!filled);
         draw();remountMsds();
       }catch(e){const msg='MSDS 받기 실패: '+String(e.message||e);setKoshaStatus(msg,true);toast(msg,true);try{alert(msg+'\n\n이 PC에서 브라우저로 https://msds.kosha.or.kr 이 열리는지 확인해보세요. 열리지 않으면 기관 네트워크에서 차단된 것이니 IT 담당자에게 문의하거나, 제조사 MSDS PDF를 직접 첨부하세요.');}catch{}}
       finally{busy=false;}
@@ -464,5 +492,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha,refetchKoshaDoc};
+  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha,refetchKoshaDoc,isOldKosha};
 })();

@@ -9,6 +9,8 @@ files:
   - "!dist/**"
   - "!electron-builder.yml"
   - "!.gitignore"
+  - "!scripts/**"
+  - "!.github/**"
 win:
   target:
     - nsis

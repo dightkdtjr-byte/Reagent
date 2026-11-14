@@ -51,7 +51,7 @@ contextBridge.exposeInMainWorld('inventoryMSDS', {
   folder: () => ipcRenderer.invoke('inventory-msds:folder'),
   report: (payload) => ipcRenderer.invoke('inventory-msds:report', payload),
   relabel: (document, meta) => ipcRenderer.invoke('inventory-msds:relabel', document, meta),
-  delete: (document) => ipcRenderer.invoke('inventory-msds:delete', document)
+  delete: (document, opts) => ipcRenderer.invoke('inventory-msds:delete', document, opts)
 });
 
 // Curated source IDs only. No arbitrary URL or path accepted from renderer.

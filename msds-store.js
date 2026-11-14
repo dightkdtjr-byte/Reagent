@@ -118,6 +118,14 @@ function checkedFile(base, doc) {
   throw lastError || new Error('MSDS 파일을 찾지 못했습니다.');
 }
 const storedName = doc => doc.file || doc.sha256 + '.pdf';
+// 빠른 확인: 파일이 있고 크기가 맞는지만 본다. 저장할 때마다 모든 PDF를 읽어 해시하면 문서가 많을수록 느려진다.
+// 내용 확인(SHA-256)은 열기·내보내기·복원·이름 변경처럼 파일을 실제로 쓰는 곳에서 한다.
+function present(base, doc) {
+  for (const name of candidateNames(doc)) {
+    try { const st = fs.lstatSync(path.join(base, name)); if (st.isFile() && !st.isSymbolicLink() && st.size === doc.size) return true; } catch {}
+  }
+  return false;
+}
 function createMSDSStore(getDataDir, options = {}) {
   const clock = options.clock || (() => new Date());
   const directory = () => ensureDirectory(path.join(getDataDir(), 'msds'));
@@ -143,10 +151,8 @@ function createMSDSStore(getDataDir, options = {}) {
     return {ok: true, documents, errors};
   }
   function list(docs) {
-    const files = validateDocuments(docs).map(doc => {
-      try { checkedFile(directory(), doc); return {...doc, available: true}; }
-      catch (e) { return {...doc, available: false, error: '파일 없음 또는 손상: ' + errText(e)}; }
-    });
+    const base = directory();
+    const files = validateDocuments(docs).map(doc => present(base, doc) ? {...doc, available: true} : {...doc, available: false, error: '파일 없음 또는 크기가 다름'});
     return {ok: true, files, directory: directory(), maxBytes: MAX_BYTES, maxDocuments: MAX_DOCUMENTS};
   }
   const openPath = doc => checkedFile(directory(), doc).file;
@@ -168,11 +174,23 @@ function createMSDSStore(getDataDir, options = {}) {
     const missing = [], failed = [];
     let copied = 0;
     for (const doc of docs) {
-      try { checkedFile(dest, doc); continue; } catch {}
+      if (present(dest, doc)) continue;
       let source;
       try { source = checkedFile(directory(), doc); } catch { missing.push(doc.fileName); continue; }
       try {
-        atomicBytes(path.join(dest, storedName(doc)), source.bytes);
+        const target = path.join(dest, storedName(doc));
+        // 같은 이름에 다른 PDF(예전에 받은 문서)의 사본이 있으면 덮어쓰지 않고 그 파일의 해시 이름으로 옮겨 둔다.
+        // 예전 백업 JSON은 해시 이름으로도 사본을 찾으므로 계속 복원할 수 있다.
+        if (doc.file && fs.existsSync(target)) {
+          try {
+            const existing = pdfBytes(target), h = hash(existing);
+            if (h !== doc.sha256) {
+              const aside = path.join(dest, h + '.pdf');
+              if (fs.existsSync(aside)) fs.unlinkSync(target); else fs.renameSync(target, aside);
+            }
+          } catch { try { fs.unlinkSync(target); } catch {} }
+        }
+        atomicBytes(target, source.bytes);
         checkedFile(dest, doc);
         copied++;
       } catch (e) { failed.push(`${doc.fileName}: ${errText(e)}`); }
@@ -182,10 +200,11 @@ function createMSDSStore(getDataDir, options = {}) {
   }
   // 백업 JSON이 가리키는 PDF 사본이 있는지 센다. 없는 파일은 이름만 모아 알리고 검사를 막지 않는다.
   // 문서 파일을 지운다 (원본과 백업 사본 모두). 다른 품목이 같은 문서를 쓰는지는 호출하는 쪽에서 확인한다.
-  function deleteFile(doc) {
+  // originalOnly: 원본만 지우고 백업 사본은 남긴다 (예전 백업을 불러올 때 쓰이도록). 정리는 백업 보관 개수 정리 때 된다.
+  function deleteFile(doc, {originalOnly = false} = {}) {
     validateDocument(doc);
     const removed = [], failed = [];
-    for (const base of [directory(), backupDirectory()]) {
+    for (const base of originalOnly ? [directory()] : [directory(), backupDirectory()]) {
       for (const name of candidateNames(doc)) {
         const file = path.join(base, name);
         try { const st = fs.lstatSync(file); if (!st.isFile() || st.isSymbolicLink()) continue; }
@@ -199,10 +218,8 @@ function createMSDSStore(getDataDir, options = {}) {
   }
   function inspectBackup(inventory, base) {
     const docs = references(inventory), missing = [];
-    for (const doc of docs) {
-      try { checkedFile(base || backupDirectory(), doc); }
-      catch { missing.push(doc.fileName); }
-    }
+    const dir = base || backupDirectory();
+    for (const doc of docs) if (!present(dir, doc)) missing.push(doc.fileName);
     return {documents: docs.length, missing};
   }
   // 저장 파일을 '품목코드_물질명_CAS.pdf'로 바꾼다. 내용이 같은 파일이 그 이름으로 이미 있으면 그대로 쓰고,

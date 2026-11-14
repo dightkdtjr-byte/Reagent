@@ -1116,6 +1116,8 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 .ghs-view-meta{display:flex;flex-direction:column;gap:6px;font-size:13px}
 .ghs-classes{color:var(--ink-soft)}
 .ghs-msds-info{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px}
+.msds-old-note{color:#b86d00!important}html[data-theme="dark"] .msds-old-note{color:#f0b35a!important}
+html[data-theme="dark"] .ghs-signal.danger{background:#4a1f24;color:#ff9a9a}html[data-theme="dark"] .ghs-signal.warning{background:#4a3a1a;color:#f5c26b}
 .ghs-fold{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}.ghs-fold>summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--teal-dark);padding:4px 0;list-style:none}.ghs-fold>summary::before{content:'▸ ';}.ghs-fold[open]>summary::before{content:'▾ ';}.ghs-fold .ghs-classes{font-size:12px;color:var(--ink-soft);margin:4px 0 6px}
 .ghs-td{white-space:normal}
 .ghs-extract-box{margin:4px 0 10px;padding:10px 12px;border:1px solid var(--teal-dark);border-radius:10px;background:var(--teal-tint)}.ghs-extract-box.empty{border-color:var(--amber);background:var(--amber-tint)}.ghs-extract-box p{margin:4px 0 0}
@@ -1217,7 +1219,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.2</div>
+        <div class="work-version">v4.0.3</div>
       </div>
 </aside>
   </div>
@@ -1547,7 +1549,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.2<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.0.3<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1620,7 +1622,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.2';
+  const APP_VERSION = '4.0.3';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1703,6 +1705,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   // MSDS PDF 저장 파일명을 '품목코드_물질명_CAS.pdf'로 맞춘다. 품명·CAS가 바뀌거나 새로 첨부한 문서만 개명하며, 실패해도 저장은 계속한다.
   // (main의 msds-store.friendlyName과 같은 규칙. 다르더라도 개명 요청이 한 번 더 갈 뿐이다.)
   function msdsFriendlyName(itemId,name,casNo){const clean=v=>String(v||'').replace(/[\\/\x00-\x1f<>:"|?*]/g,'_').replace(/\s+/g,' ').trim();const stem=[clean(itemId).slice(0,12),clean(name).slice(0,60),clean(casNo).slice(0,20)].filter(Boolean).join('_').replace(/\.+$/,'');return stem?stem+'.pdf':'';}
+  // 이번 실행 동안 이름 바꾸기에 실패한 문서(원본 없음 등)는 다시 시도하지 않는다. 저장할 때마다 헛도는 것을 막는다.
+  const relabelSkip=new Set();
   async function syncMsdsFileNames(){
     if(!window.inventoryMSDS?.relabel)return;
     for(const r of DB.reagents||[]){
@@ -1713,10 +1717,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         if(!want||d.file===want||(d.file&&d.file.startsWith(want.replace(/\.pdf$/,'_'))))continue;
         // 같은 PDF를 여러 품목이 쓰면 파일은 하나다. 다른 품목 이름이 이미 붙어 있으면 그대로 둔다 (이름이 번갈아 바뀌는 것을 막음).
         if(d.file&&!d.file.startsWith(r.id+'_'))continue;
+        const key=d.sha256+'|'+want;if(relabelSkip.has(key))continue;
         try{
           const res=await window.inventoryMSDS.relabel(d,{itemId:r.id,name:r.name,casNo:r.casNo});
-          if(res?.ok&&res.document){docs[i]=res.document;for(const o of DB.reagents||[])for(const od of o.msdsDocuments||[])if(od.sha256===d.sha256&&od.file!==res.document.file)od.file=res.document.file;}
-        }catch(e){console.error('msds relabel failed',r.id,e);}
+          if(!res?.ok){relabelSkip.add(key);continue;}
+          if(res.document){docs[i]=res.document;for(const o of DB.reagents||[])for(const od of o.msdsDocuments||[])if(od.sha256===d.sha256&&od.file!==res.document.file)od.file=res.document.file;}
+        }catch(e){relabelSkip.add(key);}
       }
     }
   }
@@ -3174,7 +3180,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <button class="danger" id="detail-delete-btn">${r.archivedAt ? '복원' : '폐기/비활성'}</button>
       </div>
     `);
-    window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
+    window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
     document.querySelectorAll('#detail-modal-box .history-delete-btn').forEach(btn=>{btn.onclick=async()=>{
@@ -3273,7 +3279,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const r=findReagent(id); if(!r||!settings().autoFetchMsds||!window.inventorySafety?.koshaSearch) return;
     if(!/^\d{2,7}-\d{2}-\d$/.test(String(r.casNo||'').trim())||(r.msdsDocuments||[]).length||autoFetchQueue.has(id)) return;
     autoFetchQueue.add(id);
-    try{ const res=await window.GHSUI.fetchAndAttachKosha(r,{getItem:findReagent,save:saveDB}); showToast(`${r.id} ${r.name}: MSDS를 자동으로 첨부했습니다${res.filled?' · GHS 채움':''}.`); }
+    try{ const res=await window.GHSUI.fetchAndAttachKosha(r,{getItem:findReagent,getItems:()=>DB.reagents,save:saveDB}); showToast(`${r.id} ${r.name}: MSDS를 자동으로 첨부했습니다${res.filled?' · GHS 채움':''}.`); }
     catch(e){ showToast(`${r.id} ${r.name}: MSDS 자동 받기 실패 — ${String(e.message||e)}`,true); }
     finally{ autoFetchQueue.delete(id); }
   }
@@ -3786,17 +3792,25 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     nativeScanDetector=null;nativeScanBusy=false;
   }
   let html5LoaderPromise=null;
-  async function loadHtml5QrcodeOptional(){
-    if(typeof Html5Qrcode!=='undefined') return true;
-    if(navigator.onLine===false) return false;
-    if(html5LoaderPromise) return html5LoaderPromise;
-    html5LoaderPromise=new Promise(resolve=>{
+  // 카메라 QR 인식 라이브러리. 프로그램에 들어 있는 사본(vendor)을 먼저 쓰고, 없을 때만 인터넷에서 받는다.
+  // (Windows의 Chromium에는 내장 바코드 인식기가 없어 이 라이브러리가 있어야 카메라 스캔이 된다.)
+  function loadScriptOnce(src,ms){
+    return new Promise(resolve=>{
       const script=document.createElement('script'); let done=false;
       const finish=ok=>{if(done)return;done=true;clearTimeout(timer);resolve(ok&&typeof Html5Qrcode!=='undefined');};
-      script.src='https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js'; script.async=true; script.onload=()=>finish(true); script.onerror=()=>finish(false);
-      const timer=setTimeout(()=>finish(false),2500); document.head.appendChild(script);
+      script.src=src; script.async=true; script.onload=()=>finish(true); script.onerror=()=>{script.remove();finish(false);};
+      const timer=setTimeout(()=>finish(false),ms); document.head.appendChild(script);
     });
-    return html5LoaderPromise;
+  }
+  async function loadHtml5QrcodeOptional(){
+    if(typeof Html5Qrcode!=='undefined') return true;
+    if(html5LoaderPromise) return html5LoaderPromise;
+    html5LoaderPromise=(async()=>{
+      if(await loadScriptOnce('vendor/html5-qrcode/html5-qrcode.min.js',5000)) return true;
+      if(navigator.onLine===false) return false;
+      return loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js',4000);
+    })();
+    const ok=await html5LoaderPromise; if(!ok) html5LoaderPromise=null; return ok;
   }
   async function startScan(readerId){
     const requested=readerId||preferredScanReader();

@@ -12,10 +12,6 @@ on:
         description: '물질명'
         required: false
         default: '과망간산칼륨'
-      mode:
-        description: 'fetch 또는 probe'
-        required: false
-        default: 'fetch'
 
 permissions:
   contents: read
@@ -38,11 +34,10 @@ jobs:
         env:
           CAS: ${{ github.event.inputs.cas }}
           NAME: ${{ github.event.inputs.name }}
-          MODE: ${{ github.event.inputs.mode }}
         run: |
-          if [ "$MODE" = "probe" ]; then node scripts/win-pdf-probe.js node_modules/electron/dist/electron.exe . out; else node scripts/win-msds-test.js node_modules/electron/dist/electron.exe . "$CAS" "$NAME" out; fi
+          node scripts/win-msds-test.js node_modules/electron/dist/electron.exe . "$CAS" "$NAME" out
       - uses: actions/upload-artifact@v4
         with:
           name: msds-pdf
-          path: out/pdf/*
+          path: out/pdf/*.pdf
           if-no-files-found: error

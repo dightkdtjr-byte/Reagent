@@ -5,13 +5,15 @@
   const stamp = s => { const d = new Date(s); return Number.isFinite(d.getTime()) ? d.toLocaleString('ko-KR', {hour12: false}) : ''; };
   // 품목에서 문서를 떼고, 다른 품목이 같은 문서를 쓰지 않으면 PDF 파일(원본·백업 사본)도 지운다.
   async function removeDocument(item, doc, {getItems, save}) {
-    const before = item.msdsDocuments, beforeUpdated = item.updatedAt;
+    const before = item.msdsDocuments, beforeGhs = item.ghs, beforeUpdated = item.updatedAt;
     item.msdsDocuments = (item.msdsDocuments || []).filter(d => d.id !== doc.id); item.updatedAt = new Date().toISOString();
     for (const key of ['safetyInfo', 'safetyReferenceInfo']) if (item[key] && item[key].documentId === doc.id) delete item[key];
     if (item.ghs && item.ghs.extractedFrom && item.ghs.extractedFrom.documentId === doc.id) { item.ghs = {...item.ghs}; delete item.ghs.extractedFrom; }
     let ok = false; try { ok = await save(); } catch {}
-    if (!ok) { if (before === undefined) delete item.msdsDocuments; else item.msdsDocuments = before; item.updatedAt = beforeUpdated; throw new Error('저장하지 못해 되돌렸습니다.'); }
-    const shared = (getItems ? getItems() : []).some(r => r.id !== item.id && (r.msdsDocuments || []).some(d => d.sha256 === doc.sha256));
+    if (!ok) { if (before === undefined) delete item.msdsDocuments; else item.msdsDocuments = before; if (beforeGhs === undefined) delete item.ghs; else item.ghs = beforeGhs; item.updatedAt = beforeUpdated; throw new Error('저장하지 못해 되돌렸습니다.'); }
+    // 다른 품목(폐기 품목 포함)이 같은 파일을 쓰는지 모르면 파일은 지우지 않는다.
+    if (typeof getItems !== 'function') return {fileDeleted: false, shared: true};
+    const shared = getItems().some(r => r.id !== item.id && (r.msdsDocuments || []).some(d => d.sha256 === doc.sha256));
     if (shared || !window.inventoryMSDS?.delete) return {fileDeleted: false, shared};
     const r = await window.inventoryMSDS.delete(doc);
     if (!r?.ok) throw new Error(r?.error || '파일 삭제 실패');
@@ -109,8 +111,13 @@
             const copy = button('다른 이름으로 저장', () => exportDoc(doc)); copy.dataset.msdsAction = 'export';
             const remove = button('삭제', () => unlink(doc), 'danger'); remove.dataset.msdsAction = 'unlink';
             for (const b of [look, view, copy]) { b.dataset.unavailable = doc.available ? '0' : '1'; b.disabled = !doc.available; }
+            if (doc.available && window.GHSUI?.isOldKosha?.(doc)) {
+              badge.textContent += ' · 이전 방식으로 받음 (쪽이 잘려 보이면 새 서식으로 다시 받으세요)'; badge.classList.add('msds-old-note');
+              const fresh = button('새 서식으로', () => action(async () => { await window.GHSUI.refetchKoshaDoc(getItem(itemId), doc, {getItem, getItems, save}); toast('MSDS를 새 서식으로 다시 받아 바꿨습니다.'); }));
+              fresh.dataset.msdsAction = 'refresh'; fresh.title = '같은 물질의 MSDS를 새 서식으로 다시 받아 바꿉니다 (안전보건공단 KOSHA)'; actions.append(fresh);
+            }
             if (!doc.available && doc.koshaChemId) {
-              const again = button('다시 받기', () => action(async () => { await window.GHSUI.refetchKoshaDoc(getItem(itemId), doc, {getItem, save}); toast('MSDS를 다시 받아 교체했습니다.'); }), 'primary');
+              const again = button('다시 받기', () => action(async () => { await window.GHSUI.refetchKoshaDoc(getItem(itemId), doc, {getItem, getItems, save}); toast('MSDS를 다시 받아 교체했습니다.'); }), 'primary');
               again.dataset.msdsAction = 'refetch'; again.title = '같은 물질의 MSDS를 다시 받아 이 문서를 교체합니다 (안전보건공단 KOSHA)';
               actions.append(again, remove); row.append(info, actions); list.append(row); continue;
             }
