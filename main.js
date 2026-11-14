@@ -54,7 +54,10 @@ ipcMain.handle('inventory:export-bundle', async (evt, obj)=> {
     validateInventory(obj);
     const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
     const win = BrowserWindow.fromWebContents(evt.sender);
-    const result = await dialog.showSaveDialog(win, {title:'백업 묶음 저장 (재고 + MSDS PDF)', defaultPath: path.join(app.getPath('documents'), `시약재고_백업_${stamp}.zip`), filters:[{name:'zip 묶음', extensions:['zip']}]});
+    // 문서 폴더를 못 찾는 PC가 있다 (폴더 리디렉션·OneDrive 등). 바탕화면 → 사용자 폴더 → 앱 데이터 폴더 순으로 대신 쓴다.
+    const safeDir = name => { try { const p = app.getPath(name); return p && fs.existsSync(p) ? p : ''; } catch { return ''; } };
+    const startDir = safeDir('documents') || safeDir('desktop') || safeDir('home') || dataDir();
+    const result = await dialog.showSaveDialog(win, {title:'백업 묶음 저장 (재고 + MSDS PDF)', defaultPath: path.join(startDir, `시약재고_백업_${stamp}.zip`), filters:[{name:'zip 묶음', extensions:['zip']}]});
     if (result.canceled || !result.filePath) return {ok:true, canceled:true};
     const target = /\.zip$/i.test(result.filePath) ? result.filePath : result.filePath + '.zip';
     const entries = [{name:'inventory.json', data: Buffer.from(JSON.stringify(obj, null, 2), 'utf8')}];
