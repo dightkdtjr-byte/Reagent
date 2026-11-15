@@ -274,7 +274,7 @@
     if(!base){if(result.state==='ok'){result.state='unset';result.label='검토일 미입력';}return result;}
     result.nextReviewAt=addMonths(base,months);
     const days=Math.round((new Date(result.nextReviewAt+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);result.days=days;
-    if(days<0){result.state='overdue';result.label=`검토기한 ${-days}일 경과`;}
+    if(days<0&&attached){result.state='overdue';result.label=`검토기한 ${-days}일 경과`;}
     else if(days<=30&&result.state==='ok'){result.state='due-soon';result.label=`검토 D-${days}`;}
     return result;
   }

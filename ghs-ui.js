@@ -33,10 +33,15 @@
     return `<div class="ghs-cell" title="${esc(D.summaryText(item))}"><span class="ghs-icons">${g.pictograms.map(c=>iconImg(c,22)).join('')}</span>${signalBadge(g.signalWord,true)}${msds}</div>`;
   }
   // 스캔·입출고 확인창 요약
-  function inlineHtml(item){
+  // part: 'head'(그림문자·신호어만), 'detail'(유해문구만), 생략하면 둘 다. 스캔 창에서는 경고 표시를 조작 버튼 위에, 문구는 아래에 둔다.
+  function inlineHtml(item,part){
     if(!D.hasClassification(item))return '';
     const g=item.ghs,h=g.hCodes.slice(0,4).map(c=>`<span>${esc(c)} ${esc(D.hText(c))}</span>`).join('');
-    return `<div class="ghs-inline"><div class="ghs-inline-head"><span class="ghs-icons">${g.pictograms.map(c=>iconImg(c,34)).join('')}</span>${signalBadge(g.signalWord)}${g.hazardClasses?`<span class="ghs-inline-class">${esc(g.hazardClasses)}</span>`:''}</div>${h?`<div class="ghs-inline-h">${h}${g.hCodes.length>4?`<span>외 ${g.hCodes.length-4}개</span>`:''}</div>`:''}</div>`;
+    const head=`<div class="ghs-inline-head"><span class="ghs-icons">${g.pictograms.map(c=>iconImg(c,34)).join('')}</span>${signalBadge(g.signalWord)}${g.hazardClasses?`<span class="ghs-inline-class">${esc(g.hazardClasses)}</span>`:''}</div>`;
+    const detail=h?`<div class="ghs-inline-h">${h}${g.hCodes.length>4?`<span>외 ${g.hCodes.length-4}개</span>`:''}</div>`:'';
+    if(part==='head')return `<div class="ghs-inline">${head}</div>`;
+    if(part==='detail')return detail?`<div class="ghs-inline">${detail}</div>`:'';
+    return `<div class="ghs-inline">${head}${detail}</div>`;
   }
   // 상세 창 머리: 그림문자·신호어·MSDS 상태를 한 줄로
   function headerHtml(item,settings){
@@ -102,10 +107,20 @@
   }
   function searchText(item){const g=item?.ghs;if(!g)return '';return [g.signalWord?D.SIGNAL[g.signalWord]:'',...g.pictograms.map(c=>c+' '+D.PICTOGRAMS[c].label),...g.hCodes,g.hazardClasses].filter(Boolean).join(' ');}
   function excelRows(items,settings){
-    const header=['QR코드ID','분류','품명','영문명','CAS No.','제조사','신호어','그림문자','유해·위험성 분류','H코드','P코드','GHS 출처','MSDS 첨부','MSDS 작성·개정일','개정번호','MSDS 검토일','다음 검토 예정','MSDS 상태','비고'];
+    // 표 한 칸에 긴 문구를 다 넣으면 엑셀 행 높이 한도를 넘어 잘린다. H는 문구까지, P는 코드만 적고 뜻은 'H·P 문구' 시트에 한 번씩만 싣는다.
+    const header=['QR코드ID','분류','품명','영문명','CAS No.','제조사','신호어','그림문자','유해·위험성 분류','H코드 (유해·위험 문구)','P코드\n(뜻은 H·P 문구 시트)','GHS 출처','MSDS\n첨부','MSDS 파일','MSDS\n작성·개정일','개정번호','MSDS\n검토일','다음 검토\n예정','MSDS 상태','비고'];
+    const widths=[11,8,22,17,11,13,7,20,26,40,26,18,7,30,13,9,13,13,17,22];
+    const toDate=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||'').trim());if(!m)return v||'';const d=new Date(+m[1],+m[2]-1,+m[3]);return d.getFullYear()===+m[1]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[3]?d:v;};
+    const usedH=new Set(),usedP=new Set();
     const rows=(items||[]).map(r=>{const g=r.ghs||{},st=D.msdsStatus(r,reviewMonths(settings),today());const src={supplier:'공급자 MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS 자료',other:'기타'}[g.source]||'';
-      return [r.id,(r.category||'reagent')==='standard'?'표준물질':'시약',r.name||'',r.nameEn||'',r.casNo||'',r.maker||'',g.signalWord?D.SIGNAL[g.signalWord]:'',(g.pictograms||[]).map(c=>c+' '+D.PICTOGRAMS[c].label).join(', '),g.hazardClasses||'',(g.hCodes||[]).map(c=>c+' '+D.hText(c)).join('\n'),(g.pCodes||[]).map(c=>c+' '+D.pText(c)).join('\n'),src+(g.sourceNote?' · '+g.sourceNote:''),st.attached,g.msdsIssuedAt||'',g.msdsRevision||'',g.msdsReviewedAt||'',st.nextReviewAt||'',st.label,g.note||''];});
-    return {header,rows};
+      (g.hCodes||[]).forEach(c=>usedH.add(c));(g.pCodes||[]).forEach(c=>usedP.add(c));
+      const docs=(r.msdsDocuments||[]).map(d=>(d.fileName||d.file||'MSDS')+(d.koshaChemId?' (KOSHA)':''));
+      return [r.id,(r.category||'reagent')==='standard'?'표준물질':'시약',r.name||'',r.nameEn||'',r.casNo||'',r.maker||'',g.signalWord?D.SIGNAL[g.signalWord]:'',(g.pictograms||[]).map(c=>c+' '+D.PICTOGRAMS[c].label).join(', '),g.hazardClasses||'',(g.hCodes||[]).map(c=>c+' '+D.hText(c)).join('\n'),(g.pCodes||[]).join(', '),[src,g.sourceNote].filter(Boolean).join(' · '),st.attached?st.attached+'개':'미첨부',docs.join('\n'),toDate(g.msdsIssuedAt),g.msdsRevision||'',toDate(g.msdsReviewedAt),toDate(st.nextReviewAt),st.label,g.note||''];});
+    const pKind=c=>{const n=String(c).match(/P(\d)/);return n?({1:'일반',2:'예방',3:'대응',4:'저장',5:'폐기'}[n[1]]||'예방조치'):'예방조치';};
+    const split=c=>String(c).split('+');
+    const byCode=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
+    const phrases=[...[...usedH].sort(byCode).map(c=>[c,'유해·위험',D.hText(c)||'']),...[...usedP].sort(byCode).map(c=>[c,pKind(split(c)[0]),D.pText(c)||''])];
+    return {header,rows,widths,phrases,statusCol:19,dateCols:[15,17,18],centerCols:[1,2,5,7,13,16,19]};
   }
 
   // CAS로 MSDS를 찾아 PDF로 받고 품목에 첨부한 뒤, GHS가 비어 있으면 읽어온 값으로 채워 저장한다.
@@ -297,13 +312,14 @@
       try{
         if(!window.inventoryMSDS?.extract)throw new Error('자동 추출은 설치형 앱에서 사용할 수 있습니다.');
         toast('MSDS에서 GHS 정보를 읽는 중입니다…');
+        doc=(getItem(itemId)?.msdsDocuments||[]).find(d=>d.id===doc.id)||doc;
         const r=await window.inventoryMSDS.extract(doc);
         if(!alive())return;
         if(!r?.ok)throw new Error(r?.error||'추출 실패');
         const filled=applyExtract(doc,r,doc.koshaChemId?'kosha':'supplier');draw();
         if(!filled){toast(r.textLength<200?'글자 정보가 없는 PDF(스캔본)라 자동으로 읽을 수 없습니다. 아래에서 직접 선택해주세요.':'MSDS에서 GHS 항목을 찾지 못했습니다. 아래에서 직접 선택해주세요.',true);return;}
         toast('MSDS에서 읽은 내용을 채웠습니다. 확인 후 저장을 누르세요.');
-      }catch(e){toast('자동 추출 실패: '+String(e.message||e),true);}
+      }catch(e){const m=String(e.message||e);toast(/ENOENT|no such file|EPERM|EBUSY/i.test(m)?'MSDS PDF 파일을 찾지 못했습니다. 잠시 뒤 [다시 읽기]를 눌러 주세요.':'MSDS에서 읽지 못했습니다: '+m,true);try{draw();}catch{}}
       finally{busy=false;}
     }
     async function attachThenExtract(){
@@ -337,7 +353,7 @@
       function addCodes(codes){let n=0;for(const c of codes)if(!list.includes(c)){list.push(c);n++;}if(n){drawChips();onChange();}return n;}
       function addTyped(){const codes=D.parseCodes(input.value,kind);if(!codes.length){toast(`${kind}코드 형식(예: ${kind}2xx)으로 입력하거나 목록에서 선택하세요.`,true);return;}addCodes(codes);input.value='';results.hidden=true;input.focus();}
       function search(){const q=input.value.trim().toLowerCase();results.replaceChildren();if(!q){results.hidden=true;return;}const hits=rows.filter(([code,ko])=>code.toLowerCase().includes(q)||ko.toLowerCase().includes(q)).slice(0,12);if(!hits.length){results.hidden=true;return;}for(const [code,ko] of hits){const b=button(`${code} · ${ko}`,()=>{addCodes([code]);input.value='';results.hidden=true;input.focus();},'ghs-picker-hit');if(list.includes(code))b.disabled=true;results.append(b);}results.hidden=false;}
-      input.oninput=search;input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const first=results.hidden?null:results.querySelector('button:not(:disabled)');if(first&&!/^[hp]\d/i.test(input.value.trim()))first.click();else addTyped();}else if(e.key==='Escape'){results.hidden=true;}};
+      input.oninput=search;input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const first=results.hidden?null:results.querySelector('button:not(:disabled)');if(first&&!/^[hp]\d/i.test(input.value.trim()))first.click();else addTyped();}else if(e.key==='Escape'&&!results.hidden){e.preventDefault();e.stopPropagation();results.hidden=true;}};
       let onChange=()=>{};wrap.setOnChange=fn=>{onChange=fn;};drawChips();return wrap;
     }
     function field(label,control,full){const d=E('div',undefined,full?'full':'');const l=E('label',label);d.append(l,control);return d;}
@@ -410,7 +426,7 @@
     function viewer(item){
       const box=E('div',undefined,'ghs-view'),g=item.ghs,st=D.msdsStatus(item,reviewMonths(settings()),today());
       if(!D.hasClassification(item)){
-        box.append(E('p',docs().length?'GHS 분류가 아직 없습니다. \'첨부 MSDS에서 추출\'을 누르면 첨부한 PDF의 2절(유해성·위험성)에서 그림문자·신호어·H/P 문구를 읽어옵니다.':'GHS 분류가 아직 없습니다. CAS 번호가 있으면 \'MSDS 받기\'로 국문 MSDS를 받아 첨부하고 GHS까지 자동으로 채웁니다. 제조사 PDF가 있으면 첨부하면 자동으로 읽어옵니다.','hint ghs-empty'));
+        box.append(E('p',docs().length?'GHS 분류가 아직 없습니다. \'다시 읽기\'를 누르면 첨부한 PDF의 2절(유해성·위험성)에서 그림문자·신호어·H/P 문구를 읽어옵니다.':'GHS 분류가 아직 없습니다. CAS 번호가 있으면 \'MSDS 받기\'로 국문 MSDS를 받아 첨부하고 GHS까지 자동으로 채웁니다. 제조사 PDF가 있으면 첨부하면 자동으로 읽어옵니다.','hint ghs-empty'));
       }else{
         const head=E('div',undefined,'ghs-view-head');
         const sym=E('div',undefined,'safety-symbols ghs-symbols');
@@ -470,13 +486,18 @@
     }
     element._ghsApi={refresh:draw,startKosha:()=>koshaAuto(),autoExtract:async doc=>{
       const item=getItem(itemId);if(!item)return;
+      doc=(item.msdsDocuments||[]).find(d=>d.id===doc.id)||doc;draw();
       const had=D.hasClassification(item);
       if(had&&!confirm(`새로 첨부한 MSDS '${doc.fileName}'에서 GHS 정보를 다시 읽어 기존 분류를 바꿀까요?\n읽어온 내용은 저장을 누르기 전까지 반영되지 않습니다.`))return;
       pickedDocId=doc.id;await extractFrom(doc);
       // 분류가 없던 품목은 읽어온 값을 바로 저장한다.
       if(!had&&editing&&draft&&lastExtract&&!lastExtract.empty){await commit(D.normalizeGHS(draft));setKoshaStatus(`'${doc.fileName}'에서 읽어온 GHS 분류를 저장했습니다. 틀린 곳이 있으면 편집에서 고치세요.`);draw();}
       try{element.scrollIntoView({block:'start',behavior:'smooth'});}catch{}
-    }};
+    },
+    // 상세 창이 닫히거나 '기본 정보 저장'을 누를 때 GHS 편집 중인 내용을 놓치지 않게 밖에서 확인할 수 있게 한다.
+    isDirty:()=>!!(editing&&draft&&alive()),
+    getDraft:()=>draft?D.normalizeGHS(JSON.parse(JSON.stringify(draft))):null,
+    discard:()=>{editing=false;draft=null;lastExtract=null;reviewMode=false;try{draw();}catch{}}};
     draw();
     return element._ghsApi;
   }

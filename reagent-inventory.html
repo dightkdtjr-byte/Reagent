@@ -264,6 +264,8 @@
   .scan-result h3{margin:0 0 2px; font-size:16px;}
   .scan-result .meta{font-size:12.5px; color:var(--ink-soft); margin-bottom:12px;}
   .adjust-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .adjust-row input[type=text]{min-width:0; padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:var(--sans); background:var(--surface); color:var(--ink);}
+  .adjust-row input[type=text]:focus{outline:2px solid var(--teal); outline-offset:1px;}
   .adjust-row input[type=number]{
     width:80px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-family:var(--mono);
     font-size:15px; text-align:center;
@@ -308,6 +310,19 @@
   .field-grid label{font-size:11.5px; color:var(--ink-soft); font-weight:600; display:block; margin-bottom:3px;}
   .field-grid input{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:13.5px; font-family:var(--sans);}
   .detail-actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
+  .detail-save-row{align-items:center; margin-top:12px;}
+  .detail-save-row .hint{margin:0; color:var(--red); font-weight:600;}
+  .detail-save-row .hint[hidden]{display:none;}
+  .batch-edit-btn{border:1px solid var(--line); background:var(--surface); border-radius:6px; width:28px; height:28px; padding:0; cursor:pointer; color:var(--ink-soft); display:inline-flex; align-items:center; justify-content:center;}
+  .batch-edit-btn:hover{color:var(--teal-dark); border-color:var(--teal);}
+  .batch-edit-btn svg{width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .batch-table tr.batch-edit-row td{background:var(--teal-tint);}
+  .batch-edit-form{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 12px;}
+  .batch-edit-form > b{align-self:center; font-size:12.5px; color:var(--teal-dark);}
+  .batch-edit-form label{display:flex; flex-direction:column; gap:3px; font-size:11px; font-weight:600; color:var(--ink-soft);}
+  .batch-edit-form input{width:138px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; font-size:12.5px; font-family:var(--sans); background:var(--surface); color:var(--ink);}
+  .batch-edit-actions{margin-left:auto; white-space:nowrap;}
+  .batch-edit-actions button{padding:6px 12px; font-size:12.5px; margin-left:4px;}
 
   .modal-backdrop{
     position:fixed; inset:0; background:rgba(20,26,33,0.55); z-index:80;
@@ -319,6 +334,24 @@
     box-shadow:0 20px 50px rgba(0,0,0,0.25); position:relative; animation:modal-pop 0.15s ease;
   }
   .modal-box.modal-box-wide{ max-width:640px; }
+  .modal-box.modal-box-import{ max-width:900px; max-height:calc(100vh - 48px); }
+  #scan-modal-box{ max-height:calc(100vh - 40px); }
+  #scan-modal-box.modal-box-import .scan-result{ border:0; background:transparent; padding:0; }
+  .bulk-summary{display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 8px;}
+  .bulk-summary .chip{cursor:default;}
+  .bulk-plan-wrap{max-height:46vh; overflow:auto; border:1px solid var(--line); border-radius:8px; margin-top:8px;}
+  .bulk-plan{margin-top:0; table-layout:fixed; width:100%;}
+  .bulk-plan th{position:sticky; top:0; z-index:1; white-space:nowrap;}
+  .bulk-plan td{vertical-align:top; white-space:normal; word-break:keep-all; overflow-wrap:anywhere;}
+  .bulk-plan th:nth-child(1){width:62px;} .bulk-plan th:nth-child(2){width:84px;} .bulk-plan th:nth-child(3){width:24%;} .bulk-plan th:nth-child(4){width:92px;} .bulk-plan th:nth-child(5){width:98px;}
+  .bulk-plan.bulk-result th:nth-child(1){width:130px;} .bulk-plan.bulk-result th:nth-child(3){width:auto;}
+  .bulk-plan td:first-child{white-space:nowrap; color:var(--ink-soft);}
+  .bulk-plan tr.bulk-skip td{color:var(--ink-soft);}
+  .bulk-plan .bulk-info{font-size:11.5px; color:var(--ink-soft);}
+  .bulk-plan .badge.ok-badge{background:var(--teal-tint); color:var(--teal-dark);}
+  .bulk-warn{color:var(--red); font-weight:600;}
+  .bulk-dup-opt{display:flex; align-items:center; gap:6px; margin-top:10px; font-size:12.5px; color:var(--ink-soft);}
+  button.danger-text{color:var(--red);}
   #detail-modal-box{padding:0;overflow:hidden;max-height:calc(100vh - 48px);}
   #detail-modal-box .detail-modal-scroll{
     max-height:calc(100vh - 48px); overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable;
@@ -384,7 +417,7 @@
   #toast{
     position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);
     background:var(--ink); color:#fff; padding:11px 18px; border-radius:8px; font-size:13.5px;
-    opacity:0; transition:all 0.25s ease; pointer-events:none; z-index:50; max-width:90vw; text-align:center;
+    opacity:0; transition:all 0.25s ease; pointer-events:none; z-index:1000; max-width:90vw; text-align:center;
     display:flex; align-items:center; gap:10px; justify-content:center;
   }
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto;}
@@ -1219,7 +1252,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.4</div>
+        <div class="work-version">v4.0.5</div>
       </div>
 </aside>
   </div>
@@ -1400,11 +1433,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
     <div class="panel" style="margin-top:14px;">
       <h3 style="margin:0 0 4px; font-size:15px; color:var(--ink);" id="bulk-panel-title">여러 시약 한 번에 등록</h3>
-      <div class="hint" style="margin-bottom:10px;">엑셀 양식을 내려받아 목록을 채운 뒤 업로드하면 자동으로 QR코드가 발급되며 한꺼번에 등록됩니다.</div>
+      <div class="hint" style="margin-bottom:10px;">엑셀 양식을 내려받아 목록을 채운 뒤 올리면, 등록할 내용을 먼저 보여 드립니다. 확인을 누르면 QR코드가 발급되고 라벨을 바로 인쇄할 수 있습니다. 같은 파일을 다시 올려도 이미 등록된 줄은 빼고 등록합니다.</div>
       <div class="row">
         <button class="ghost" id="bulk-template-btn">양식 다운로드</button>
         <button class="primary" id="bulk-import-btn">엑셀로 일괄등록</button>
-        <input type="file" id="bulk-import-file" accept=".xlsx" style="display:none;">
+        <button class="ghost danger-text" id="bulk-undo-btn" style="display:none;">방금 일괄등록 취소</button>
+        <input type="file" id="bulk-import-file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="display:none;">
       </div>
     </div>
   </section>
@@ -1469,7 +1503,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
           <div class="setting-control"><label class="setting-switch"><input type="checkbox" id="settings-auto-backup"><span class="setting-slider"></span></label></div>
         </div>
         <div class="setting-row">
-          <div class="setting-copy"><div class="setting-title">백업 보관 개수</div><div class="setting-sub">설정한 개수를 초과하면 오래된 날짜별·수동·복원 전 사본부터 자동 삭제합니다. 최신 복구본은 개수에서 제외됩니다.</div></div>
+          <div class="setting-copy"><div class="setting-title">백업 보관 개수</div><div class="setting-sub">설정한 개수를 넘으면 오래된 백업(날짜별·수동·복원 전 사본)부터 자동으로 지웁니다. 개수를 줄이면 지워질 백업을 먼저 알려 드립니다.</div></div>
           <div class="setting-control"><select id="settings-backup-retention"><option value="7">7개</option><option value="30">30개</option><option value="60">60개</option><option value="90">90개</option></select></div>
         </div>
         <div class="setting-row">
@@ -1549,7 +1583,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.4<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.0.5<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1605,7 +1639,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
  <div id="assist-tools-content" role="region" aria-label="결과"></div>
  <div class="settings-actions"><button type="button" class="ghost" id="assist-tools-refresh">다시 확인</button><button type="button" class="ghost" id="assist-tools-copy">전체 복사</button><button type="button" class="ghost" id="assist-tools-save">텍스트 저장</button></div>
 </div></div>
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <div id="print-area"></div>
 <style id="dynamic-print-style"></style>
 
@@ -1615,14 +1649,15 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let DB = { nextId:1, nextIdStd:1, reagents:[], logs:[] };
   let selectedId = null;
   let selectedPrintIds = new Set();
-  let lastHandlerName = '';
+  // 마지막으로 입력한 입출고인 이름은 프로그램을 다시 켜도 남겨 둔다.
+  let lastHandlerName = (()=>{ try{ return window.localStorage.getItem('reagent.lastHandler')||''; }catch{ return ''; } })();
   let currentCategory = 'reagent'; // 'reagent' | 'standard'
   let unifiedScanMode = false;
   let html5Qrcode = null;
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.4';
+  const APP_VERSION = '4.0.5';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1680,6 +1715,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         const q = Math.max(0, Number(r.stock)||0);
         r.batches=[normalizeBatch({batchId:'B001', receivedDate:r.receivedDate||'', expiryDate:r.expiryDate||'', lotNo:r.category==='standard'?(r.serialNo||''):'', openedDate:r.openedDate||'', initialQty:q, stock:q, createdAt:r.createdAt||new Date().toISOString()},0)];
       } else r.batches=r.batches.map(normalizeBatch);
+      if(r.batches.length===1){ const b=r.batches[0]; if(!b.expiryDate && r.expiryDate) b.expiryDate=r.expiryDate; if(r.category==='standard' && !b.openedDate && r.openedDate) b.openedDate=r.openedDate; }
       syncReagentFromBatches(r, false);
     });
     return db;
@@ -1815,9 +1851,11 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!safeConfirm(`이 백업으로 복원할까요?\n\n시약 ${parsed.reagents.length-std}건 · 표준물질 ${std}건 · 입출고 이력 ${(parsed.logs||[]).length}건\n\n현재 재고와 이력은 백업의 내용으로 바뀝니다.\n현재 화면·프린터·백업 설정은 유지합니다.\n복원 직전 현재 데이터의 안전 사본을 먼저 저장합니다.\n\nMSDS가 연결된 백업은 JSON과 같은 위치에 msds 폴더가 필요합니다. 문서 파일이 없으면 복원을 중단합니다.`))return;
     if(!window.inventoryStore?.restoreBackup)throw new Error('안전 복원은 설치형 앱에서 사용할 수 있습니다.');
     const candidate=migrateDB({...parsed,settings:DB.settings});
+    candidate.migrations=Object.assign({koshaPictogram:!!(parsed.settings&&parsed.settings.koshaPictogramFixed)},(parsed.migrations&&typeof parsed.migrations==='object'&&!Array.isArray(parsed.migrations))?parsed.migrations:{});
     const r=await window.inventoryStore.restoreBackup(candidate,DB,sourceToken);
     if(!r||!r.ok)throw new Error(r?.error||'복원 실패');
-    DB=migrateDB(r.data);selectedId=null;selectedPrintIds.clear();
+    DB=migrateDB(r.data);selectedId=null;selectedPrintIds.clear();lastBulkImport=null;updateBulkUndoButton();
+    try{ await fixKoshaPictogramNumbers(); }catch(e){ console.error(e); }
     applyTheme();renderInventory();renderRecentLogs();renderStats();renderHomeDashboard();renderSettings();
     const warning=r.warning||r.backup?.warning||(r.backup?.ok===false?r.backup.error:'');
     const missing=r.msds?.missing||[];
@@ -1886,12 +1924,13 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       const e=(a.expiryDate||'9999-12-31').localeCompare(b.expiryDate||'9999-12-31');
       return e || (a.receivedDate||'').localeCompare(b.receivedDate||'');
     });
-    for(const b of bs){ if(remain<=0) break; const take=Math.min(Number(b.stock)||0,remain); if(take>0){b.stock-=take; remain-=take; used.push(`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`);} }
-    syncReagentFromBatches(r); return {used, actual:Math.max(0,Number(qty)||0)-remain};
+    const parts=[];
+    for(const b of bs){ if(remain<=0) break; const take=Math.min(Number(b.stock)||0,remain); if(take>0){b.stock-=take; remain-=take; used.push(`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`); parts.push({batchId:b.batchId,lotNo:b.lotNo||'',qty:take});} }
+    syncReagentFromBatches(r); return {used, parts, actual:Math.max(0,Number(qty)||0)-remain};
   }
   function consumeSpecificBatch(r, batchId, qty, includeExpired=false){
-    const b=(r.batches||[]).find(x=>x.batchId===batchId); if(!b || Number(b.stock)<=0 || (!includeExpired&&isBatchExpired(b))) return {used:[],actual:0};
-    const take=Math.min(Number(b.stock)||0,Math.max(0,Number(qty)||0)); b.stock-=take; syncReagentFromBatches(r); return {used:[`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`],actual:take,batch:b};
+    const b=(r.batches||[]).find(x=>x.batchId===batchId); if(!b || Number(b.stock)<=0 || (!includeExpired&&isBatchExpired(b))) return {used:[],parts:[],actual:0};
+    const take=Math.min(Number(b.stock)||0,Math.max(0,Number(qty)||0)); b.stock-=take; syncReagentFromBatches(r); return {used:[`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`],parts:[{batchId:b.batchId,lotNo:b.lotNo||'',qty:take}],actual:take,batch:b};
   }
   function batchQrCode(r,b){ return b ? `${r.id}-${b.batchId}` : r.id; }
   function qrPayload(item){
@@ -1915,7 +1954,23 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const fallback=s.match(/((?:RG|ST)\d+(?:-B\d+)?)/i);
     return fallback ? fallback[1].toUpperCase() : s.toUpperCase();
   }
+  // 한/영 키가 '한'인 상태에서 스캐너가 입력하면 RG0001이 'ㄱㅎ0001'처럼 들어온다. 두벌식 자판 기준으로 영문 글쇠로 되돌린다.
+  const HANGUL_KEYS={'ㄱ':'r','ㄲ':'R','ㄴ':'s','ㄷ':'e','ㄸ':'E','ㄹ':'f','ㅁ':'a','ㅂ':'q','ㅃ':'Q','ㅅ':'t','ㅆ':'T','ㅇ':'d','ㅈ':'w','ㅉ':'W','ㅊ':'c','ㅋ':'z','ㅌ':'x','ㅍ':'v','ㅎ':'g','ㅏ':'k','ㅐ':'o','ㅑ':'i','ㅒ':'O','ㅓ':'j','ㅔ':'p','ㅕ':'u','ㅖ':'P','ㅗ':'h','ㅛ':'y','ㅜ':'n','ㅠ':'b','ㅡ':'m','ㅣ':'l','ㄳ':'rt','ㄵ':'sw','ㄶ':'sg','ㄺ':'fr','ㄻ':'fa','ㄼ':'fq','ㄽ':'ft','ㄾ':'fx','ㄿ':'fv','ㅀ':'fg','ㅄ':'qt','ㅘ':'hk','ㅙ':'ho','ㅚ':'hl','ㅝ':'nj','ㅞ':'np','ㅟ':'nl','ㅢ':'ml'};
+  function normalizeScanText(s){
+    s=String(s||''); if(!/[ㄱ-ㅣ가-힣]/.test(s)) return s;
+    const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ',JUNG='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ',JONG=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+    let o='';
+    for(const ch of s){const c=ch.charCodeAt(0);
+      if(c>=0xAC00&&c<=0xD7A3){const n=c-0xAC00;o+=HANGUL_KEYS[CHO[Math.floor(n/588)]]+HANGUL_KEYS[JUNG[Math.floor(n%588/28)]]+(HANGUL_KEYS[JONG[n%28]]||'');}
+      else o+=(HANGUL_KEYS[ch]!==undefined?HANGUL_KEYS[ch]:ch);}
+    return o;
+  }
   function findScanTarget(code){
+    const hit=findScanTargetRaw(code); if(hit) return hit;
+    const alt=normalizeScanText(code);
+    return alt!==String(code||'') ? findScanTargetRaw(alt) : null;
+  }
+  function findScanTargetRaw(code){
     if(!code) return null;
     const raw=String(code||'').trim(), normCode=extractQrId(raw);
     const direct=findReagent(normCode); if(direct) return {r:direct,batch:null,code:normCode,source:'id'};
@@ -1925,14 +1980,21 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(r){const batch=(r.batches||[]).find(b=>String(b.batchId).toUpperCase()===m[2].toUpperCase());if(batch)return {r,batch,code:normCode,source:'id'};}
     }
     // 제조사 1D 바코드가 제품번호/Lot No.를 담는 경우에도, DB에서 정확히 한 항목만 일치하면 바로 찾습니다.
-    const key=raw.toUpperCase(), hits=[];
+    // 품목 하나만 일치할 때 찾은 것으로 본다. 같은 Lot을 여러 번 입고했으면 유효기간이 가장 빠른(꺼낼 수 있는) 회차를 고른다.
+    const key=raw.toUpperCase(), byItem=new Map();
     (DB.reagents||[]).forEach(r=>{
-      if(String(r.serialNo||'').trim().toUpperCase()===key) hits.push({r,batch:null});
-      (r.batches||[]).forEach(b=>{if(String(b.lotNo||'').trim().toUpperCase()===key) hits.push({r,batch:b});});
+      if(r.archivedAt) return;
+      const lots=(r.batches||[]).filter(b=>String(b.lotNo||'').trim().toUpperCase()===key);
+      // 표준물질의 serialNo는 회차 Lot의 사본이므로 회차로만 비교한다.
+      const serial=(r.category||'reagent')!=='standard' && String(r.serialNo||'').trim().toUpperCase()===key;
+      if(lots.length||serial) byItem.set(r.id,{r,lots});
     });
-    const unique=[]; const seen=new Set();
-    hits.forEach(h=>{const k=h.r.id+'|'+(h.batch?.batchId||'');if(!seen.has(k)){seen.add(k);unique.push(h);}});
-    if(unique.length===1)return {r:unique[0].r,batch:unique[0].batch,code:raw,source:'barcode'};
+    if(byItem.size===1){
+      const {r,lots}=[...byItem.values()][0];
+      const usable=lots.filter(b=>Number(b.stock)>0&&!isBatchExpired(b)).sort((a,b)=>(a.expiryDate||'9999-12-31').localeCompare(b.expiryDate||'9999-12-31')||(a.receivedDate||'').localeCompare(b.receivedDate||''));
+      const batch=lots.length===1?lots[0]:(usable[0]||null);
+      return {r,batch,code:raw,source:'barcode'};
+    }
     return null;
   }
   function makeBatchLabelItem(r,b){
@@ -1944,8 +2006,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
   function reconcileTotalStock(r, target){
     target=Math.max(0,Number(target)||0); const now=(r.batches||[]).reduce((a,b)=>a+(Number(b.stock)||0),0); const diff=target-now;
-    if(diff>0) addBatch(r,{qty:diff,receivedDate:todayStr(),expiryDate:'',lotNo:''});
-    else if(diff<0) consumeFEFO(r,-diff,true); else syncReagentFromBatches(r);
+    if(diff>0){ const b=addBatch(r,{qty:diff,receivedDate:todayStr(),expiryDate:'',lotNo:''}); return [{batchId:b.batchId,lotNo:'',qty:diff}]; }
+    if(diff<0) return consumeFEFO(r,-diff,true).parts;
+    syncReagentFromBatches(r); return [];
   }
   function sameProduct(r,d){
     if(r.archivedAt || (r.category||'reagent')!==(d.category||'reagent')) return false;
@@ -1968,162 +2031,524 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   function ws_setColWidth(ws, idx, width){
     ws.getColumn(idx).width = width;
   }
+  // 'YYYY-MM-DD' 또는 ISO 시각 → 엑셀 날짜 셀로 쓸 로컬 Date. 날짜가 아니면 원래 글자를 그대로 돌려준다.
+  function xlDate(v){
+    const s = String(v||'').trim(); if(!s) return '';
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if(m){ const d = new Date(+m[1], +m[2]-1, +m[3]); return (d.getFullYear()===+m[1] && d.getMonth()===+m[2]-1 && d.getDate()===+m[3]) ? d : s; }
+    return s;
+  }
+  function xlDateTime(iso, dateOnly){
+    if(!iso) return '';
+    const d = new Date(iso); if(Number.isNaN(d.getTime())) return '';
+    return dateOnly ? new Date(d.getFullYear(), d.getMonth(), d.getDate()) : new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), 0);
+  }
+  function roundQty(v){ const n = Number(v); return Number.isFinite(n) ? Math.round(n*1000)/1000 : 0; }
+  function qtyFmt(v){ return Number.isInteger(roundQty(v)) ? '#,##0' : '#,##0.###'; }
+  function fmtQty(v){ return roundQty(v).toLocaleString('ko-KR', {maximumFractionDigits:3}); }
+  function excelLibraryReady(){
+    if(typeof ExcelJS !== 'undefined') return true;
+    showToast('엑셀 기능을 불러오지 못했습니다. 프로그램을 다시 실행해 주세요. 계속되면 업데이트 파일을 다시 덮어써 주세요.', true);
+    return false;
+  }
+  // 파일 저장: 설치형 앱에서는 저장 창을 띄워 한글 파일명·확장자를 제대로 넣는다. (브라우저로 열었을 때만 내려받기 방식)
+  async function saveBytesAs(bytes, name, kind){
+    const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    if(window.inventoryStore && window.inventoryStore.saveFile){
+      let r;
+      try{ r = await window.inventoryStore.saveFile({defaultName:name, bytes:u8, kind:kind||'xlsx'}); }
+      catch(e){ r = {ok:false, error:'파일을 저장하지 못했습니다.'}; }
+      finally{ try{ restoreKeyboardFocus(); }catch{} }
+      if(!r || !r.ok){ showToast((r && r.error) || '파일을 저장하지 못했습니다.', true); return {ok:false}; }
+      if(r.canceled){ hideToast(); return {ok:true, canceled:true}; }
+      return {ok:true, canceled:false, path:r.path, name:r.name||name};
+    }
+    const type = kind==='txt' ? 'text/plain;charset=utf-8' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    const url = URL.createObjectURL(new Blob([u8], {type}));
+    const a = document.createElement('a'); a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); restoreKeyboardFocus();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+    return {ok:true, canceled:false, name};
+  }
+  // 저장이 끝나면 예전처럼 저장한 폴더를 열어 파일을 바로 볼 수 있게 한다. (openFolder=false면 토스트의 [폴더 열기]로만)
+  function toastSaved(saved, extra, openFolder){
+    if(!saved || !saved.ok || saved.canceled) return;
+    const msg = `'${saved.name}' 저장 완료${extra ? ' · ' + extra : ''}`, can = !!(saved.path && window.inventoryStore && window.inventoryStore.showInFolder);
+    if(can) showToast(msg, false, {label:'폴더 열기', fn:()=>window.inventoryStore.showInFolder(saved.path)});
+    else showToast(msg);
+    if(can && openFolder !== false) setTimeout(()=>{ try{ window.inventoryStore.showInFolder(saved.path); }catch{} }, 200);
+  }
+  window.__saveTextFile = async (text, name)=>{ const saved = await saveBytesAs(new TextEncoder().encode('﻿'+String(text||'')), name, 'txt'); toastSaved(saved, '', false); return saved; };
+  // 엑셀을 만드는 동안 같은 버튼을 다시 눌러 파일이 두 번 만들어지지 않게 한다.
+  let excelBusy = false;
+  async function withExcelBusy(fn){
+    if(excelBusy){ showToast('엑셀 파일을 만드는 중입니다. 잠시만 기다려 주세요.'); return; }
+    excelBusy = true;
+    try{ await new Promise(r=>setTimeout(r, 30)); await fn(); }
+    catch(e){ console.error(e); showToast('엑셀 파일을 만들지 못했습니다. 다시 시도해 주세요.', true); }
+    finally{ excelBusy = false; }
+  }
+
+  // 대장 엑셀 공통 서식
+  const XL = (()=>{
+    const NAVY='FF558022', NAVY_TINT='FFF0F6E4', RED='FFED193A', RED_TINT='FFFDE7EA', AMBER='FFC97A2B', AMBER_TINT='FFFBEEDF', GRAY='FF6B7684', ZEBRA='FFF5F6F7';
+    const THIN={ style:'thin', color:{argb:'FFC7CDD3'} }, MEDIUM={ style:'medium', color:{argb:NAVY} };
+    return {
+      NAVY, NAVY_TINT, RED, RED_TINT, AMBER, AMBER_TINT, GRAY, ZEBRA, THIN, MEDIUM,
+      TITLE_FONT:{ name:'맑은 고딕', size:14, bold:true, color:{argb:NAVY} },
+      SUB_FONT:{ name:'맑은 고딕', size:9.5, color:{argb:GRAY} },
+      HEADER_FONT:{ name:'맑은 고딕', size:10.5, bold:true, color:{argb:'FFFFFFFF'} },
+      BODY:{ name:'맑은 고딕', size:10.5 },
+      BORDER_ALL:{ top:THIN, left:THIN, bottom:THIN, right:THIN },
+      HEADER_ROW:7, DATA_START:8,
+      fill:argb=>({ type:'pattern', pattern:'solid', fgColor:{argb} }),
+    };
+  })();
+  function xlLogoImage(wb){
+    const img = document.querySelector('.footer-logo'), src = img ? (img.getAttribute('src')||'') : '';
+    return src.startsWith('data:image') ? wb.addImage({ base64: src.split(',')[1], extension:'png' }) : null;
+  }
+  function xlTitleBar(ws, imageId, title, lastCol, note){
+    const L = colLetter(lastCol);
+    ws.getRow(1).height = 34;
+    if(imageId !== null) ws.addImage(imageId, { tl:{col:0.05, row:0.1}, ext:{width:150, height:36.6} });
+    for(let c=1; c<=lastCol; c++) ws.getCell(1, c).border = { bottom:{ style:'medium', color:{argb:XL.RED} } };
+    ws.mergeCells(`A2:${L}2`);
+    const t = ws.getCell('A2'); t.value = title; t.font = XL.TITLE_FONT; t.alignment = { vertical:'middle', horizontal:'left', indent:1 };
+    ws.getRow(2).height = 24;
+    ws.mergeCells(`A3:${L}3`);
+    const s = ws.getCell('A3');
+    s.value = `기후에너지환경부 · 수도권대기환경청     작성일 ${todayStr()}${note ? '     ' + note : ''}`;
+    s.font = XL.SUB_FONT; s.alignment = { vertical:'middle', horizontal:'left', indent:1 };
+    ws.getRow(3).height = 15;
+    ws.getRow(4).height = 5;
+  }
+  function xlKpiRow(ws, totalCols, items){
+    ws.getRow(5).height = 30;
+    let col = 1; const per = Math.max(1, Math.floor(totalCols / items.length));
+    items.forEach((item, i)=>{
+      const span = (i === items.length-1) ? (totalCols - col + 1) : per, startCol = col, endCol = col + span - 1;
+      if(span > 1) ws.mergeCells(5, startCol, 5, endCol);
+      const cell = ws.getCell(5, startCol);
+      cell.value = `${item.label}  ${item.value}`;
+      cell.font = { name:'맑은 고딕', size:10.5, bold:true, color:{argb:item.color} };
+      cell.alignment = { vertical:'middle', horizontal:'center' };
+      for(let c=startCol; c<=endCol; c++){ ws.getCell(5, c).fill = XL.fill(item.tint); ws.getCell(5, c).border = { bottom:{style:'thin', color:{argb:item.color}} }; }
+      col = endCol + 1;
+    });
+    ws.getRow(6).height = 8;
+  }
+  function xlHeaderRow(ws, headers, rowNo){
+    const row = ws.getRow(rowNo || XL.HEADER_ROW);
+    headers.forEach((h,i)=>{
+      const cell = row.getCell(i+1); cell.value = h; cell.font = XL.HEADER_FONT; cell.fill = XL.fill(XL.NAVY);
+      cell.alignment = { vertical:'middle', horizontal:'center', wrapText:true };
+      cell.border = { top:XL.MEDIUM, bottom:XL.MEDIUM, left:{style:'thin',color:{argb:'FFFFFFFF'}}, right:{style:'thin',color:{argb:'FFFFFFFF'}} };
+    });
+    row.height = 32;
+    ws.autoFilter = { from:`A${row.number}`, to:`${colLetter(headers.length)}${row.number}` };
+  }
+  function xlFrame(ws, firstRow, lastRow, lastCol){
+    for(let c=1; c<=lastCol; c++){
+      const top = ws.getCell(firstRow, c), bot = ws.getCell(lastRow, c);
+      top.border = { ...top.border, top:XL.MEDIUM }; bot.border = { ...bot.border, bottom:XL.MEDIUM };
+    }
+    for(let r=firstRow; r<=lastRow; r++){
+      const left = ws.getCell(r, 1), right = ws.getCell(r, lastCol);
+      left.border = { ...left.border, left:XL.MEDIUM }; right.border = { ...right.border, right:XL.MEDIUM };
+    }
+  }
+  // 인쇄: A4 가로. wide=1이면 모든 열이 한 쪽 너비에 들어가고, 2이면 좌우 두 쪽으로 나누되 왼쪽 제목 열을 반복한다.
+  function xlPrint(ws, opts){
+    opts = opts || {};
+    ws.pageSetup = {
+      paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:opts.wide || 1, fitToHeight:0, horizontalCentered:true,
+      margins:{ left:0.3, right:0.3, top:0.4, bottom:0.45, header:0.2, footer:0.2 },
+      printTitlesRow:`${opts.headerRow || XL.HEADER_ROW}:${opts.headerRow || XL.HEADER_ROW}`,
+    };
+    if(opts.titleCols){ ws.pageSetup.printTitlesColumn = opts.titleCols; ws.pageSetup.pageOrder = 'overThenDown'; }
+    ws.headerFooter = { oddFooter:`&L&8${opts.footer || ''}&C&8&P / &N 쪽&R&8작성일 ${todayStr()}` };
+  }
+  // 본문 행 서식. cols: [{align, wrap, numFmt}] (1부터). fillArgb가 있으면 행 전체 배경.
+  function xlBodyRow(row, colCount, fillArgb, specs){
+    for(let c=1; c<=colCount; c++){
+      const cell = row.getCell(c), sp = (specs && specs[c]) || {};
+      cell.font = XL.BODY; cell.border = XL.BORDER_ALL;
+      cell.alignment = { vertical:'middle', horizontal:sp.align || 'left', wrapText:sp.wrap !== false };
+      if(sp.numFmt) cell.numFmt = sp.numFmt;
+      if(fillArgb) cell.fill = XL.fill(fillArgb);
+    }
+  }
+  // 화면 통계 칩과 엑셀 요약이 같은 기준을 쓰도록 한 곳에서 센다. (폐기 품목 제외한 목록을 넘긴다)
+  function calcInvStats(items){
+    const s = {total:items.length, low:0, out:0, expired:0, soon:0};
+    for(const r of items){
+      const usable = usableStock(r), exp = expiryInfo(r);
+      if(Number(r.stock) <= 0) s.out++;
+      else if(r.minStock > 0 && usable > 0 && usable <= r.minStock) s.low++;
+      if(exp.expiredBatches > 0) s.expired++;
+      if(exp.soonBatches > 0) s.soon++;
+    }
+    return s;
+  }
+  // 출고 기록 한 건이 어느 입고회차에서 얼마나 빠졌는지. 새 기록은 usedBatches에 남고, 예전 기록은 당시 재고 상태로 다시 계산한다.
+  function logBatchParts(l, r){
+    if(Array.isArray(l.usedBatches) && l.usedBatches.length) return l.usedBatches;
+    const lotOf = id => { const b = ((r && r.batches) || []).find(x=>x.batchId===id); return (b && b.lotNo) || ''; };
+    if(l.batchId) return [{batchId:l.batchId, lotNo:l.lotNo || lotOf(l.batchId), qty:Math.abs(Number(l.qty)||0)}];
+    if(l.type !== 'out' || !Array.isArray(l.batchSnapshotBefore)) return [];
+    const day = String(l.date||'').slice(0,10) ? (()=>{ const d=new Date(l.date), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; })() : todayStr();
+    let remain = Math.max(0, Number(l.qty)||0); const parts = [];
+    const bs = l.batchSnapshotBefore.filter(b=>Number(b.stock)>0 && !(b.expiryDate && b.expiryDate < day)).sort((a,b)=>(a.expiryDate||'9999-12-31').localeCompare(b.expiryDate||'9999-12-31') || (a.receivedDate||'').localeCompare(b.receivedDate||''));
+    for(const b of bs){ if(remain <= 0) break; const take = Math.min(Number(b.stock)||0, remain); if(take > 0){ parts.push({batchId:b.batchId, lotNo:b.lotNo||'', qty:take}); remain -= take; } }
+    return remain > 0 ? [] : parts;
+  }
+  const LOG_TYPE_LABEL = {in:'입고', out:'출고', adjust:'수동조정', register:'최초등록', archive:'폐기', restore:'복원', edit:'정보 수정'};
+  function logTypeLabel(l){ return (l.type==='in' && !(Number(l.qty) > 0)) ? '입고일 수정' : (LOG_TYPE_LABEL[l.type] || '기타'); }
 
   // ---------- 일괄등록 (양식 다운로드 / 엑셀 업로드) ----------
-  function getBulkCols(){
-    const isStd = currentCategory === 'standard';
+  // 양식 열. key는 가져올 때 머리글 이름으로 열을 찾는 데 쓴다 (열 순서가 바뀌거나 빠져도 엉뚱한 칸에 들어가지 않게).
+  function getBulkCols(cat){
+    const isStd = (cat || currentCategory) === 'standard', label = catLabel(cat);
     return [
-      {header:`${catLabel()}명 (필수)`, width:22}, {header:'영문명', width:18}, {header:'규격/용량', width:14}, {header:'단위', width:10},
-      {header:'초기재고', width:10}, {header:'최소재고기준', width:12}, {header:'입고일(YYYY-MM-DD)', width:16}, {header:'유효기간(YYYY-MM-DD)', width:16},
-      {header:'제조사', width:14}, {header:'CAS No.', width:12}, {header:isStd?'Lot No.':'제품 시리얼번호', width:16}, {header:'농도', width:14},
-      ...(isStd ? [{header:'순도', width:10},{header:'개봉일(YYYY-MM-DD)', width:16}] : []), {header:'보관방법', width:16},
+      {key:'name', header:`${label}명 (필수)`, width:24, text:true}, {key:'nameEn', header:'영문명', width:20, text:true}, {key:'spec', header:'규격/용량', width:14, text:true}, {key:'unit', header:'단위', width:8, text:true},
+      {key:'stock', header:'초기재고', width:10}, {key:'minStock', header:'최소재고기준', width:12}, {key:'receivedDate', header:'입고일(YYYY-MM-DD)', width:17, date:true}, {key:'expiryDate', header:'유효기간(YYYY-MM-DD)', width:18, date:true},
+      {key:'maker', header:'제조사', width:16, text:true}, {key:'casNo', header:'CAS No.', width:13, text:true}, {key:'serialNo', header:isStd ? 'Lot No.' : '제품 시리얼번호', width:17, text:true}, {key:'concentration', header:'농도', width:14, text:true},
+      ...(isStd ? [{key:'purity', header:'순도', width:10, text:true}, {key:'openedDate', header:'개봉일(YYYY-MM-DD)', width:17, date:true}] : []), {key:'storage', header:'보관방법', width:18, text:true},
     ];
   }
-
+  const BULK_EXAMPLE_SHEET = '작성예시';
+  function bulkExampleRows(isStd){
+    return isStd
+      ? [['암모니아 표준용액', 'Ammonia Standard Solution', '100mL', '병', 5, 1, xlDate(todayStr()), xlDate('2027-12-31'), 'Merck', '7664-41-7', 'LOT-2026-001', '1000 mg/L', '99.9%', '', '냉장보관 (2~8℃)'],
+         ['납 표준용액', 'Lead Standard Solution', '100mL', '병', 2, 1, xlDate(todayStr()), xlDate('2028-06-30'), 'Kanto', '', 'K-240817', '1000 mg/L', '', '', '실온보관']]
+      : [['아세톤', 'Acetone', '500mL', '병', 10, 2, xlDate(todayStr()), xlDate('2028-12-31'), 'Sigma-Aldrich', '67-64-1', '', '', '인화성 시약장'],
+         ['염산', 'Hydrochloric acid', '1L', '병', 3, 1, xlDate(todayStr()), '', '대정화금', '7647-01-0', '', '35%', '산 시약장']];
+  }
   async function downloadBulkTemplate(){
-    if(typeof ExcelJS === 'undefined'){
-      showToast('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.', true);
-      return;
-    }
-    const NAVY = 'FF558022';
-    const HEADER_FONT = { name:'맑은 고딕', size:11, bold:true, color:{argb:'FFFFFFFF'} };
-    const BODY_FONT = { name:'맑은 고딕', size:10.5 };
-    const NOTE_FONT = { name:'맑은 고딕', size:9.5, italic:true, color:{argb:'FF6B7684'} };
-    const THIN = { style:'thin', color:{argb:'FFD9D9D9'} };
-
-    const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet(`${catLabel()}목록`);
-    const BULK_COLS = getBulkCols();
-    const isStd = currentCategory === 'standard';
-    BULK_COLS.forEach((c,i)=>{ ws.getColumn(i+1).width = c.width; });
-
-    ws.mergeCells(1,1,1,BULK_COLS.length);
-    const noteCell = ws.getCell(1,1);
-    noteCell.value = `${catLabel()}명은 필수입니다. 날짜는 2026-08-20 형식으로 입력해 주세요. 3행 예시는 지우고 실제 데이터를 입력한 뒤 업로드하세요.`;
-    noteCell.font = NOTE_FONT;
-    noteCell.alignment = { vertical:'middle', horizontal:'left', wrapText:true };
-    ws.getRow(1).height = 20;
-
-    const headerRow = ws.getRow(2);
-    BULK_COLS.forEach((c,i)=>{ headerRow.getCell(i+1).value = i===0 ? `${catLabel()}명 (필수)` : c.header; });
-    headerRow.eachCell(cell=>{
-      cell.font = HEADER_FONT;
-      cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:NAVY} };
-      cell.alignment = { vertical:'middle', horizontal:'center', wrapText:true };
-      cell.border = { top:THIN, left:THIN, right:THIN, bottom:THIN };
-    });
-    headerRow.height = 30;
-
-    const exampleRow = ws.getRow(3);
-    exampleRow.values = isStd
-      ? ['암모니아 표준용액', 'Ammonia Standard Solution', '100mL', '병', 5, 1, todayStr(), '', 'Merck', '7664-41-7', 'LOT-2026-001', '1000 mg/L', '99.9%', '', '냉장보관 (2~8℃)']
-      : ['아세톤', 'Acetone', '500mL', '병', 10, 2, todayStr(), '', 'Sigma-Aldrich', '67-64-1', '', '', '냉장보관 (2~8℃)'];
-    exampleRow.eachCell(cell=>{
-      cell.font = { ...BODY_FONT, italic:true, color:{argb:'FF9AA5B1'} };
-      cell.border = { top:THIN, left:THIN, right:THIN, bottom:THIN };
-    });
-
-    ws.views = [{ state:'frozen', ySplit:2 }];
-    ws.getColumn(7).numFmt = 'yyyy-mm-dd';
-    ws.getColumn(8).numFmt = 'yyyy-mm-dd';
-    if(isStd) ws.getColumn(14).numFmt = 'yyyy-mm-dd'; // 개봉일
-
-    const buf = await wb.xlsx.writeBuffer();
-    const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${catLabel()}_일괄등록양식.xlsx`;
-    document.body.appendChild(a); a.click(); a.remove(); restoreKeyboardFocus();
-    URL.revokeObjectURL(url);
-  }
-
-  function cellToDateStr(value){
-    if(!value) return '';
-    if(value instanceof Date){
-      const pad = n=>String(n).padStart(2,'0');
-      return `${value.getFullYear()}-${pad(value.getMonth()+1)}-${pad(value.getDate())}`;
-    }
-    const s = String(value).trim();
-    const m = s.match(/^(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);
-    if(m){
-      const pad = n=>String(n).padStart(2,'0');
-      return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
-    }
-    return '';
-  }
-  function cellToText(value){
-    if(value===null || value===undefined) return '';
-    if(typeof value === 'object' && value.richText){
-      return value.richText.map(r=>r.text).join('');
-    }
-    if(typeof value === 'object' && value.text) return String(value.text);
-    return String(value).trim();
-  }
-  function cellToNumber(value){
-    const n = Number(cellToText(value));
-    return Number.isNaN(n) ? 0 : n;
-  }
-
-  async function importBulkExcel(file){
-    if(typeof ExcelJS === 'undefined'){
-      showToast('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.', true);
-      return;
-    }
-    try{
-      const buf = await file.arrayBuffer();
+    if(!excelLibraryReady()) return;
+    await withExcelBusy(async ()=>{
+      const label = catLabel(), isStd = currentCategory === 'standard', cols = getBulkCols();
+      const HEADER_FONT = { name:'맑은 고딕', size:11, bold:true, color:{argb:'FFFFFFFF'} };
+      const NOTE_FONT = { name:'맑은 고딕', size:10, color:{argb:'FF4A5560'} };
+      const THIN = { style:'thin', color:{argb:'FFD9D9D9'} };
       const wb = new ExcelJS.Workbook();
-      await wb.xlsx.load(buf);
-      const ws = wb.worksheets[0];
-      if(!ws){ showToast('엑셀 파일에서 시트를 찾을 수 없습니다.', true); return; }
-
-      let added = 0, skipped = 0;
-      const now = new Date().toISOString();
-      const isStd = currentCategory === 'standard';
-      const h12 = cellToText(ws.getRow(2).getCell(12).value).toLowerCase();
-      const legacyReagentTemplate = !isStd && h12.includes('보관');
-
-      ws.eachRow({ includeEmpty:false }, (row, rowNumber)=>{
-        if(rowNumber <= 2) return; // 1행 안내, 2행 헤더
-        const name = cellToText(row.getCell(1).value);
-        if(!name){ skipped++; return; }
-
-        const nameEn = cellToText(row.getCell(2).value);
-        const spec = cellToText(row.getCell(3).value);
-        const unit = cellToText(row.getCell(4).value);
-        const stock = Math.max(0, cellToNumber(row.getCell(5).value));
-        const minStock = Math.max(0, cellToNumber(row.getCell(6).value));
-        const receivedDate = cellToDateStr(row.getCell(7).value) || todayStr();
-        const expiryDate = cellToDateStr(row.getCell(8).value);
-        const maker = cellToText(row.getCell(9).value);
-        const casNo = cellToText(row.getCell(10).value);
-        const serialNo = cellToText(row.getCell(11).value);
-        // 12번 컬럼은 공통 농도, 표준물질은 순도/개봉일이 추가됨
-        const concentration = legacyReagentTemplate ? '' : cellToText(row.getCell(12).value);
-        const purity = isStd ? cellToText(row.getCell(13).value) : '';
-        const openedDate = isStd ? cellToDateStr(row.getCell(14).value) : '';
-        const storage = cellToText(row.getCell(isStd ? 15 : (legacyReagentTemplate ? 12 : 13)).value);
-
-        const draft={name,nameEn,spec,unit,stock,minStock,casNo,serialNo,maker,storage,concentration,purity,openedDate,category:currentCategory,receivedDate,expiryDate};
-        let reagent=findDuplicateProduct(draft);
-        if(reagent){ const before=reagent.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(reagent.batches||[])); const b=addBatch(reagent,{qty:stock,receivedDate,expiryDate,lotNo:isStd?serialNo:'',openedDate}); addLog({id:reagent.id,name:reagent.name,type:'in',qty:stock,before,after:reagent.stock,batchId:b.batchId,lotNo:b.lotNo,note:'엑셀 일괄등록',batchSnapshotBefore}); }
-        else { const id=genId(currentCategory); reagent={id,name,nameEn,spec,unit,minStock,casNo,serialNo,maker,storage,concentration,purity,openedDate,category:currentCategory,receivedDate,expiryDate,createdAt:now,updatedAt:now,archivedAt:'',archiveReason:'',batches:[],stock:0}; addBatch(reagent,{qty:stock,receivedDate,expiryDate,lotNo:isStd?serialNo:'',openedDate}); DB.reagents.push(reagent); addLog({id,name,type:'register',qty:stock,before:0,after:reagent.stock,batchId:'B001',lotNo:isStd?serialNo:'',note:'엑셀 일괄등록'}); }
-        added++;
+      const setup = (ws, note, noteHeight)=>{
+        cols.forEach((c,i)=>{ const col = ws.getColumn(i+1); col.width = c.width; col.numFmt = c.date ? 'yyyy-mm-dd' : c.text ? '@' : ''; });
+        ws.mergeCells(1, 1, 1, cols.length);
+        const n = ws.getCell(1,1); n.value = note; n.font = NOTE_FONT; n.alignment = { vertical:'middle', horizontal:'left', wrapText:true };
+        ws.getRow(1).height = noteHeight;
+        const hr = ws.getRow(2);
+        cols.forEach((c,i)=>{ const cell = hr.getCell(i+1); cell.value = c.header; cell.font = HEADER_FONT; cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FF558022'} }; cell.alignment = { vertical:'middle', horizontal:'center', wrapText:true }; cell.border = { top:THIN, left:THIN, right:THIN, bottom:THIN }; });
+        hr.height = 32;
+        ws.views = [{ state:'frozen', ySplit:2 }];
+      };
+      const ws = wb.addWorksheet(`${label}목록`);
+      setup(ws, `① 2행 머리글은 지우거나 바꾸지 마세요.  ② 3행부터 한 줄에 한 품목씩 입력합니다 (${label}명은 필수).  ③ 날짜는 2026-08-20처럼 입력합니다.\n④ CAS No.·${isStd ? 'Lot No.' : '시리얼번호'} 등 글자 칸은 '텍스트' 서식입니다. 다른 파일에서 복사할 때는 [선택하여 붙여넣기 → 값]을 쓰세요.  ⑤ 작성 예는 '${BULK_EXAMPLE_SHEET}' 시트에 있습니다.`, 44);
+      const ex = wb.addWorksheet(BULK_EXAMPLE_SHEET);
+      setup(ex, `작성 예시입니다. 이 시트의 내용은 등록되지 않습니다. 실제 자료는 '${label}목록' 시트에 입력하세요.`, 24);
+      bulkExampleRows(isStd).forEach((vals,i)=>{
+        const row = ex.getRow(3+i); row.values = vals;
+        for(let c=1; c<=cols.length; c++){ const cell = row.getCell(c); cell.font = { name:'맑은 고딕', size:10.5, color:{argb:'FF6B7684'} }; cell.border = { top:THIN, left:THIN, right:THIN, bottom:THIN }; if(cols[c-1].date) cell.numFmt = 'yyyy-mm-dd'; else if(cols[c-1].text) cell.numFmt = '@'; }
       });
+      const buf = await wb.xlsx.writeBuffer();
+      const saved = await saveBytesAs(buf, `${label}_일괄등록양식.xlsx`);
+      toastSaved(saved, `'${label}목록' 시트에 입력한 뒤 [엑셀로 일괄등록]으로 올려 주세요`);
+    });
+  }
 
-      if(added === 0){
-        showToast(`등록할 ${catLabel()}이 없습니다. 양식의 ${catLabel()}명 칸을 확인해주세요.`, true);
-        return;
-      }
-
-      await saveDB();
-      renderInventory(); renderRecentLogs(); renderStats();
-      const msg = skipped > 0
-        ? `${added}건 등록 완료 (${catLabel()}명 없는 ${skipped}건은 건너뜀)`
-        : `${added}건 등록 완료`;
-      showToast(msg);
-    }catch(e){
-      showToast('엑셀 파일을 읽는 중 오류가 발생했습니다. 양식을 다시 확인해주세요.', true);
+  // ----- 셀 값 읽기 -----
+  const pad2 = n => String(n).padStart(2,'0');
+  const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
+  function realDate(y,m,d){ const t = new Date(y, m-1, d); return y>=2000 && y<=2100 && t.getFullYear()===y && t.getMonth()===m-1 && t.getDate()===d; }
+  // 날짜 칸: {ok, value('YYYY-MM-DD' 또는 ''), raw, monthOnly}
+  function parseDateCell(value, allowMonth){
+    if(value===null || value===undefined || value==='') return {ok:true, value:''};
+    if(value instanceof Date){
+      if(Number.isNaN(value.getTime())) return {ok:false, raw:'(날짜 아님)'};
+      const y=value.getFullYear(), m=value.getMonth()+1, d=value.getDate();
+      return realDate(y,m,d) ? {ok:true, value:ymd(y,m,d)} : {ok:false, raw:ymd(y,m,d)};
     }
+    if(typeof value === 'number'){
+      if(Number.isInteger(value) && value >= 19000101 && value <= 21001231){ const y=Math.floor(value/10000), m=Math.floor(value/100)%100, d=value%100; return realDate(y,m,d) ? {ok:true, value:ymd(y,m,d)} : {ok:false, raw:String(value)}; }
+      if(value >= 36526 && value <= 73415){ const t = new Date(Date.UTC(1899,11,30) + Math.floor(value)*86400000); return {ok:true, value:ymd(t.getUTCFullYear(), t.getUTCMonth()+1, t.getUTCDate())}; }
+      return {ok:false, raw:String(value)};
+    }
+    const raw = String(value).normalize('NFKC').trim(); if(!raw) return {ok:true, value:''};
+    const s = raw.replace(/\s+/g,'').replace(/[년월]/g,'-').replace(/일$/,'').replace(/[./]/g,'-').replace(/-+$/,'');
+    let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s) || /^(\d{4})(\d{2})(\d{2})$/.exec(s);
+    if(m) return realDate(+m[1],+m[2],+m[3]) ? {ok:true, value:ymd(+m[1],+m[2],+m[3])} : {ok:false, raw};
+    m = /^(\d{2})-(\d{1,2})-(\d{1,2})$/.exec(s);
+    if(m) return realDate(2000+ +m[1],+m[2],+m[3]) ? {ok:true, value:ymd(2000+ +m[1],+m[2],+m[3])} : {ok:false, raw};
+    m = /^(\d{4})-(\d{1,2})$/.exec(s);
+    if(m && allowMonth && +m[2]>=1 && +m[2]<=12 && +m[1]>=2000 && +m[1]<=2100){ const last = new Date(+m[1], +m[2], 0).getDate(); return {ok:true, value:ymd(+m[1],+m[2],last), monthOnly:true}; }
+    return {ok:false, raw};
+  }
+  // 수량 칸: {ok, value, raw}. '1,000'·'５'·'5병'(단위와 같은 글자)까지 읽고, 그 밖의 글자·음수는 오류로 돌려준다.
+  function parseQtyCell(value, unit){
+    if(value===null || value===undefined || value==='') return {ok:true, value:0, blank:true};
+    if(typeof value === 'number') return (Number.isFinite(value) && value >= 0) ? {ok:true, value:roundQty(value)} : {ok:false, raw:String(value)};
+    if(value instanceof Date) return {ok:false, raw:'(날짜)'};
+    const raw = String(value).normalize('NFKC').trim(); if(!raw) return {ok:true, value:0, blank:true};
+    let s = raw.replace(/\s+/g,'');
+    const u = String(unit||'').normalize('NFKC').trim().replace(/\s+/g,'');
+    if(u && s.length > u.length && s.toLowerCase().endsWith(u.toLowerCase()) && /\d$/.test(s.slice(0, -u.length))) s = s.slice(0, -u.length);
+    else s = s.replace(/(?<=\d)(개|병|통|ea)$/i, '');
+    if(/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g,'');
+    return /^\d+(\.\d+)?$/.test(s) ? {ok:true, value:roundQty(Number(s))} : {ok:false, raw};
+  }
+  // 글자 칸: 엑셀이 날짜·백분율로 바꿔 버린 값을 그대로 저장하지 않는다. {value, changed(날짜로 바뀐 표시값)}
+  function parseTextCell(cell){
+    const v = cell ? cell.value : null;
+    if(v===null || v===undefined) return {value:''};
+    if(v instanceof Date) return {value:'', changed:Number.isNaN(v.getTime()) ? '날짜' : ymd(v.getFullYear(), v.getMonth()+1, v.getDate()), date:v};
+    if(typeof v === 'number'){ if(cell.numFmt && /%/.test(cell.numFmt)) return {value:`${+(v*100).toPrecision(12)}%`}; return {value:String(+v.toPrecision(15))}; }
+    if(typeof v === 'boolean') return {value:v ? 'TRUE' : 'FALSE'};
+    return {value:String(v).replace(/[\u0000-\u001f]+/g,' ').trim()};
+  }
+  function normalizeCas(v){
+    return String(v||'').normalize('NFKC').trim().replace(/^cas\s*(no\.?|번호)?\s*[:：]?\s*/i,'').replace(/[‐-―−﹘﹣－]/g,'-').replace(/\s*-\s*/g,'-').trim();
+  }
+  function validCas(v){ return !!(window.InventorySafetyCommon && window.InventorySafetyCommon.validCAS(v)); }
+  // CAS 칸이 날짜로 바뀐 경우(예: 75-05-8 → 1975-05-08) 원래 번호를 되살려 본다.
+  function casFromDate(d){
+    const y = d.getFullYear(), m = pad2(d.getMonth()+1), day = d.getDate();
+    const cands = [`${y}-${m}-${day}`]; if(y >= 1930 && y <= 2029) cands.unshift(`${String(y).slice(2)}-${m}-${day}`);
+    return cands.filter(validCas);
+  }
+  const bulkHeaderKey = v => String(v===null || v===undefined ? '' : v).normalize('NFKC').replace(/\([^)]*\)/g,'').replace(/[\s._\-\/]/g,'').toLowerCase();
+  const BULK_ALIASES = {
+    name:['시약명','표준물질명','품명','물질명','제품명'], nameEn:['영문명','영문'], spec:['규격용량','규격','용량'], unit:['단위'], stock:['초기재고','수량','입고수량','재고'], minStock:['최소재고기준','최소재고'],
+    receivedDate:['입고일','입고일자'], expiryDate:['유효기간','유효기한','유통기한'], maker:['제조사','제조회사'], casNo:['casno','cas','cas번호'], serialNo:['제품시리얼번호','시리얼번호','lotno','lot','lot번호'],
+    concentration:['농도'], purity:['순도'], openedDate:['개봉일','개봉일자'], storage:['보관방법','보관조건','보관장소'],
+  };
+  // 시트에서 머리글 행과 열 위치를 찾는다. 양식이 아니면 이유(reason)를 돌려준다.
+  function findBulkHeader(ws){
+    for(let rno=1; rno<=10; rno++){
+      const row = ws.rows.get(rno); if(!row) continue;
+      const map = {}, seen = [];
+      row.eachCell((cell, c)=>{ const k = bulkHeaderKey(cell.value); if(!k) return; seen.push(k); for(const [field, names] of Object.entries(BULK_ALIASES)){ if(map[field] === undefined && names.includes(k)) map[field] = c; } });
+      if(map.name === undefined) continue;
+      const nameHeader = bulkHeaderKey(row.getCell(map.name).value);
+      const kind = nameHeader === '표준물질명' ? 'standard' : nameHeader === '시약명' ? 'reagent' : (seen.includes('순도') || seen.includes('개봉일')) ? 'standard' : '';
+      return {row:rno, map, kind, ledger:seen.includes('qr코드id') || seen.includes('현재재고')};
+    }
+    return null;
+  }
+
+  // 엑셀 파일을 읽어 '무엇을 어떻게 등록할지' 계획만 만든다. DB는 건드리지 않는다.
+  function planBulkImport(wb){
+    const label = catLabel(), isStd = currentCategory === 'standard', today = todayStr();
+    const sheets = wb.worksheets.filter(w=>w.name !== BULK_EXAMPLE_SHEET);
+    const found = sheets.map(ws=>({ws, head:findBulkHeader(ws)})).filter(x=>x.head);
+    if(!found.length) return {error:`일괄등록 양식이 아닙니다. 머리글(${label}명, 초기재고 …)이 있는 행을 찾지 못했습니다.\n[양식 다운로드]로 받은 파일에 입력해 주세요.`};
+    const pick = found.find(x=>!x.head.ledger && x.ws.name === `${label}목록`) || found.find(x=>!x.head.ledger) || found[0];
+    const {ws, head} = pick;
+    if(head.ledger) return {error:'내보낸 대장(재고현황) 파일입니다. 일괄등록에는 [양식 다운로드]로 받은 양식을 사용해 주세요.'};
+    if(head.kind && head.kind !== currentCategory) return {error:`${catLabel(head.kind)} 양식입니다. 왼쪽 메뉴에서 '${catLabel(head.kind)}관리'로 들어가 등록 화면에서 올려 주세요.`};
+    if(head.map.stock === undefined) return {error:`양식에 '초기재고' 열이 없습니다. [양식 다운로드]로 받은 파일에 입력해 주세요.`};
+    const col = key => head.map[key];
+    const cellOf = (row, key) => col(key) === undefined ? null : (row.cells.get(col(key)) || null);
+    const rows = []; let exampleSkipped = 0;
+    const planned = []; // 이번 파일로 새로 만들 품목 (같은 파일 안의 같은 제품은 한 품목의 입고회차로 묶는다)
+    const existKeys = new Map(), running = new Map(); // 기존 품목별: 이미 있는 입고(같은 날짜·유효기간·수량) 개수, 이번 파일로 늘어날 재고
+    const batchKey = b => [b.receivedDate||'', b.expiryDate||'', isStd ? (b.lotNo||'') : '', roundQty(b.initialQty)].join('|');
+    ws.eachRow({includeEmpty:false}, (row, rowNumber)=>{
+      if(rowNumber <= head.row) return;
+      const filled = [...row.cells.values()].some(c=>c.value !== null && c.value !== undefined && String(c.value).trim() !== '');
+      if(!filled) return;
+      const out = {row:rowNumber, errors:[], warns:[]};
+      const text = (key, what) => { const t = parseTextCell(cellOf(row, key)); if(t.changed) out.warns.push(`${what} 칸이 엑셀에서 날짜(${t.changed})로 바뀌어 있어 비워 두었습니다`); return t; };
+      const name = parseTextCell(cellOf(row, 'name')).value;
+      out.name = name;
+      if(!name){ out.errors.push(`${label}명이 비어 있습니다`); rows.push(out); return; }
+      if(/^(예\)|예시|\(예\)|ex\))/i.test(name)){ exampleSkipped++; return; }
+      const nameEn = text('nameEn','영문명').value, spec = text('spec','규격/용량').value, unit = text('unit','단위').value, maker = text('maker','제조사').value;
+      const concentration = text('concentration','농도').value, storage = text('storage','보관방법').value, purity = isStd ? text('purity','순도').value : '';
+      const serialNo = text('serialNo', isStd ? 'Lot No.' : '제품 시리얼번호').value;
+      // 예전 양식(3행 예시가 같은 시트에 있던 것)의 예시행은 등록하지 않는다.
+      if(rowNumber === head.row + 1){
+        const st0 = parseQtyCell((cellOf(row,'stock')||{}).value, unit).value;
+        if((!isStd && name==='아세톤' && nameEn==='Acetone' && spec==='500mL' && st0===10 && /^Sigma/i.test(maker)) || (isStd && name==='암모니아 표준용액' && spec==='100mL' && st0===5 && serialNo==='LOT-2026-001')){ exampleSkipped++; return; }
+      }
+      const q = parseQtyCell((cellOf(row,'stock')||{}).value, unit);
+      if(!q.ok) out.errors.push(`초기재고 '${q.raw}'을(를) 숫자로 읽을 수 없습니다`);
+      const mq = parseQtyCell((cellOf(row,'minStock')||{}).value, unit);
+      if(!mq.ok) out.errors.push(`최소재고기준 '${mq.raw}'을(를) 숫자로 읽을 수 없습니다`);
+      const rd = parseDateCell((cellOf(row,'receivedDate')||{}).value), ed = parseDateCell((cellOf(row,'expiryDate')||{}).value, true), od = isStd ? parseDateCell((cellOf(row,'openedDate')||{}).value) : {ok:true, value:''};
+      if(!rd.ok) out.errors.push(`입고일 '${rd.raw}'을(를) 날짜로 읽을 수 없습니다`);
+      if(!ed.ok) out.errors.push(`유효기간 '${ed.raw}'을(를) 날짜로 읽을 수 없습니다`);
+      if(!od.ok) out.errors.push(`개봉일 '${od.raw}'을(를) 날짜로 읽을 수 없습니다`);
+      // CAS
+      let casNo = ''; const casCell = cellOf(row, 'casNo'), casRaw = casCell ? casCell.value : null;
+      if(casRaw instanceof Date){ const c = casFromDate(casRaw); if(c.length === 1){ casNo = c[0]; out.warns.push(`CAS No.가 엑셀에서 날짜로 바뀌어 있어 ${casNo}(으)로 되돌렸습니다`); } else out.warns.push('CAS No.가 엑셀에서 날짜로 바뀌어 있어 비워 두었습니다'); }
+      else { casNo = normalizeCas(parseTextCell(casCell).value); if(casNo && !validCas(casNo)) out.warns.push(`CAS No. '${casNo}'이(가) 형식에 맞지 않습니다 (MSDS 자동 받기 대상에서 빠집니다)`); }
+      if(out.errors.length){ rows.push(out); return; }
+      const stock = q.value, minStock = mq.value;
+      if(ed.monthOnly) out.warns.push(`유효기간에 날짜가 없어 그 달 말일(${ed.value})로 넣었습니다`);
+      if(ed.value && ed.value < today) out.warns.push('유효기간이 이미 지났습니다');
+      if(stock >= 10000) out.warns.push(`초기재고 ${fmtQty(stock)} — 수량을 확인해 주세요`);
+      const draft = {name, nameEn, spec, unit, stock, minStock, casNo, serialNo, maker, storage, concentration, purity, openedDate:od.value, category:currentCategory, receivedDate:rd.value || today, expiryDate:ed.value};
+      out.draft = draft; out.qty = stock; out.expiryDate = ed.value;
+      const myKey = [draft.receivedDate, draft.expiryDate, isStd ? serialNo : '', stock].join('|');
+      const existing = findDuplicateProduct(draft);
+      if(existing){
+        let keys = existKeys.get(existing.id);
+        if(!keys){ keys = new Map(); (existing.batches||[]).forEach(b=>{ const k = batchKey(b); keys.set(k, (keys.get(k)||0) + 1); }); existKeys.set(existing.id, keys); running.set(existing.id, Number(existing.stock)||0); }
+        out.target = existing.id; out.before = running.get(existing.id);
+        if(stock <= 0){ out.action = 'skip'; out.reason = `이미 등록된 품목이고 수량이 0입니다 (${existing.id})`; }
+        else if(keys.get(myKey) > 0){
+          // 같은 파일을 다시 올린 경우: 이미 들어 있는 입고와 같은 줄은 그 개수만큼 제외한다.
+          keys.set(myKey, keys.get(myKey) - 1); out.action = 'skip'; out.dup = true; out.alt = 'add';
+          out.reason = `이미 같은 입고(입고일·유효기간·수량 동일)가 등록되어 있습니다 (${existing.id})`;
+        }
+        else { out.action = 'add'; running.set(existing.id, roundQty(out.before + stock)); }
+      }else{
+        const twin = planned.find(p=>sameProduct(Object.assign({archivedAt:''}, p.draft), draft));
+        if(twin){
+          out.twinRow = twin.row;
+          if(stock <= 0){ out.action = 'skip'; out.reason = `${twin.row}행과 같은 제품이고 수량이 0입니다`; }
+          else { out.action = 'addNew'; if(twin.keys.has(myKey)) out.warns.push(`${twin.row}행과 내용이 같습니다. 같은 입고를 두 번 적은 것이 아닌지 확인해 주세요`); twin.keys.add(myKey); }
+        }else{ out.action = 'new'; planned.push({row:rowNumber, draft, keys:new Set([myKey])}); }
+      }
+      rows.push(out);
+    });
+    rows.forEach(o=>{ if(o.errors.length){ o.action = 'error'; o.reason = o.errors.join(' / '); } });
+    return {rows, exampleSkipped, sheet:ws.name};
+  }
+
+  let lastBulkImport = null; // 방금 한 일괄등록 (되돌리기용)
+  function bulkPlanTable(rows){
+    const badge = o => o.action==='new' ? '<span class="badge ok-badge">신규</span>' : (o.action==='add' || o.action==='addNew') ? '<span class="badge low">입고 추가</span>' : '<span class="badge out">제외</span>';
+    const info = o => {
+      const bits = [];
+      if(o.action==='add') bits.push(`${o.target}에 입고 추가 · 재고 ${fmtQty(o.before)} → ${fmtQty(roundQty(o.before + o.qty))}`);
+      if(o.action==='addNew') bits.push(`${o.twinRow}행과 같은 제품 — 입고회차로 추가`);
+      if(o.reason) bits.push(o.reason);
+      bits.push(...o.warns);
+      return bits.map(escapeHtml).join('<br>');
+    };
+    return `<div class="bulk-plan-wrap"><table class="batch-table bulk-plan"><thead><tr><th>엑셀 행</th><th>처리</th><th>${catLabel()}명</th><th>수량</th><th>유효기간</th><th>내용</th></tr></thead><tbody>${rows.map(o=>`<tr class="${o.action==='error'||o.action==='skip'?'bulk-skip':''}"><td>${o.row}</td><td>${badge(o)}</td><td>${escapeHtml(o.name||'(이름 없음)')}</td><td>${o.draft ? fmtQty(o.qty)+' '+escapeHtml(o.draft.unit||'') : '-'}</td><td>${escapeHtml(o.expiryDate||'-')}</td><td class="bulk-info">${info(o)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  async function importBulkExcel(file){
+    if(!excelLibraryReady()) return;
+    const fname = String((file && file.name) || '');
+    if(!/\.xlsx$/i.test(fname)){
+      showToast(/\.xls$/i.test(fname) ? '예전 형식(.xls) 파일은 읽을 수 없습니다. 엑셀에서 [다른 이름으로 저장 → Excel 통합 문서(.xlsx)]로 바꿔 올려 주세요.' : '엑셀 파일(.xlsx)만 올릴 수 있습니다. [양식 다운로드]로 받은 파일에 입력해 주세요.', true);
+      return;
+    }
+    let plan;
+    try{
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(await file.arrayBuffer());
+      if(!wb.worksheets.length){ showToast('엑셀 파일에서 시트를 찾을 수 없습니다.', true); return; }
+      plan = planBulkImport(wb);
+    }catch(e){
+      console.error(e);
+      showToast('엑셀 파일을 열 수 없습니다. 파일이 엑셀에서 열려 있으면 저장하고 닫은 뒤 다시 올려 주세요. 암호가 걸린 파일은 읽을 수 없습니다.', true);
+      return;
+    }
+    if(plan.error){ showToast(plan.error, true); alert(plan.error); restoreKeyboardFocus(); return; }
+    const label = catLabel(), rows = plan.rows;
+    const nNew = rows.filter(o=>o.action==='new').length, nAdd = rows.filter(o=>o.action==='add' || o.action==='addNew').length, nSkip = rows.filter(o=>o.action==='skip').length, nErr = rows.filter(o=>o.action==='error').length;
+    const nWarn = rows.filter(o=>o.warns.length && o.action!=='error' && o.action!=='skip').length, todo = nNew + nAdd, nDup = rows.filter(o=>o.dup).length;
+    const exNote = plan.exampleSkipped ? ` · 예시행 ${plan.exampleSkipped}건 제외` : '';
+    if(!rows.length){ showToast(`등록할 ${label}이 없습니다. '${plan.sheet}' 시트의 머리글 아래에 내용을 입력해 주세요.${exNote}`, true); return; }
+    showScanModal(`<div class="scan-result"><h3>${label} 일괄등록 — 확인</h3>
+      <div class="meta">${escapeHtml(fname)} · '${escapeHtml(plan.sheet)}' 시트${exNote}</div>
+      <div class="bulk-summary"><span class="chip">신규 등록 <b>${nNew}</b></span><span class="chip">기존 품목에 입고 추가 <b>${nAdd}</b></span><span class="chip ${nSkip?'warn':''}">이미 있어 제외 <b>${nSkip}</b></span><span class="chip ${nErr?'bad':''}">오류로 제외 <b>${nErr}</b></span></div>
+      ${nErr ? `<div class="hint bulk-warn">오류가 있는 ${nErr}줄은 등록되지 않습니다. 엑셀에서 고친 뒤 같은 파일을 다시 올리면 빠진 줄만 추가로 등록됩니다.</div>` : ''}
+      ${nWarn ? `<div class="hint">확인이 필요한 줄이 ${nWarn}건 있습니다. '내용' 칸을 확인해 주세요.</div>` : ''}
+      ${bulkPlanTable(rows)}
+      ${nDup ? `<label class="bulk-dup-opt"><input type="checkbox" id="bulk-include-dups"> 이미 등록된 것과 같은 ${nDup}줄도 새 입고로 추가 (같은 날 같은 수량이 또 들어온 경우에만 체크)</label>` : ''}
+      <div class="adjust-row" style="justify-content:flex-end;gap:8px;margin-top:12px;"><button class="ghost" id="bulk-plan-cancel">취소</button><button class="primary" id="bulk-plan-apply" ${todo ? '' : 'disabled'}>${todo}건 등록</button></div></div>`);
+    document.getElementById('scan-modal-box').classList.add('modal-box-import');
+    document.getElementById('bulk-plan-cancel').onclick = ()=>{ closeScanModal(); showToast('일괄등록을 취소했습니다. 아무것도 등록하지 않았습니다.'); };
+    const applyBtn = document.getElementById('bulk-plan-apply'), dupBox = document.getElementById('bulk-include-dups');
+    const withDups = ()=>!!(dupBox && dupBox.checked);
+    if(dupBox) dupBox.onchange = ()=>{ const n = todo + (withDups() ? nDup : 0); applyBtn.textContent = `${n}건 등록`; applyBtn.disabled = !n; };
+    applyBtn.onclick = async ()=>{
+      applyBtn.disabled = true;
+      const inc = withDups();
+      if(inc) rows.forEach(o=>{ if(o.dup){ o.action = o.alt; o.reason = ''; } });
+      await applyBulkImport(rows, {skipped:nSkip - (inc ? nDup : 0), errors:nErr});
+    };
+    (todo ? applyBtn : document.getElementById('bulk-plan-cancel')).focus();
+  }
+  async function applyBulkImport(rows, counts){
+    const isStd = currentCategory === 'standard', now = new Date().toISOString(), importId = 'IMP' + Date.now().toString(36);
+    const record = {id:importId, category:currentCategory, nextIdBefore:DB.nextId, nextIdStdBefore:DB.nextIdStd, applied:[], labelsPrinted:false};
+    const byRow = new Map();
+    for(const o of rows){
+      const d = o.draft; if(!d) continue;
+      if(o.action === 'new'){
+        const id = genId(currentCategory);
+        const reagent = {id, name:d.name, nameEn:d.nameEn, spec:d.spec, unit:d.unit, minStock:d.minStock, casNo:d.casNo, serialNo:d.serialNo, maker:d.maker, storage:d.storage, concentration:d.concentration, purity:d.purity, openedDate:d.openedDate, category:currentCategory, receivedDate:d.receivedDate, expiryDate:d.expiryDate, createdAt:now, updatedAt:now, archivedAt:'', archiveReason:'', batches:[], stock:0};
+        const b = addBatch(reagent, {qty:d.stock, receivedDate:d.receivedDate, expiryDate:d.expiryDate, lotNo:isStd ? d.serialNo : '', openedDate:d.openedDate});
+        DB.reagents.push(reagent); byRow.set(o.row, reagent);
+        addLog({id, name:d.name, type:'register', qty:d.stock, before:0, after:reagent.stock, batchId:b.batchId, lotNo:b.lotNo, note:'엑셀 일괄등록', importId});
+        record.applied.push({kind:'new', id, batchId:b.batchId});
+      }else if(o.action === 'add' || o.action === 'addNew'){
+        const reagent = o.action === 'add' ? findReagent(o.target) : byRow.get(o.twinRow); if(!reagent) continue;
+        const before = reagent.stock, batchSnapshotBefore = JSON.parse(JSON.stringify(reagent.batches||[]));
+        const b = addBatch(reagent, {qty:d.stock, receivedDate:d.receivedDate, expiryDate:d.expiryDate, lotNo:isStd ? d.serialNo : '', openedDate:d.openedDate});
+        addLog({id:reagent.id, name:reagent.name, type:'in', qty:d.stock, before, after:reagent.stock, batchId:b.batchId, lotNo:b.lotNo, note:'엑셀 일괄등록 · 기존 품목 입고', batchSnapshotBefore, importId});
+        record.applied.push({kind:'add', id:reagent.id, batchId:b.batchId});
+      }
+    }
+    await saveDB();
+    lastBulkImport = record; updateBulkUndoButton();
+    renderInventory(); renderRecentLogs(); renderStats();
+    showBulkResult(record, counts);
+  }
+  function bulkLabelItems(record){
+    return record.applied.map(a=>{ const r = findReagent(a.id), b = r && (r.batches||[]).find(x=>x.batchId===a.batchId); return r && b ? makeBatchLabelItem(r, b) : null; }).filter(Boolean);
+  }
+  function showBulkResult(record, counts){
+    const label = catLabel(record.category), nNew = record.applied.filter(a=>a.kind==='new').length, nAdd = record.applied.length - nNew;
+    const items = record.applied.map(a=>{ const r = findReagent(a.id), b = r && (r.batches||[]).find(x=>x.batchId===a.batchId); return r && b ? {r, b, kind:a.kind} : null; }).filter(Boolean);
+    const casCount = items.filter(x=>x.kind==='new' && validCas(x.r.casNo)).length;
+    showScanModal(`<div class="scan-result"><h3>${label} 일괄등록 완료</h3>
+      <div class="bulk-summary"><span class="chip">신규 등록 <b>${nNew}</b></span><span class="chip">기존 품목에 입고 추가 <b>${nAdd}</b></span>${counts.skipped ? `<span class="chip warn">이미 있어 제외 <b>${counts.skipped}</b></span>` : ''}${counts.errors ? `<span class="chip bad">오류로 제외 <b>${counts.errors}</b></span>` : ''}</div>
+      <div class="bulk-plan-wrap"><table class="batch-table bulk-plan bulk-result"><thead><tr><th>QR코드ID</th><th>구분</th><th>${label}명</th><th>수량</th><th>유효기간</th></tr></thead><tbody>${items.map(x=>`<tr><td><span class="id-cell">${escapeHtml(batchQrCode(x.r, x.b))}</span></td><td>${x.kind==='new' ? '신규' : '입고 추가'}</td><td>${escapeHtml(x.r.name)}</td><td>${fmtQty(x.b.initialQty)} ${escapeHtml(x.r.unit||'')}</td><td>${escapeHtml(x.b.expiryDate||'-')}</td></tr>`).join('')}</tbody></table></div>
+      ${casCount && settings().autoFetchMsds !== false ? `<div class="hint">MSDS는 일괄등록에서 자동으로 받지 않습니다. 왼쪽 메뉴 'MSDS 관리'의 [일괄 받기]로 한꺼번에 받을 수 있습니다 (CAS 있는 신규 ${casCount}건).</div>` : ''}
+      <div class="adjust-row" style="justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="ghost danger-text" id="bulk-result-undo">이번 등록 취소</button><button class="ghost" id="bulk-result-close">닫기</button><button class="primary" id="bulk-result-labels">QR 라벨 인쇄 (${items.length}장)</button></div></div>`);
+    document.getElementById('scan-modal-box').classList.add('modal-box-import');
+    document.getElementById('bulk-result-close').onclick = ()=>{ closeScanModal(); showToast(`신규 ${nNew}건 등록, 기존 품목 입고 ${nAdd}건 추가 완료`); };
+    document.getElementById('bulk-result-labels').onclick = ()=>{ const list = bulkLabelItems(record); record.labelsPrinted = true; closeScanModal(); if(list.length) printLabelsBrother(list); };
+    document.getElementById('bulk-result-undo').onclick = ()=>{ closeScanModal(); undoBulkImport(); };
+    document.getElementById('bulk-result-labels').focus();
+  }
+  function updateBulkUndoButton(){
+    const btn = document.getElementById('bulk-undo-btn'); if(!btn) return;
+    const on = !!(lastBulkImport && lastBulkImport.applied.length);
+    btn.style.display = on ? '' : 'none';
+    if(on) btn.textContent = `방금 일괄등록 취소 (${lastBulkImport.applied.length}건)`;
+  }
+  // 방금 한 일괄등록만 되돌린다. 그 뒤에 입출고·MSDS 첨부 등 변경이 생긴 항목은 그대로 둔다.
+  async function undoBulkImport(){
+    const rec = lastBulkImport; if(!rec || !rec.applied.length){ showToast('되돌릴 일괄등록이 없습니다.', true); return; }
+    if(!safeConfirm(`방금 일괄등록한 ${rec.applied.length}건을 취소할까요?\n등록된 품목과 입고회차가 삭제됩니다.\n(그 뒤에 입출고나 MSDS 첨부를 한 항목은 그대로 둡니다)`)) return;
+    let undone = 0, kept = 0;
+    for(const a of rec.applied.slice().reverse()){
+      const r = findReagent(a.id), b = r && (r.batches||[]).find(x=>x.batchId===a.batchId);
+      const li = DB.logs.findIndex(l=>l.importId===rec.id && l.id===a.id && l.batchId===a.batchId);
+      const untouched = r && b && li >= 0 && roundQty(b.stock) === roundQty(b.initialQty) && li === DB.logs.findIndex(l=>l.id===a.id);
+      if(!untouched){ kept++; continue; }
+      if(a.kind === 'new'){
+        if(r.batches.length !== 1 || (r.msdsDocuments||[]).length || r.ghs || r.archivedAt){ kept++; continue; }
+        DB.reagents.splice(DB.reagents.indexOf(r), 1); selectedPrintIds.delete(r.id);
+      }else{ r.batches.splice(r.batches.indexOf(b), 1); syncReagentFromBatches(r); }
+      DB.logs.splice(li, 1); undone++;
+    }
+    // 번호를 다시 쓰는 것은 라벨을 아직 인쇄하지 않았고, 그 번호 이후의 품목이 하나도 없을 때만.
+    if(!rec.labelsPrinted){
+      const maxNo = prefix => DB.reagents.reduce((m,r)=>{ const x = new RegExp('^'+prefix+'(\\d+)$').exec(r.id); return x ? Math.max(m, Number(x[1])) : m; }, 0);
+      DB.nextId = Math.max(rec.nextIdBefore, maxNo('RG') + 1); DB.nextIdStd = Math.max(rec.nextIdStdBefore, maxNo('ST') + 1);
+    }
+    lastBulkImport = null; updateBulkUndoButton();
+    await saveDB(); renderInventory(); renderRecentLogs(); renderStats();
+    showToast(kept ? `${undone}건을 취소했습니다. ${kept}건은 그 뒤에 변경이 있어 그대로 두었습니다.` : `일괄등록 ${undone}건을 취소했습니다.`, kept > 0 && undone === 0);
   }
 
   function cleanLogNoteForDisplay(log){
@@ -2138,418 +2563,274 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     return note;
   }
 
-  async function exportExcel(){
-    if(typeof ExcelJS === 'undefined'){
-      showToast('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.', true);
-      return;
-    }
-    const hasCatData = DB.reagents.some(r=>(r.category||'reagent')===currentCategory);
-    if(!hasCatData){
-      showToast(`내보낼 ${catLabel()} 데이터가 없습니다.`, true);
-      return;
-    }
-
-    const NAVY = 'FF558022';
-    const NAVY_TINT = 'FFF0F6E4';
-    const RED = 'FFED193A';
-    const RED_TINT = 'FFFDE7EA';
-    const AMBER = 'FFC97A2B';
-    const AMBER_TINT = 'FFFBEEDF';
-    const GRAY = 'FF6B7684';
-    const TITLE_FONT = { name:'맑은 고딕', size:14, bold:true, color:{argb:NAVY} };
-    const SUBTITLE_FONT = { name:'맑은 고딕', size:9.5, color:{argb:GRAY} };
-    const HEADER_FONT = { name:'맑은 고딕', size:11, bold:true, color:{argb:'FFFFFFFF'} };
-    const BODY_FONT = { name:'맑은 고딕', size:11 };
-    const KPI_LABEL_FONT = { name:'맑은 고딕', size:9, color:{argb:GRAY} };
-    const THIN = { style:'thin', color:{argb:'FFC7CDD3'} };
-    const MEDIUM_NAVY = { style:'medium', color:{argb:NAVY} };
-    const BORDER_ALL = { top:THIN, left:THIN, bottom:THIN, right:THIN };
-    const ZEBRA_TINT = 'FFF5F6F7';
-    const RED_UNDERLINE = { style:'medium', color:{argb:RED} };
-    const HEADER_ROW = 7;
-    const DATA_START_ROW = HEADER_ROW + 1;
-
-    let logoBase64 = null;
-    const footerImg = document.querySelector('.footer-logo');
-    if(footerImg){
-      const src = footerImg.getAttribute('src') || '';
-      if(src.startsWith('data:image')) logoBase64 = src.split(',')[1];
-    }
-
-    function lastEventDate(id, type){
-      const events = DB.logs.filter(l=>l.id===id && l.type===type && l.qty>0);
-      if(events.length===0) return '';
-      const latest = events.reduce((a,b)=> new Date(a.date)>new Date(b.date)?a:b);
-      const d = new Date(latest.date);
-      const pad = n=>String(n).padStart(2,'0');
-      return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
-    }
-
-    function addTitleBar(ws, imageId, title, lastColLetter){
-      // Row1: 로고 전용 (텍스트 없음, 겹치지 않게 분리)
-      ws.getRow(1).height = 34;
-      if(imageId!==null){
-        ws.addImage(imageId, { tl:{col:0.05, row:0.1}, ext:{width:150, height:36.6} });
-      }
-      ws.getRow(1).eachCell({includeEmpty:true}, cell=>{
-        cell.border = { bottom: RED_UNDERLINE };
-      });
-
-      // Row2: 제목
-      ws.mergeCells(`A2:${lastColLetter}2`);
-      const titleCell = ws.getCell('A2');
-      titleCell.value = title;
-      titleCell.font = TITLE_FONT;
-      titleCell.alignment = { vertical:'middle', horizontal:'left', indent:1 };
-      ws.getRow(2).height = 24;
-
-      // Row3: 부제
-      ws.mergeCells(`A3:${lastColLetter}3`);
-      const subCell = ws.getCell('A3');
-      const stamp = todayStr().replace(/-/g,'.');
-      subCell.value = `기후에너지환경부 · 수도권대기환경청     생성일 ${stamp}`;
-      subCell.font = SUBTITLE_FONT;
-      subCell.alignment = { vertical:'middle', horizontal:'left', indent:1 };
-      ws.getRow(3).height = 15;
-
-      ws.getRow(4).height = 5; // spacer
-    }
-
-    function addKpiRow(ws, totalCols, items){
-      const row = ws.getRow(5);
-      row.height = 32;
-      let col = 1;
-      const per = Math.floor(totalCols / items.length);
-      items.forEach((item, i)=>{
-        const span = (i === items.length-1) ? (totalCols - col + 1) : per;
-        const startCol = col, endCol = col + span - 1;
-        if(span > 1) ws.mergeCells(5, startCol, 5, endCol);
-        const cell = ws.getCell(5, startCol);
-        // Excel 호환성 우선: KPI는 richText가 아닌 일반 문자열로 기록한다.
-        cell.value = `${item.label}  ${item.value}`;
-        cell.font = { name:'맑은 고딕', size:11, bold:true, color:{argb:item.color} };
-        cell.alignment = { vertical:'middle', horizontal:'center' };
-        for(let c=startCol; c<=endCol; c++){
-          ws.getCell(5, c).fill = { type:'pattern', pattern:'solid', fgColor:{argb:item.tint} };
-          ws.getCell(5, c).border = { bottom:{style:'thin', color:{argb:item.color}} };
-        }
-        col = endCol + 1;
-      });
-      ws.getRow(6).height = 8;
-    }
-
-    function styleHeaderRow(row){
-      row.eachCell(cell=>{
-        cell.font = HEADER_FONT;
-        cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:NAVY} };
-        cell.alignment = { vertical:'middle', horizontal:'center' };
-        cell.border = { top:MEDIUM_NAVY, bottom:MEDIUM_NAVY, left:{style:'thin',color:{argb:'FFFFFFFF'}}, right:{style:'thin',color:{argb:'FFFFFFFF'}} };
-      });
-      row.height = 23;
-    }
-
-    function frameOuterBorder(ws, firstRow, lastRow, firstCol, lastCol){
-      for(let c=firstCol; c<=lastCol; c++){
-        const topCell = ws.getCell(firstRow, c);
-        const botCell = ws.getCell(lastRow, c);
-        topCell.border = { ...topCell.border, top:MEDIUM_NAVY };
-        botCell.border = { ...botCell.border, bottom:MEDIUM_NAVY };
-      }
-      for(let r=firstRow; r<=lastRow; r++){
-        const leftCell = ws.getCell(r, firstCol);
-        const rightCell = ws.getCell(r, lastCol);
-        leftCell.border = { ...leftCell.border, left:MEDIUM_NAVY };
-        rightCell.border = { ...rightCell.border, right:MEDIUM_NAVY };
-      }
-    }
-
-    function setupPrint(ws, lastColLetter){
-      ws.pageSetup = {
-        paperSize:9, // 9 = A4
-        orientation:'landscape', fitToPage:true, fitToWidth:2, fitToHeight:0,
-        horizontalCentered:true,
-        margins:{ left:0.3, right:0.3, top:0.4, bottom:0.4, header:0.2, footer:0.2 }
-      };
-      ws.pageSetup.printTitlesRow = `${HEADER_ROW}:${HEADER_ROW}`;
-      ws.pageSetup.printTitlesColumn = 'A:D';
-      ws.headerFooter = {
-        oddFooter: '&C&8페이지 &P / &N'
-      };
-    }
-
-    const wb = new ExcelJS.Workbook();
-    wb.creator = `${catLabel()} 재고관리`;
-    wb.created = new Date();
-
-    let imageId = null;
-    if(logoBase64){
-      imageId = wb.addImage({ base64: logoBase64, extension:'png' });
-    }
-
-    // ---------- 시트1: 재고현황 ----------
-    const wsInv = wb.addWorksheet('재고현황', {
-      views:[{state:'frozen', ySplit:HEADER_ROW}],
-      properties:{ tabColor:{argb:NAVY} }
-    });
-    const isStdExport = currentCategory === 'standard';
-    const invCols = [
-      {header:'QR코드ID', width:13},
-      {header:'최근입고일', width:13},
-      {header:'최근출고일', width:13},
-      {header:`${catLabel()}명`, width:22},
-      {header:'영문명', width:17},
-      {header:'규격/용량', width:14},
-      {header:'단위', width:8},
-      {header:'현재재고', width:10},
-      {header:'상태', width:11},
-      {header:'CAS No.', width:12},
-      {header: isStdExport ? 'Lot No.' : '제품 시리얼번호', width:16},
-      {header:'제조사', width:14},
-      {header:'유효기간(EXP)', width:13},
-      ...(isStdExport ? [
-        {header:'농도', width:14},
-        {header:'순도', width:10},
-        {header:'개봉일', width:12},
-      ] : []),
-      {header:'보관방법', width:16},
-      {header:'최근수정', width:15},
-    ];
-    const invLastCol = invCols.length;
-    const invLastColLetter = colLetter(invLastCol);
-    invCols.forEach((c,i)=>{ ws_setColWidth(wsInv, i+1, c.width); });
-    addTitleBar(wsInv, imageId, `${catLabel()} 재고관리 — 재고현황`, invLastColLetter);
-
-    const catReagents = DB.reagents.filter(r=>(r.category||'reagent')===currentCategory);
-    const totalCount = catReagents.length;
-    const lowCount = catReagents.filter(r=>statusOf(r).cls==='low').length;
-    const outCount = catReagents.filter(r=>statusOf(r).cls==='out').length;
-    addKpiRow(wsInv, invLastCol, [
-      { label:`총 ${catLabel()}`, value:`${totalCount}종`, color:NAVY, tint:NAVY_TINT },
-      { label:'재고 부족', value:`${lowCount}건`, color:AMBER, tint:AMBER_TINT },
-      { label:'재고 없음', value:`${outCount}건`, color:RED, tint:RED_TINT },
+  // GHS·MSDS 현황 시트 (대장의 한 시트, 단독 파일 모두 이 함수로 만든다)
+  function xlBuildGhsSheets(wb, items, imageId, title, footer){
+    const data = window.GHSUI.excelRows(items, settings());
+    const n = data.header.length;
+    const ws = wb.addWorksheet('GHS·MSDS현황', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.AMBER} } });
+    data.widths.forEach((w,i)=>ws_setColWidth(ws, i+1, w));
+    xlTitleBar(ws, imageId, title, n, '폐기 품목 제외');
+    const gc = window.GHSUI.counts(items, settings());
+    xlKpiRow(ws, n, [
+      { label:'대상 품목', value:`${items.length}종`, color:XL.NAVY, tint:XL.NAVY_TINT },
+      { label:'GHS 미입력', value:`${gc.ghsMissing}건`, color:XL.AMBER, tint:XL.AMBER_TINT },
+      { label:'MSDS 미첨부', value:`${gc.msdsMissing}건`, color:XL.RED, tint:XL.RED_TINT },
+      { label:'MSDS 검토 필요', value:`${gc.msdsReview}건`, color:XL.NAVY, tint:XL.NAVY_TINT },
     ]);
-
-    const invHeaderRow = wsInv.getRow(HEADER_ROW);
-    invCols.forEach((c,i)=>{ invHeaderRow.getCell(i+1).value = c.header; });
-    styleHeaderRow(invHeaderRow);
-    wsInv.autoFilter = { from:`A${HEADER_ROW}`, to:`${invLastColLetter}${HEADER_ROW}` };
-
-    const sortedReagents = catReagents.slice().sort((a,b)=>a.id.localeCompare(b.id));
-    sortedReagents.forEach((r, i)=>{
-      const st = statusOf(r);
-      const rowIdx = DATA_START_ROW + i;
-      const row = wsInv.getRow(rowIdx);
-      row.height = 20;
-      row.values = [
-        r.id, r.receivedDate||'', lastEventDate(r.id,'out'), r.name, r.nameEn||'', r.spec||'', r.unit||'',
-        r.stock, st.label, r.casNo||'', r.serialNo||'', r.maker||'', r.expiryDate||'',
-        ...(isStdExport ? [r.concentration||'', r.purity||'', r.openedDate||''] : []),
-        r.storage||'', fmtDate(r.updatedAt)
-      ];
-      row.eachCell(cell=>{
-        cell.font = BODY_FONT;
-        cell.border = BORDER_ALL;
-        cell.alignment = { vertical:'middle' };
-      });
-      if(st.cls==='out'){
-        row.eachCell(cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFFCEBEC'} }; });
-      }else if(st.cls==='low'){
-        row.eachCell(cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:AMBER_TINT} }; });
-      }else if(i % 2 === 1){
-        row.eachCell(cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:ZEBRA_TINT} }; });
-      }
-      const statusCell = row.getCell(9);
-      statusCell.alignment = { vertical:'middle', horizontal:'center' };
-      if(st.cls==='out') statusCell.font = { ...BODY_FONT, color:{argb:RED}, bold:true };
-      else if(st.cls==='low') statusCell.font = { ...BODY_FONT, color:{argb:AMBER}, bold:true };
-      else statusCell.font = { ...BODY_FONT, color:{argb:NAVY}, bold:true };
-      row.getCell(8).alignment = { horizontal:'right' };
-      row.getCell(8).numFmt = '#,##0';
-      const expCell = row.getCell(13);
-      expCell.alignment = { horizontal:'center' };
-      if(r.expiryDate){
-        const diffDays = Math.round((new Date(r.expiryDate) - new Date(todayStr())) / 86400000);
-        if(diffDays < 0) expCell.font = { ...BODY_FONT, color:{argb:RED}, bold:true };
-        else if(diffDays <= 30) expCell.font = { ...BODY_FONT, color:{argb:AMBER}, bold:true };
-      }
-    });
-    const invLastRow = sortedReagents.length>0 ? DATA_START_ROW + sortedReagents.length - 1 : HEADER_ROW;
-
-    // ---------- 합계 행 (전문 서식용 총계 라인) ----------
-    if(sortedReagents.length > 0){
-      const totalRowIdx = invLastRow + 1;
-      const totalStock = sortedReagents.reduce((sum,r)=> sum + (Number(r.stock)||0), 0);
-      const totalRow = wsInv.getRow(totalRowIdx);
-      totalRow.height = 20;
-      wsInv.mergeCells(totalRowIdx, 1, totalRowIdx, 7);
-      const totalLabelCell = wsInv.getCell(totalRowIdx, 1);
-      totalLabelCell.value = `합계 (총 ${sortedReagents.length}건)`;
-      totalLabelCell.font = { ...BODY_FONT, bold:true, color:{argb:NAVY} };
-      totalLabelCell.alignment = { vertical:'middle', horizontal:'right' };
-      const totalStockCell = wsInv.getCell(totalRowIdx, 8);
-      totalStockCell.value = totalStock;
-      totalStockCell.numFmt = '#,##0';
-      totalStockCell.font = { ...BODY_FONT, bold:true, color:{argb:NAVY} };
-      totalStockCell.alignment = { vertical:'middle', horizontal:'right' };
-      for(let c=1; c<=invLastCol; c++){
-        const cell = wsInv.getCell(totalRowIdx, c);
-        cell.border = { top:MEDIUM_NAVY, bottom:{style:'double', color:{argb:NAVY}} };
-        cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:NAVY_TINT} };
-      }
-    }
-    const invFrameLastRow = sortedReagents.length>0 ? invLastRow + 1 : HEADER_ROW;
-    frameOuterBorder(wsInv, HEADER_ROW, invFrameLastRow, 1, invLastCol);
-    setupPrint(wsInv, invLastColLetter);
-
-    // ---------- 시트2: 입출고이력 ----------
-    const wsLog = wb.addWorksheet('입출고이력', {
-      views:[{state:'frozen', ySplit:HEADER_ROW}],
-      properties:{ tabColor:{argb:RED} }
-    });
-    const logCols = [
-      {header:'일시', width:16},
-      {header:'QR코드ID', width:12},
-      {header:`${catLabel()}명`, width:20},
-      {header:'영문명', width:16},
-      {header:'제조사', width:14},
-      {header:'제품 시리얼번호', width:16},
-      {header:'구분', width:10},
-      {header:'입고회차', width:13},
-      {header:'수량', width:null},
-      {header:'변경전', width:null},
-      {header:'변경후', width:null},
-      {header:'입출고인', width:12},
-      {header:'비고', width:18},
-    ];
-    const logLastCol = logCols.length;
-    const logLastColLetter = colLetter(logLastCol);
-    logCols.forEach((c,i)=>{ if(c.width) ws_setColWidth(wsLog, i+1, c.width); });
-    addTitleBar(wsLog, imageId, `${catLabel()} 재고관리 — 입출고이력`, logLastColLetter);
-
-    const reagentMap = {};
-    DB.reagents.forEach(r=>{ reagentMap[r.id] = r; });
-    const catIdSet = new Set(catReagents.map(r=>r.id));
-
-    const sortedLogs = DB.logs.filter(l=>catIdSet.has(l.id)).slice().sort((a,b)=>{
-      const idCmp = a.id.localeCompare(b.id);
-      if(idCmp !== 0) return idCmp;
-      return new Date(a.date) - new Date(b.date);
-    });
-    const typeLabel = {in:'입고', out:'출고', adjust:'수동조정', register:'최초등록'};
-    const inCount = sortedLogs.filter(l=>(l.type==='in'||l.type==='register') && l.qty>0).length;
-    const outLogCount = sortedLogs.filter(l=>l.type==='out').length;
-    addKpiRow(wsLog, logLastCol, [
-      { label:'총 기록', value:`${sortedLogs.length}건`, color:NAVY, tint:NAVY_TINT },
-      { label:'입고', value:`${inCount}건`, color:NAVY, tint:NAVY_TINT },
-      { label:'출고', value:`${outLogCount}건`, color:RED, tint:RED_TINT },
-    ]);
-
-    const logHeaderRow = wsLog.getRow(HEADER_ROW);
-    logCols.forEach((c,i)=>{ logHeaderRow.getCell(i+1).value = c.header; });
-    styleHeaderRow(logHeaderRow);
-    wsLog.autoFilter = { from:`A${HEADER_ROW}`, to:`${logLastColLetter}${HEADER_ROW}` };
-
-    const GROUP_TINT = ZEBRA_TINT;
-    const GROUP_COLS = [2,3,4,5,6]; // QR코드ID, 시약명, 영문명, 제조사, 시리얼번호 — 그룹 병합 대상
-    let groupIdx = 0;
-    let groupStartRow = null;
-    let prevId = null;
-    let batchCounter = 0;
-    sortedLogs.forEach((l, i)=>{
-      const qty = l.type==='adjust' ? (l.after-l.before) : l.qty;
-      const rowIdx = DATA_START_ROW + i;
-      const isNewGroup = (l.id !== prevId);
-      if(isNewGroup){
-        if(groupStartRow !== null && rowIdx - 1 > groupStartRow){
-          GROUP_COLS.forEach(c=>{ wsLog.mergeCells(groupStartRow, c, rowIdx-1, c); });
-        }
-        groupStartRow = rowIdx;
-        groupIdx++;
-        batchCounter = 0;
-      }
-      const isReceiveBatch = (l.type==='in' || l.type==='register') && l.qty > 0;
-      if(isReceiveBatch) batchCounter++;
-      const batchLabel = l.batchId ? (Number(intakeRoundNo(l.batchId))||'') : (isReceiveBatch ? batchCounter : '');
-      const rr = reagentMap[l.id];
-      const row = wsLog.getRow(rowIdx);
-      row.height = 20;
-      row.values = [
-        fmtDate(l.date), l.id, l.name, (rr&&rr.nameEn)||'', (rr&&rr.maker)||'', (rr&&rr.serialNo)||'',
-        typeLabel[l.type]||l.type, batchLabel, qty, l.before, l.after, l.handler||'', cleanLogNoteForDisplay(l)
-      ];
-      row.eachCell(cell=>{
-        cell.font = BODY_FONT;
-        cell.border = BORDER_ALL;
-        cell.alignment = { vertical:'middle' };
-      });
-      if(groupIdx % 2 === 0){
-        row.eachCell(cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:GROUP_TINT} }; });
-      }
-      if(isNewGroup && rowIdx > DATA_START_ROW){
-        row.eachCell(cell=>{ cell.border = { ...cell.border, top:MEDIUM_NAVY }; });
-      }
-      row.getCell(2).alignment = { vertical:'middle', horizontal:'center' };
-      row.getCell(2).font = { ...BODY_FONT, bold:true, color:{argb:NAVY} };
-      row.getCell(3).alignment = { vertical:'middle', horizontal:'center' };
-      row.getCell(4).alignment = { vertical:'middle', horizontal:'center' };
-      row.getCell(5).alignment = { vertical:'middle', horizontal:'center' };
-      row.getCell(6).alignment = { vertical:'middle', horizontal:'center' };
-      const typeCell = row.getCell(7);
-      typeCell.alignment = { vertical:'middle', horizontal:'center' };
-      if(l.type==='out') typeCell.font = { ...BODY_FONT, color:{argb:RED}, bold:true };
-      else if(l.type==='in' || l.type==='register') typeCell.font = { ...BODY_FONT, color:{argb:NAVY}, bold:true };
-      const batchCell = row.getCell(8);
-      batchCell.alignment = { vertical:'middle', horizontal:'center' };
-      if(batchLabel!=='') batchCell.font = { ...BODY_FONT, bold:true, color:{argb:NAVY} };
-      [9,10,11].forEach(ci=>{ row.getCell(ci).alignment = { horizontal:'right' }; row.getCell(ci).numFmt = '#,##0'; });
-      prevId = l.id;
-    });
-    if(groupStartRow !== null){
-      const lastRowIdx = DATA_START_ROW + sortedLogs.length - 1;
-      if(lastRowIdx > groupStartRow){
-        GROUP_COLS.forEach(c=>{ wsLog.mergeCells(groupStartRow, c, lastRowIdx, c); });
-      }
-    }
-    const logLastRow = sortedLogs.length>0 ? DATA_START_ROW + sortedLogs.length - 1 : HEADER_ROW;
-    frameOuterBorder(wsLog, HEADER_ROW, logLastRow, 1, logLastCol);
-    setupPrint(wsLog, logLastColLetter);
-
-    // ---------- 시트3: GHS·MSDS 현황 ----------
-    const wsGhs = wb.addWorksheet('GHS·MSDS현황', { views:[{state:'frozen', ySplit:HEADER_ROW}], properties:{ tabColor:{argb:AMBER} } });
-    const ghsData = window.GHSUI.excelRows(sortedReagents, settings());
-    const ghsCols = ghsData.header.length, ghsLastLetter = colLetter(ghsCols);
-    [12,9,22,18,13,14,8,24,28,44,44,24,9,14,10,13,13,18,26].forEach((w,i)=>{ if(i<ghsCols) ws_setColWidth(wsGhs, i+1, w); });
-    addTitleBar(wsGhs, imageId, `${catLabel()} 재고관리 — GHS 분류 · MSDS 비치 현황`, ghsLastLetter);
-    const gcount = window.GHSUI.counts(sortedReagents, settings());
-    addKpiRow(wsGhs, ghsCols, [
-      { label:'GHS 미입력', value:`${gcount.ghsMissing}건`, color:AMBER, tint:AMBER_TINT },
-      { label:'MSDS 미첨부', value:`${gcount.msdsMissing}건`, color:RED, tint:RED_TINT },
-      { label:'MSDS 검토 필요', value:`${gcount.msdsReview}건`, color:NAVY, tint:NAVY_TINT },
-    ]);
-    const ghsHeaderRow = wsGhs.getRow(HEADER_ROW);
-    ghsData.header.forEach((h,i)=>{ ghsHeaderRow.getCell(i+1).value = h; });
-    styleHeaderRow(ghsHeaderRow);
-    wsGhs.autoFilter = { from:`A${HEADER_ROW}`, to:`${ghsLastLetter}${HEADER_ROW}` };
-    ghsData.rows.forEach((vals,i)=>{
-      const row = wsGhs.getRow(DATA_START_ROW + i);
+    xlHeaderRow(ws, data.header);
+    const specs = {}; data.centerCols.forEach(c=>{ specs[c] = {align:'center'}; }); data.dateCols.forEach(c=>{ specs[c] = {align:'center', numFmt:'yyyy-mm-dd'}; });
+    data.rows.forEach((vals,i)=>{
+      const row = ws.getRow(XL.DATA_START + i);
       row.values = vals;
-      row.eachCell({includeEmpty:true}, cell=>{ cell.font = BODY_FONT; cell.border = BORDER_ALL; cell.alignment = { vertical:'top', wrapText:true }; });
-      if(i % 2 === 1) row.eachCell({includeEmpty:true}, cell=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:ZEBRA_TINT} }; });
-      const stCell = row.getCell(18), stText = String(stCell.value||'');
-      if(/경과/.test(stText)) stCell.font = { ...BODY_FONT, color:{argb:RED}, bold:true };
-      else if(/미첨부|미입력|D-/.test(stText)) stCell.font = { ...BODY_FONT, color:{argb:AMBER}, bold:true };
+      xlBodyRow(row, n, i % 2 === 1 ? XL.ZEBRA : '', specs);
+      for(let c=1; c<=n; c++) row.getCell(c).alignment = { ...row.getCell(c).alignment, vertical:'top' };
+      const stCell = row.getCell(data.statusCol), stText = String(stCell.value||'');
+      if(/경과|미첨부/.test(stText)) stCell.font = { ...XL.BODY, color:{argb:XL.RED}, bold:true };
+      else if(/미입력|D-/.test(stText)) stCell.font = { ...XL.BODY, color:{argb:XL.AMBER}, bold:true };
     });
-    const ghsLastRow = ghsData.rows.length ? DATA_START_ROW + ghsData.rows.length - 1 : HEADER_ROW;
-    frameOuterBorder(wsGhs, HEADER_ROW, ghsLastRow, 1, ghsCols);
-    setupPrint(wsGhs, ghsLastLetter);
+    const last = data.rows.length ? XL.DATA_START + data.rows.length - 1 : XL.HEADER_ROW;
+    xlFrame(ws, XL.HEADER_ROW, last, n);
+    xlPrint(ws, { wide:2, titleCols:'A:C', footer });
+    if(data.phrases.length){
+      const wp = wb.addWorksheet('H·P 문구', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}] });
+      [14, 16, 90].forEach((w,i)=>ws_setColWidth(wp, i+1, w));
+      xlTitleBar(wp, imageId, 'GHS 유해·위험 문구(H) · 예방조치 문구(P)', 3, '현황 시트에 나온 코드의 뜻');
+      xlKpiRow(wp, 3, [{ label:'코드', value:`${data.phrases.length}개`, color:XL.NAVY, tint:XL.NAVY_TINT }]);
+      xlHeaderRow(wp, ['코드', '구분', '문구']);
+      data.phrases.forEach((p,i)=>{ const row = wp.getRow(XL.DATA_START + i); row.values = p; xlBodyRow(row, 3, i % 2 === 1 ? XL.ZEBRA : '', {1:{align:'center'}, 2:{align:'center'}}); });
+      xlFrame(wp, XL.HEADER_ROW, XL.DATA_START + data.phrases.length - 1, 3);
+      xlPrint(wp, { footer });
+    }
+    return data.rows.length;
+  }
 
-    const buf = await wb.xlsx.writeBuffer();
-    const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${catLabel()}대장_${todayStr()}.xlsx`;
-    document.body.appendChild(a); a.click(); a.remove(); restoreKeyboardFocus();
-    URL.revokeObjectURL(url);
+  async function exportExcel(){
+    if(!excelLibraryReady()) return;
+    const cat = currentCategory, label = catLabel(cat), isStd = cat === 'standard';
+    const catAll = DB.reagents.filter(r=>(r.category||'reagent')===cat);
+    if(!catAll.length){ showToast(`내보낼 ${label} 데이터가 없습니다.`, true); return; }
+    await withExcelBusy(async ()=>{
+      showToast(`${label}대장 엑셀을 만드는 중…`);
+      const items = catAll.filter(r=>!r.archivedAt).sort((a,b)=>a.id.localeCompare(b.id));
+      const archived = catAll.filter(r=>r.archivedAt).sort((a,b)=>a.id.localeCompare(b.id));
+      const today = todayStr(), warnDays = Number(settings().expiryWarningDays||30);
+      const footer = `${label}대장`;
+      const dayDiff = d => Math.round((new Date(d) - new Date(today)) / 86400000);
+      const lastDateOf = (()=>{ const m = new Map(); for(const l of DB.logs){ if(!(Number(l.qty) > 0)) continue; const k = l.id+'|'+l.type; const cur = m.get(k); if(!cur || new Date(l.date) > new Date(cur)) m.set(k, l.date); } return (id,type)=>m.get(id+'|'+type) || ''; })();
+
+      const wb = new ExcelJS.Workbook();
+      wb.creator = `${label} 재고관리`; wb.created = new Date();
+      const imageId = xlLogoImage(wb);
+
+      // ---------- 시트1: 재고현황 (폐기 품목 제외) ----------
+      const wsInv = wb.addWorksheet('재고현황', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.NAVY} } });
+      const lotText = r => {
+        if(!isStd) return r.serialNo || '';
+        const lots = [...new Set(activeBatches(r).slice().sort((a,b)=>(a.expiryDate||'9999').localeCompare(b.expiryDate||'9999')).map(b=>b.lotNo).filter(Boolean))];
+        return lots.length ? lots.join(', ') : (r.serialNo || '');
+      };
+      const openedOf = r => { const bs = activeBatches(r).filter(b=>b.openedDate).map(b=>b.openedDate).sort(); return bs[0] || r.openedDate || ''; };
+      const invCols = [
+        {h:'순번', w:6, align:'center', v:(r,i)=>i+1},
+        {h:'QR코드ID', w:11, align:'center', v:r=>r.id},
+        {h:`${label}명`, w:24, v:r=>r.name||''},
+        {h:'영문명', w:17, v:r=>r.nameEn||''},
+        {h:'CAS No.', w:11, align:'center', v:r=>r.casNo||''},
+        {h:'제조사', w:13, v:r=>r.maker||''},
+        {h:'규격/용량', w:11, v:r=>r.spec||''},
+        {h:'단위', w:6, align:'center', v:r=>r.unit||''},
+        {h:'현재재고', w:9, align:'right', qty:true, key:'stock', v:r=>roundQty(r.stock)},
+        {h:'사용가능', w:9, align:'right', qty:true, v:r=>roundQty(usableStock(r))},
+        {h:'만료재고', w:8, align:'right', qty:true, key:'expired', v:r=>{ const e = roundQty(expiredStock(r)); return e > 0 ? e : ''; }},
+        {h:'최소재고', w:8, align:'right', qty:true, v:r=>r.minStock > 0 ? roundQty(r.minStock) : ''},
+        {h:'상태', w:11, align:'center', key:'status', v:r=>statusOf(r).label || '정상'},
+        {h:'유효기간\n(가장 빠른)', w:13, align:'center', date:true, key:'expiry', v:r=>xlDate(effectiveExpiry(r))},
+        {h:'잔여\n회차', w:6, align:'center', v:r=>activeBatches(r).length || ''},
+        {h:isStd ? 'Lot No.' : '제품 시리얼번호', w:15, v:lotText},
+        {h:'농도', w:11, v:r=>r.concentration||''},
+        ...(isStd ? [{h:'순도', w:8, v:r=>r.purity||''}, {h:'개봉일', w:13, align:'center', date:true, v:r=>xlDate(openedOf(r))}] : []),
+        {h:'보관방법', w:15, v:r=>r.storage||''},
+        {h:'최근입고일', w:13, align:'center', date:true, v:r=>xlDate(effectiveReceived(r))},
+        {h:'최근출고일', w:13, align:'center', date:true, v:r=>xlDateTime(lastDateOf(r.id,'out'), true)},
+        {h:'최근수정', w:13, align:'center', date:true, v:r=>xlDateTime(r.updatedAt, true)},
+      ];
+      const invN = invCols.length, colOf = key => invCols.findIndex(c=>c.key===key) + 1;
+      invCols.forEach((c,i)=>ws_setColWidth(wsInv, i+1, c.w));
+      xlTitleBar(wsInv, imageId, `${label} 관리대장 — 재고현황`, invN, `전체 품목 ${items.length}종 (검색·필터와 관계없이 모두 포함, 폐기 품목 제외)`);
+      const st = calcInvStats(items);
+      xlKpiRow(wsInv, invN, [
+        { label:`총 ${label}`, value:`${st.total}종`, color:XL.NAVY, tint:XL.NAVY_TINT },
+        { label:'재고 부족', value:`${st.low}건`, color:XL.AMBER, tint:XL.AMBER_TINT },
+        { label:'재고 없음', value:`${st.out}건`, color:XL.RED, tint:XL.RED_TINT },
+        { label:'만료 재고 보유', value:`${st.expired}건`, color:XL.RED, tint:XL.RED_TINT },
+        { label:`유효기간 임박(${warnDays}일 이내)`, value:`${st.soon}건`, color:XL.AMBER, tint:XL.AMBER_TINT },
+      ]);
+      xlHeaderRow(wsInv, invCols.map(c=>c.h));
+      const invSpecs = {}; invCols.forEach((c,i)=>{ invSpecs[i+1] = {align:c.align, numFmt:c.date ? 'yyyy-mm-dd' : ''}; });
+      items.forEach((r, i)=>{
+        const s = statusOf(r), row = wsInv.getRow(XL.DATA_START + i), exp = expiryInfo(r);
+        row.values = invCols.map(c=>c.v(r, i));
+        xlBodyRow(row, invN, s.cls==='out' ? 'FFFCEBEC' : s.cls==='low' ? XL.AMBER_TINT : (i % 2 === 1 ? XL.ZEBRA : ''), invSpecs);
+        invCols.forEach((c,ci)=>{ if(c.qty){ const cell = row.getCell(ci+1); if(typeof cell.value === 'number') cell.numFmt = qtyFmt(cell.value); } });
+        const sc = row.getCell(colOf('status'));
+        sc.font = { ...XL.BODY, bold:true, color:{argb: s.cls==='out' ? XL.RED : s.cls==='low' ? XL.AMBER : XL.NAVY} };
+        const ec = row.getCell(colOf('expiry'));
+        if(exp.expiredBatches > 0) ec.font = { ...XL.BODY, color:{argb:XL.RED}, bold:true };
+        else if(exp.soonBatches > 0) ec.font = { ...XL.BODY, color:{argb:XL.AMBER}, bold:true };
+        if(exp.expiredBatches > 0) row.getCell(colOf('expired')).font = { ...XL.BODY, color:{argb:XL.RED}, bold:true };
+      });
+      let invLast = XL.HEADER_ROW;
+      if(items.length){
+        // 합계: 단위가 다른 수량을 그냥 더하지 않고 단위별로 따로 적는다.
+        const totalRow = XL.DATA_START + items.length, stockCol = colOf('stock');
+        const byUnit = new Map(); items.forEach(r=>{ const u = (r.unit||'').trim() || '단위 없음'; byUnit.set(u, (byUnit.get(u)||0) + (Number(r.stock)||0)); });
+        const unitText = [...byUnit.entries()].map(([u,q])=>`${u} ${fmtQty(q)}`).join('  ·  ');
+        wsInv.mergeCells(totalRow, 1, totalRow, stockCol - 1);
+        wsInv.mergeCells(totalRow, stockCol, totalRow, invN);
+        const lc = wsInv.getCell(totalRow, 1), vc = wsInv.getCell(totalRow, stockCol);
+        lc.value = `합계 (총 ${items.length}종)`; vc.value = `현재재고 — ${unitText}`;
+        for(let c=1; c<=invN; c++){ const cell = wsInv.getCell(totalRow, c); cell.font = { ...XL.BODY, bold:true, color:{argb:XL.NAVY} }; cell.fill = XL.fill(XL.NAVY_TINT); cell.border = { top:XL.MEDIUM, bottom:{style:'double', color:{argb:XL.NAVY}} }; }
+        lc.alignment = { vertical:'middle', horizontal:'right' }; vc.alignment = { vertical:'middle', horizontal:'left', indent:1, wrapText:true };
+        wsInv.getRow(totalRow).height = 22;
+        invLast = totalRow;
+        // 확인란
+        const signRow = totalRow + 2, from = Math.max(1, invN - 9);
+        wsInv.mergeCells(signRow, from, signRow, invN);
+        const sg = wsInv.getCell(signRow, from);
+        sg.value = '작성자:                         (서명)          확인자:                         (서명)';
+        sg.font = XL.BODY; sg.alignment = { vertical:'middle', horizontal:'right' };
+        wsInv.getRow(signRow).height = 26;
+      }
+      xlFrame(wsInv, XL.HEADER_ROW, invLast, invN);
+      xlPrint(wsInv, { footer });
+
+      // ---------- 시트2: 입고회차별 재고 (잔량이 있는 회차마다 한 줄) ----------
+      const wsBat = wb.addWorksheet('입고회차별 재고', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.NAVY} } });
+      const batRows = [];
+      items.forEach(r=>activeBatches(r).slice().sort((a,b)=>(a.expiryDate||'9999').localeCompare(b.expiryDate||'9999') || (a.receivedDate||'').localeCompare(b.receivedDate||'')).forEach(b=>batRows.push({r,b})));
+      const batState = b => { if(!b.expiryDate) return {t:'유효기간 없음', c:''}; const d = dayDiff(b.expiryDate); return d < 0 ? {t:'만료', c:XL.RED} : d <= warnDays ? {t:`임박 (D-${d})`, c:XL.AMBER} : {t:'정상', c:''}; };
+      const batCols = [
+        {h:'회차 QR', w:15, align:'center', v:x=>batchQrCode(x.r, x.b)},
+        {h:'QR코드ID', w:11, align:'center', v:x=>x.r.id},
+        {h:`${label}명`, w:24, v:x=>x.r.name||''},
+        {h:'입고\n회차', w:6, align:'center', v:x=>Number(intakeRoundNo(x.b)) || ''},
+        {h:'입고일', w:13, align:'center', date:true, v:x=>xlDate(x.b.receivedDate)},
+        {h:'유효기간', w:13, align:'center', date:true, v:x=>xlDate(x.b.expiryDate)},
+        {h:'유효기간 상태', w:13, align:'center', key:'state', v:x=>batState(x.b).t},
+        ...(isStd ? [{h:'Lot No.', w:15, v:x=>x.b.lotNo||''}, {h:'개봉일', w:13, align:'center', date:true, v:x=>xlDate(x.b.openedDate)}] : []),
+        {h:'입고량', w:8, align:'right', qty:true, v:x=>roundQty(x.b.initialQty)},
+        {h:'잔량', w:8, align:'right', qty:true, v:x=>roundQty(x.b.stock)},
+        {h:'단위', w:6, align:'center', v:x=>x.r.unit||''},
+        {h:'보관방법', w:16, v:x=>x.r.storage||''},
+      ];
+      const batN = batCols.length;
+      batCols.forEach((c,i)=>ws_setColWidth(wsBat, i+1, c.w));
+      xlTitleBar(wsBat, imageId, `${label} 관리대장 — 입고회차별 재고`, batN, '잔량이 있는 입고회차만 표시');
+      xlKpiRow(wsBat, batN, [
+        { label:'잔량 있는 회차', value:`${batRows.length}건`, color:XL.NAVY, tint:XL.NAVY_TINT },
+        { label:'만료', value:`${batRows.filter(x=>batState(x.b).t==='만료').length}건`, color:XL.RED, tint:XL.RED_TINT },
+        { label:`임박(${warnDays}일 이내)`, value:`${batRows.filter(x=>/^임박/.test(batState(x.b).t)).length}건`, color:XL.AMBER, tint:XL.AMBER_TINT },
+      ]);
+      xlHeaderRow(wsBat, batCols.map(c=>c.h));
+      const batSpecs = {}; batCols.forEach((c,i)=>{ batSpecs[i+1] = {align:c.align, numFmt:c.date ? 'yyyy-mm-dd' : ''}; });
+      const stateCol = batCols.findIndex(c=>c.key==='state') + 1;
+      let prevBatId = '', batGroup = 0;
+      batRows.forEach((x,i)=>{
+        if(x.r.id !== prevBatId){ batGroup++; prevBatId = x.r.id; }
+        const row = wsBat.getRow(XL.DATA_START + i), bs = batState(x.b);
+        row.values = batCols.map(c=>c.v(x));
+        xlBodyRow(row, batN, bs.t==='만료' ? 'FFFCEBEC' : (batGroup % 2 === 0 ? XL.ZEBRA : ''), batSpecs);
+        batCols.forEach((c,ci)=>{ if(c.qty){ const cell = row.getCell(ci+1); if(typeof cell.value === 'number') cell.numFmt = qtyFmt(cell.value); } });
+        if(bs.c) row.getCell(stateCol).font = { ...XL.BODY, bold:true, color:{argb:bs.c} };
+      });
+      xlFrame(wsBat, XL.HEADER_ROW, batRows.length ? XL.DATA_START + batRows.length - 1 : XL.HEADER_ROW, batN);
+      xlPrint(wsBat, { footer });
+
+      // ---------- 시트3: 입출고이력 (폐기 품목의 과거 기록도 포함) ----------
+      const wsLog = wb.addWorksheet('입출고이력', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.RED} } });
+      const reagentMap = new Map(catAll.map(r=>[r.id, r]));
+      const logs = DB.logs.filter(l=>reagentMap.has(l.id)).slice().sort((a,b)=>a.id.localeCompare(b.id) || (new Date(a.date) - new Date(b.date)));
+      const logCols = [
+        {h:'일시', w:19, align:'center', numFmt:'yyyy-mm-dd hh:mm'}, {h:'QR코드ID', w:11, align:'center'}, {h:`${label}명`, w:22}, {h:'영문명', w:16}, {h:'제조사', w:13},
+        {h:isStd ? 'Lot No.' : '제품 시리얼번호', w:15}, {h:'구분', w:9, align:'center'}, {h:'입고\n회차', w:7, align:'center'},
+        {h:'수량', w:8, align:'right'}, {h:'단위', w:6, align:'center'}, {h:'변경전', w:8, align:'right'}, {h:'변경후', w:8, align:'right'}, {h:'입출고인', w:10, align:'center'}, {h:'비고', w:26},
+      ];
+      const logN = logCols.length;
+      logCols.forEach((c,i)=>ws_setColWidth(wsLog, i+1, c.w));
+      xlTitleBar(wsLog, imageId, `${label} 관리대장 — 입출고이력`, logN, '품목별 · 시간순');
+      xlKpiRow(wsLog, logN, [
+        { label:'총 기록', value:`${logs.length}건`, color:XL.NAVY, tint:XL.NAVY_TINT },
+        { label:'입고', value:`${logs.filter(l=>(l.type==='in'||l.type==='register') && Number(l.qty) > 0).length}건`, color:XL.NAVY, tint:XL.NAVY_TINT },
+        { label:'출고', value:`${logs.filter(l=>l.type==='out').length}건`, color:XL.RED, tint:XL.RED_TINT },
+      ]);
+      xlHeaderRow(wsLog, logCols.map(c=>c.h));
+      const logSpecs = {}; logCols.forEach((c,i)=>{ logSpecs[i+1] = {align:c.align, numFmt:c.numFmt||''}; });
+      let prevId = null, group = 0, roundCounter = 0;
+      logs.forEach((l, i)=>{
+        const rr = reagentMap.get(l.id), newGroup = l.id !== prevId;
+        if(newGroup){ group++; roundCounter = 0; prevId = l.id; }
+        const isReceive = (l.type==='in' || l.type==='register') && Number(l.qty) > 0;
+        if(isReceive) roundCounter++;
+        const parts = logBatchParts(l, rr);
+        const roundLabel = parts.length ? parts.map(p=>Number(intakeRoundNo(p.batchId)) || p.batchId).join(', ') : (isReceive ? roundCounter : '');
+        const lotLabel = !isStd ? ((rr && rr.serialNo) || '') : (parts.length > 1 ? parts.map(p=>`${p.lotNo || '(Lot 없음)'} ${fmtQty(p.qty)}`).join(' / ') : ((parts[0] && parts[0].lotNo) || l.lotNo || ''));
+        const hasQty = ['in','out','register','adjust'].includes(l.type) && !(l.type==='in' && !(Number(l.qty) > 0));
+        const qty = !hasQty ? '' : l.type==='adjust' ? roundQty((Number(l.after)||0) - (Number(l.before)||0)) : roundQty(l.qty);
+        const curName = (rr && rr.name) || l.name || '';
+        let note = cleanLogNoteForDisplay(l);
+        if(l.name && curName && l.name !== curName) note = (note ? note + ' / ' : '') + `기록 당시 품명: ${l.name}`;
+        const row = wsLog.getRow(XL.DATA_START + i);
+        row.values = [xlDateTime(l.date), l.id, curName, (rr && rr.nameEn)||'', (rr && rr.maker)||'', lotLabel, logTypeLabel(l), roundLabel, qty, (rr && rr.unit)||'', roundQty(l.before), roundQty(l.after), l.handler||'', note];
+        xlBodyRow(row, logN, group % 2 === 0 ? XL.ZEBRA : '', logSpecs);
+        [9, 11, 12].forEach(ci=>{ const cell = row.getCell(ci); if(typeof cell.value === 'number') cell.numFmt = qtyFmt(cell.value); });
+        if(newGroup && i > 0) for(let c=1; c<=logN; c++){ const cell = row.getCell(c); cell.border = { ...cell.border, top:XL.MEDIUM }; }
+        row.getCell(2).font = { ...XL.BODY, bold:true, color:{argb:XL.NAVY} };
+        const tc = row.getCell(7);
+        if(l.type==='out' || l.type==='archive') tc.font = { ...XL.BODY, color:{argb:XL.RED}, bold:true };
+        else if(isReceive) tc.font = { ...XL.BODY, color:{argb:XL.NAVY}, bold:true };
+      });
+      xlFrame(wsLog, XL.HEADER_ROW, logs.length ? XL.DATA_START + logs.length - 1 : XL.HEADER_ROW, logN);
+      xlPrint(wsLog, { footer });
+
+      // ---------- 시트4: GHS·MSDS 현황 (+ H·P 문구) ----------
+      xlBuildGhsSheets(wb, items, imageId, `${label} 관리대장 — GHS 분류 · MSDS 비치 현황`, footer);
+
+      // ---------- 폐기 품목 (있을 때만) ----------
+      if(archived.length){
+        const wsArc = wb.addWorksheet('폐기품목', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.GRAY} } });
+        const arcCols = [
+          {h:'QR코드ID', w:11, align:'center', v:r=>r.id}, {h:`${label}명`, w:26, v:r=>r.name||''}, {h:'영문명', w:18, v:r=>r.nameEn||''}, {h:'CAS No.', w:11, align:'center', v:r=>r.casNo||''},
+          {h:'제조사', w:14, v:r=>r.maker||''}, {h:'규격/용량', w:12, v:r=>r.spec||''}, {h:'폐기 시 재고', w:10, align:'right', qty:true, v:r=>roundQty(r.stock)}, {h:'단위', w:6, align:'center', v:r=>r.unit||''},
+          {h:'폐기일', w:13, align:'center', date:true, v:r=>xlDateTime(r.archivedAt, true)}, {h:'사유', w:22, v:r=>r.archiveReason||''},
+        ];
+        arcCols.forEach((c,i)=>ws_setColWidth(wsArc, i+1, c.w));
+        xlTitleBar(wsArc, imageId, `${label} 관리대장 — 폐기 품목`, arcCols.length, '폐기/비활성 처리한 품목 (재고현황·합계에는 포함되지 않음)');
+        xlKpiRow(wsArc, arcCols.length, [{ label:'폐기 품목', value:`${archived.length}종`, color:XL.GRAY, tint:XL.ZEBRA }]);
+        xlHeaderRow(wsArc, arcCols.map(c=>c.h));
+        const arcSpecs = {}; arcCols.forEach((c,i)=>{ arcSpecs[i+1] = {align:c.align, numFmt:c.date ? 'yyyy-mm-dd' : ''}; });
+        archived.forEach((r,i)=>{ const row = wsArc.getRow(XL.DATA_START + i); row.values = arcCols.map(c=>c.v(r)); xlBodyRow(row, arcCols.length, i % 2 === 1 ? XL.ZEBRA : '', arcSpecs); const qc = row.getCell(7); if(typeof qc.value === 'number') qc.numFmt = qtyFmt(qc.value); });
+        xlFrame(wsArc, XL.HEADER_ROW, XL.DATA_START + archived.length - 1, arcCols.length);
+        xlPrint(wsArc, { footer });
+      }
+
+      const buf = await wb.xlsx.writeBuffer();
+      const saved = await saveBytesAs(buf, `${label}대장_${today}.xlsx`);
+      toastSaved(saved, `${label} ${items.length}종 전체${archived.length ? `, 폐기 ${archived.length}종은 '폐기품목' 시트` : ''}`);
+    });
+  }
+
+  // GHS·MSDS 현황만 따로 저장 (시약·표준물질 모두). MSDS 관리 화면과 설정에서 쓴다.
+  async function exportGhsExcel(){
+    if(!excelLibraryReady()) return;
+    const items = DB.reagents.filter(r=>!r.archivedAt).slice().sort((a,b)=>a.id.localeCompare(b.id));
+    if(!items.length){ showToast('내보낼 품목이 없습니다.', true); return; }
+    await withExcelBusy(async ()=>{
+      const wb = new ExcelJS.Workbook(); wb.creator = '시약 재고관리'; wb.created = new Date();
+      xlBuildGhsSheets(wb, items, xlLogoImage(wb), '시약 · 표준물질 — GHS 분류 · MSDS 비치 현황', 'GHS·MSDS 현황');
+      const buf = await wb.xlsx.writeBuffer();
+      const saved = await saveBytesAs(buf, `GHS_MSDS현황_${todayStr()}.xlsx`);
+      toastSaved(saved, `시약·표준물질 ${items.length}종`);
+    });
   }
 
   // ---------- keyboard focus recovery ----------
@@ -2789,25 +3070,32 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
     // ---------- toast ----------
   let toastTimer = null;
-  function showToast(msg, isError, undoFn){
+  function hideToast(){ const el = document.getElementById('toast'); if(el){ el.className = ''; clearTimeout(toastTimer); } }
+  // action: 함수(되돌리기) 또는 {label, fn} (예: '폴더 열기')
+  function showToast(msg, isError, action){
     // 저장이 막 실패한 직후에는 '완료' 같은 성공 문구로 오류 문구를 덮지 않는다.
     if(!isError && lastSaveFailure && Date.now()-lastSaveFailure.at<5000) return;
     const el = document.getElementById('toast');
-    if(undoFn){
-      el.innerHTML = `<span>${escapeHtml(msg)}</span> <button id="toast-undo-btn" class="toast-undo">되돌리기</button>`;
-      document.getElementById('toast-undo-btn').onclick = ()=>{
-        undoFn();
+    const act = typeof action === 'function' ? {label:'되돌리기', fn:action} : (action && typeof action.fn === 'function' ? action : null);
+    if(act){
+      el.innerHTML = `<span>${escapeHtml(msg)}</span> <button id="toast-undo-btn" class="toast-undo">${escapeHtml(act.label||'되돌리기')}</button>`;
+      document.getElementById('toast-undo-btn').onclick = (e)=>{
+        e.stopPropagation();
+        act.fn();
         el.className = '';
         clearTimeout(toastTimer);
       };
     } else {
       el.textContent = msg;
     }
+    el.setAttribute('role', isError ? 'alert' : 'status');
     el.className = isError ? 'show error' : 'show';
     clearTimeout(toastTimer);
     // 오류 안내는 읽을 시간을 넉넉히 둔다. 누르면 바로 닫힌다.
     el.onclick = ()=>{ el.className = ''; clearTimeout(toastTimer); };
-    toastTimer = setTimeout(()=>{ el.className = ''; }, undoFn ? 7000 : isError ? 8000 : 2600);
+    // 글이 길수록 조금 더 오래 보여 준다.
+    const base = act ? 8000 : isError ? 8000 : 2600;
+    toastTimer = setTimeout(()=>{ el.className = ''; }, Math.min(15000, base + Math.max(0, String(msg||'').length - 30) * 55));
   }
 
   // ---------- tabs ----------
@@ -2919,19 +3207,26 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(r.minStock > 0 && usable <= r.minStock) return {cls:'low', label:'재고 부족'};
     return {cls:'ok', label:''};
   }
+  // 잔량이 있는 입고회차 가운데 '가장 빠른' 유효기간을 대표로 보여 준다 (먼저 만료되는 병이 묻히지 않게).
+  // fullyExpired: 남은 재고가 전부 만료, expiredBatches: 만료된 회차 수, soonBatches: 임박 기준일 안에 만료될 회차 수.
   function expiryInfo(r){
-    const active=activeBatches(r);
-    if(!active.length) return {cls:'',text:'-',fullyExpired:false,expiredBatches:0};
-    // 목록에서는 여러 입고회차의 경고 문구를 나열하지 않고,
-    // 현재 잔량이 있는 입고회차 중 가장 최신 유효기간 하나만 대표로 표시한다.
-    const dates=active.map(b=>b.expiryDate).filter(Boolean).sort();
-    const latest=dates.length ? dates[dates.length-1] : '';
-    const expiredCount=active.filter(isBatchExpired).length;
-    if(!latest) return {cls:'',text:'-',fullyExpired:false,expiredBatches:expiredCount};
-    const diffDays=Math.round((new Date(latest)-new Date(todayStr()))/86400000);
-    if(diffDays<0) return {cls:'exp-over',text:`${latest} (만료)`,fullyExpired:true,expiredBatches:expiredCount};
-    if(diffDays<=Number(settings().expiryWarningDays||30)) return {cls:'exp-soon',text:`${latest} (D-${diffDays})`,fullyExpired:false,expiredBatches:expiredCount};
-    return {cls:'',text:latest,fullyExpired:false,expiredBatches:expiredCount};
+    const active=activeBatches(r), today=todayStr(), warn=Number(settings().expiryWarningDays||30);
+    const out={cls:'',text:'-',sub:'',title:'',fullyExpired:false,expiredBatches:0,soonBatches:0,earliest:'',latest:''};
+    if(!active.length) return out;
+    const dayDiff=d=>Math.round((new Date(d)-new Date(today))/86400000);
+    const dated=active.filter(b=>b.expiryDate).sort((a,b)=>a.expiryDate.localeCompare(b.expiryDate));
+    out.expiredBatches=dated.filter(isBatchExpired).length;
+    out.soonBatches=dated.filter(b=>!isBatchExpired(b)&&dayDiff(b.expiryDate)<=warn).length;
+    if(active.length>1) out.title=active.slice().sort((a,b)=>(a.expiryDate||'9999').localeCompare(b.expiryDate||'9999')).map(b=>`${intakeRoundNo(b)}회차 · ${b.expiryDate||'유효기간 없음'} · 잔량 ${Number(b.stock)||0}${r.unit||''}${isBatchExpired(b)?' (만료)':''}`).join('\n');
+    if(!dated.length) return out;
+    out.earliest=dated[0].expiryDate; out.latest=dated[dated.length-1].expiryDate;
+    out.fullyExpired=dated.length===active.length&&out.latest<today;
+    const d=dayDiff(out.earliest);
+    if(d<0){out.cls='exp-over';out.text=`${out.earliest} (만료)`;}
+    else if(d<=warn){out.cls='exp-soon';out.text=`${out.earliest} (D-${d})`;}
+    else out.text=out.earliest;
+    if(active.length>1) out.sub=out.expiredBatches&&!out.fullyExpired?`${active.length}회차 중 ${out.expiredBatches}회차 만료`:`잔량 ${active.length}회차`;
+    return out;
   }
   function findReagent(id){
     if(!id) return null;
@@ -2944,12 +3239,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v);};
     const statsFor=(cat)=>{
       const items=DB.reagents.filter(r=>(r.category||'reagent')===cat&&!r.archivedAt);
-      return {
-        total:items.length,
-        low:items.filter(r=>r.minStock>0&&usableStock(r)>0&&usableStock(r)<=r.minStock).length,
-        out:items.filter(r=>Number(r.stock)<=0).length,
-        soon:items.filter(r=>expiryInfo(r).cls==='exp-soon').length
-      };
+      return calcInvStats(items);
     };
     const apply=(prefix,s)=>{
       set(`home-${prefix}-total`,s.total);set(`home-${prefix}-low`,s.low);set(`home-${prefix}-out`,s.out);set(`home-${prefix}-soon`,s.soon);
@@ -2984,10 +3274,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   // ---------- render: stats ----------
   function renderStats(){
     const catItems = DB.reagents.filter(r=>(r.category||'reagent')===currentCategory && !r.archivedAt);
-    const total=catItems.length, low=catItems.filter(r=>r.minStock>0&&usableStock(r)>0&&usableStock(r)<=r.minStock).length, out=catItems.filter(r=>r.stock<=0).length;
-    const expired=catItems.filter(r=>expiryInfo(r).fullyExpired).length, soon=catItems.filter(r=>expiryInfo(r).cls==='exp-soon').length;
+    const {total,low,out,expired,soon}=calcInvStats(catItems);
     const gc=window.GHSUI.counts(catItems,settings());
-    document.getElementById('stat-chips').innerHTML = `<div class="chip">총 ${catLabel()} <b>${total}</b></div><div class="chip warn">재고 부족 <b>${low}</b></div><div class="chip bad">재고 없음 <b>${out}</b></div><div class="chip bad">만료 <b>${expired}</b></div><div class="chip warn">D-${settings().expiryWarningDays} <b>${soon}</b></div><div class="chip clickable ${gc.ghsMissing?'warn':''}" data-ghs-filter="ghs-missing" title="GHS 분류가 입력되지 않은 품목 보기">GHS 미입력 <b>${gc.ghsMissing}</b></div><div class="chip clickable ${gc.msdsMissing?'warn':''}" data-ghs-filter="msds-missing" title="MSDS PDF가 첨부되지 않은 품목 보기">MSDS 미첨부 <b>${gc.msdsMissing}</b></div><div class="chip clickable ${gc.msdsReview?'bad':''}" data-ghs-filter="msds-review" title="MSDS 검토기한이 지났거나 임박한 품목 보기">MSDS 검토 필요 <b>${gc.msdsReview}</b></div>`;
+    document.getElementById('stat-chips').innerHTML = `<div class="chip">총 ${catLabel()} <b>${total}</b></div><div class="chip warn">재고 부족 <b>${low}</b></div><div class="chip bad">재고 없음 <b>${out}</b></div><div class="chip bad" title="유효기간이 지난 재고가 남아 있는 품목">만료 <b>${expired}</b></div><div class="chip warn" title="${settings().expiryWarningDays}일 안에 유효기간이 끝나는 재고가 있는 품목">D-${settings().expiryWarningDays} <b>${soon}</b></div><div class="chip clickable ${gc.ghsMissing?'warn':''}" data-ghs-filter="ghs-missing" title="GHS 분류가 입력되지 않은 품목 보기">GHS 미입력 <b>${gc.ghsMissing}</b></div><div class="chip clickable ${gc.msdsMissing?'warn':''}" data-ghs-filter="msds-missing" title="MSDS PDF가 첨부되지 않은 품목 보기">MSDS 미첨부 <b>${gc.msdsMissing}</b></div><div class="chip clickable ${gc.msdsReview?'bad':''}" data-ghs-filter="msds-review" title="MSDS 검토기한이 지났거나 임박한 품목 보기">MSDS 검토 필요 <b>${gc.msdsReview}</b></div>`;
     document.querySelectorAll('#stat-chips .chip[data-ghs-filter]').forEach(ch=>ch.onclick=()=>setGhsFilter(ghsFilter===ch.dataset.ghsFilter?'all':ch.dataset.ghsFilter));
     renderHomeDashboard();
   }
@@ -3008,7 +3297,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(!window.GHSUI.matchesFilter(r,ghsFilter,settings())) return false;
       if(!q) return true;
       const batchText=(r.batches||[]).map(b=>`${batchQrCode(r,b)} ${b.batchId} ${b.lotNo||''} ${b.receivedDate||''} ${b.expiryDate||''}`).join(' ');
-      return [r.name,r.id,r.serialNo,r.maker,r.nameEn,r.casNo,r.spec,r.concentration,r.storage,batchText,window.GHSUI.searchText(r)].some(v=>norm(v).includes(q));
+      const hay=[r.name,r.id,r.serialNo,r.maker,r.nameEn,r.casNo,r.spec,r.concentration,r.storage,batchText,window.GHSUI.searchText(r)].map(norm).join(' \u0001 ');
+      return hay.includes(q) || q.split(/\s+/).filter(Boolean).every(w=>hay.includes(w));
     });
     const sort=document.getElementById('sort-select')?.value||'id';
     const sorter={name:(a,b)=>norm(a.name).localeCompare(norm(b.name)), expiry:(a,b)=>(effectiveExpiry(a)||'9999').localeCompare(effectiveExpiry(b)||'9999'), stock:(a,b)=>(a.stock||0)-(b.stock||0), received:(a,b)=>(effectiveReceived(b)||'').localeCompare(effectiveReceived(a)||''), id:(a,b)=>a.id.localeCompare(b.id)}[sort];
@@ -3018,7 +3308,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     empty.style.display='none';
     const visibleIds=new Set(list.map(r=>r.id)); Array.from(selectedPrintIds).forEach(id=>{if(!visibleIds.has(id))selectedPrintIds.delete(id);});
     tbody.innerHTML=list.map(r=>{ const st=r.archivedAt?{cls:'archived',label:'폐기'}:statusOf(r); const exp=expiryInfo(r); const checked=selectedPrintIds.has(r.id)?'checked':'';
-      return `<tr data-id="${r.id}" class="${r.id===selectedId?'selected':''} ${r.archivedAt?'archived-row':''}"><td onclick="event.stopPropagation()"><input type="checkbox" class="row-select-checkbox" data-id="${r.id}" ${checked}></td><td class="id-cell">${r.id}</td><td style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(effectiveReceived(r)||'-')}</td><td class="${exp.cls}" style="font-size:11.5px;">${escapeHtml(exp.text)}</td><td class="truncate" title="${escapeHtml(r.name)}"><span style="display:block;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.name)}</span>${r.nameEn?`<span style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink-soft);">${escapeHtml(r.nameEn)}</span>`:''}</td><td class="truncate">${escapeHtml(r.spec||'-')}${r.concentration?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">${escapeHtml(r.concentration)}</span>`:''}</td><td class="truncate">${escapeHtml(r.maker||'-')}</td><td class="ghs-td">${window.GHSUI.cellHtml(r,settings())}</td><td class="stock-cell">${r.stock} ${escapeHtml(r.unit||'')}${expiredStock(r)>0?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">사용가능 ${usableStock(r)}</span>`:''}</td><td>${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''}</td><td onclick="event.stopPropagation()"><button class="row-delete-btn" data-id="${r.id}" title="${r.archivedAt?'복원':'폐기'}">${r.archivedAt?'↩':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</button></td></tr>`;
+      return `<tr data-id="${r.id}" class="${r.id===selectedId?'selected':''} ${r.archivedAt?'archived-row':''}"><td onclick="event.stopPropagation()"><input type="checkbox" class="row-select-checkbox" data-id="${r.id}" ${checked}></td><td class="id-cell">${r.id}</td><td style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(effectiveReceived(r)||'-')}</td><td class="${exp.cls}" style="font-size:11.5px;"${exp.title?` title="${escapeHtml(exp.title)}"`:''}>${escapeHtml(exp.text)}${exp.sub?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);font-weight:400;">${escapeHtml(exp.sub)}</span>`:''}</td><td class="truncate" title="${escapeHtml(r.name)}"><span style="display:block;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.name)}</span>${r.nameEn?`<span style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink-soft);">${escapeHtml(r.nameEn)}</span>`:''}</td><td class="truncate" title="${escapeHtml([r.spec,r.concentration].filter(Boolean).join(' · '))}">${escapeHtml(r.spec||'-')}${r.concentration?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">${escapeHtml(r.concentration)}</span>`:''}</td><td class="truncate" title="${escapeHtml(r.maker||'')}">${escapeHtml(r.maker||'-')}</td><td class="ghs-td">${window.GHSUI.cellHtml(r,settings())}</td><td class="stock-cell">${r.stock} ${escapeHtml(r.unit||'')}${expiredStock(r)>0?`<span style="display:block;font-size:10.5px;color:var(--ink-soft);">사용가능 ${usableStock(r)}</span>`:''}</td><td>${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''}</td><td onclick="event.stopPropagation()"><button class="row-delete-btn" data-id="${r.id}" title="${r.archivedAt?'복원':'폐기'}">${r.archivedAt?'↩':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</button></td></tr>`;
     }).join('');
     tbody.querySelectorAll('tr').forEach(tr=>tr.addEventListener('click',()=>{selectedId=tr.dataset.id;renderInventory();renderDetail();}));
     tbody.querySelectorAll('.row-select-checkbox').forEach(cb=>cb.addEventListener('change',()=>{if(cb.checked)selectedPrintIds.add(cb.dataset.id);else selectedPrintIds.delete(cb.dataset.id);updateSelectAllCheckbox(list);}));
@@ -3048,7 +3338,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const batches=(r.batches||[]).slice().sort((a,b)=>(b.receivedDate||'').localeCompare(a.receivedDate||''));
     if(!batches.length) return `<div class="hint">기록된 입고회차가 없습니다.</div>`;
     const qrIcon=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM15 14h2M20 14v3M14 18h3v2M19 19h1"/></svg>`;
-    return `<table class="batch-table"><thead><tr><th>입고회차</th><th>입고일</th><th>유효기간</th><th>${(r.category||'reagent')==='standard'?'Lot No.':'구분'}</th><th>입고</th><th>잔량</th><th class="batch-qr-col">QR</th></tr></thead><tbody>${batches.map(b=>`<tr><td><span class="id-cell">${escapeHtml(intakeRoundLabel(b))}</span></td><td>${escapeHtml(b.receivedDate||'-')}</td><td class="${isBatchExpired(b)&&Number(b.stock)>0?'exp-over':''}">${escapeHtml(b.expiryDate||'-')}</td><td>${escapeHtml(b.lotNo||'-')}</td><td>${Number(b.initialQty)||0}</td><td><b>${Number(b.stock)||0}</b></td><td class="batch-qr-col"><button class="batch-qr-btn" data-batch="${escapeHtml(b.batchId)}" title="${escapeHtml(intakeRoundLabel(b))}회차 QR 보기" aria-label="${escapeHtml(intakeRoundLabel(b))}회차 QR 보기">${qrIcon}</button></td></tr>`).join('')}</tbody></table>`;
+    const isStd=(r.category||'reagent')==='standard';
+    return `<table class="batch-table"><thead><tr><th>입고회차</th><th>입고일</th><th>유효기간</th>${isStd?'<th>Lot No.</th><th>개봉일</th>':''}<th>입고</th><th>잔량</th><th class="batch-qr-col">수정</th><th class="batch-qr-col">QR</th></tr></thead><tbody>${batches.map(b=>`<tr data-batch="${escapeHtml(b.batchId)}"><td><span class="id-cell">${escapeHtml(intakeRoundLabel(b))}</span></td><td>${escapeHtml(b.receivedDate||'-')}</td><td class="${Number(b.stock)>0?(isBatchExpired(b)?'exp-over':(b.expiryDate&&Math.round((new Date(b.expiryDate)-new Date(todayStr()))/86400000)<=Number(settings().expiryWarningDays||30)?'exp-soon':'')):''}">${escapeHtml(b.expiryDate||'-')}</td>${isStd?`<td>${escapeHtml(b.lotNo||'-')}</td><td>${escapeHtml(b.openedDate||'-')}</td>`:''}<td>${Number(b.initialQty)||0}</td><td><b>${Number(b.stock)||0}</b></td><td class="batch-qr-col"><button class="batch-edit-btn" data-batch="${escapeHtml(b.batchId)}" title="${escapeHtml(intakeRoundLabel(b))}회차 입고일·유효기간 수정" aria-label="${escapeHtml(intakeRoundLabel(b))}회차 수정"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg></button></td><td class="batch-qr-col"><button class="batch-qr-btn" data-batch="${escapeHtml(b.batchId)}" title="${escapeHtml(intakeRoundLabel(b))}회차 QR 보기" aria-label="${escapeHtml(intakeRoundLabel(b))}회차 QR 보기">${qrIcon}</button></td></tr>`).join('')}</tbody></table>`;
   }
 
   function latestTransactionIndex(id){
@@ -3082,15 +3373,17 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const rows=DB.logs.map((l,index)=>({l,index})).filter(x=>x.l.id===id && ['register','in','out','adjust'].includes(x.l.type));
     if(!rows.length) return `<div class="hint">입출고 기록이 없습니다.</div>`;
     const typeLabel={register:'최초등록',in:'입고',out:'출고',adjust:'재고조정'};
+    const partsText=l=>{ if(l.type!=='out'&&l.type!=='adjust') return ''; const ps=logBatchParts(l,r); return ps.length>1?`차감: ${ps.map(p=>`${intakeRoundNo(p.batchId)}회차${p.lotNo?'('+p.lotNo+')':''} ${fmtQty(p.qty)}`).join(', ')}`:''; };
     return `<div class="history-list">${rows.map(({l,index})=>{
       const cls=l.type==='out'?'out':l.type==='adjust'?'adjust':'in';
-      const qtyText=l.type==='adjust'?`${Number(l.before)||0} → ${Number(l.after)||0}`:(Number(l.qty)>0?`${l.type==='out'?'-':'+'}${Number(l.qty)}`:'수정');
-      const bits=[fmtDate(l.date), l.batchId?`입고회차 ${intakeRoundLabel(l.batchId)}`:'', l.lotNo?`Lot ${l.lotNo}`:'', l.handler?`입출고인 ${l.handler}`:''].filter(Boolean);
+      const noQty=l.type!=='adjust'&&!(Number(l.qty)>0);
+      const qtyText=l.type==='adjust'?`${Number(l.before)||0} → ${Number(l.after)||0}`:(noQty?'':`${l.type==='out'?'-':'+'}${Number(l.qty)}`);
+      const bits=[fmtDate(l.date), l.batchId?`입고회차 ${intakeRoundLabel(l.batchId)}`:'', l.lotNo?`Lot ${l.lotNo}`:'', partsText(l), l.handler?`입출고인 ${l.handler}`:''].filter(Boolean);
       const canDelete=index===latestIdx && !(l.type==='in' && Number(l.qty)<=0);
       const del=canDelete
         ? `<button class="danger history-delete-btn" data-log-index="${index}" title="이 기록과 재고를 함께 되돌리기">삭제</button>`
         : ((l.type==='in'&&Number(l.qty)<=0)?'':`<button class="danger history-delete-btn" data-log-index="${index}" disabled title="가장 최근 입출고 내역부터 삭제할 수 있습니다">삭제</button>`);
-      return `<div class="history-row"><div class="history-main"><div class="history-title"><b>${escapeHtml(typeLabel[l.type]||l.type)}</b><span class="${cls}">${escapeHtml(qtyText)}${r&&r.unit?' '+escapeHtml(r.unit):''}</span></div><div class="history-meta">${escapeHtml(bits.join(' · '))}${cleanLogNoteForDisplay(l)?`<br>${escapeHtml(cleanLogNoteForDisplay(l))}`:''}</div></div>${del}</div>`;
+      return `<div class="history-row"><div class="history-main"><div class="history-title"><b>${escapeHtml((l.type==='in'&&!(Number(l.qty)>0))?'입고일 수정':(typeLabel[l.type]||l.type))}</b><span class="${cls}">${escapeHtml(qtyText)}${!noQty&&r&&r.unit?' '+escapeHtml(r.unit):''}</span></div><div class="history-meta">${escapeHtml(bits.join(' · '))}${cleanLogNoteForDisplay(l)?`<br>${escapeHtml(cleanLogNoteForDisplay(l))}`:''}</div></div>${del}</div>`;
     }).join('')}</div>`;
   }
 
@@ -3104,7 +3397,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
     // v2.7.2 이후 기록은 처리 전 입고회차 상태를 저장하므로 정확히 복원 가능.
     if(Array.isArray(log.batchSnapshotBefore)){
-      r.batches=JSON.parse(JSON.stringify(log.batchSnapshotBefore));
+      const cur=new Map((r.batches||[]).map(b=>[b.batchId,b]));
+      r.batches=JSON.parse(JSON.stringify(log.batchSnapshotBefore)).map(sb=>{const c=cur.get(sb.batchId);return c?Object.assign(sb,{receivedDate:c.receivedDate,expiryDate:c.expiryDate,lotNo:c.lotNo,openedDate:c.openedDate}):sb;});
       syncReagentFromBatches(r);
     }else if(log.type==='in' || log.type==='register'){
       const bi=(r.batches||[]).findIndex(b=>b.batchId===log.batchId);
@@ -3135,6 +3429,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   function renderDetail(){
     const r = findReagent(selectedId);
     if(!r){ closeDetailModal(); return; }
+    // 입고일·유효기간·개봉일은 입고회차마다 따로 관리한다. 회차가 하나뿐이면 여기서 바로 고치고, 여러 개면 아래 입고회차 표에서 고친다.
+    const oneBatch=(r.batches||[]).length===1 ? r.batches[0] : null, multi=(r.batches||[]).length>1;
+    const batchNote=multi?' — 아래 입고회차 표에서 수정':'', batchLock=multi?'disabled':'';
     showDetailModal(`
       <div class="top-row">
         <div>
@@ -3149,8 +3446,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>영문명</label><input type="text" id="d-name-en" value="${escapeHtml(r.nameEn||'')}"></div>
         <div><label>규격/용량</label><input type="text" id="d-spec" value="${escapeHtml(r.spec||'')}"></div>
         <div><label>단위</label><input type="text" id="d-unit" value="${escapeHtml(r.unit||'')}"></div>
-        <div><label>최근 입고일</label><input type="date" id="d-received" value="${escapeHtml(r.receivedDate||'')}"></div>
-        <div><label>유효기간 (EXP)</label><input type="date" id="d-expiry" value="${escapeHtml(r.expiryDate||'')}"></div>
+        <div><label>${multi?'최근 입고일'+batchNote:'입고일'}</label><input type="date" id="d-received" value="${escapeHtml((oneBatch?oneBatch.receivedDate:r.receivedDate)||'')}" ${batchLock}></div>
+        <div><label>${multi?'가장 빠른 유효기간'+batchNote:'유효기간 (EXP)'}</label><input type="date" id="d-expiry" value="${escapeHtml((oneBatch?oneBatch.expiryDate:effectiveExpiry(r))||'')}" ${batchLock}></div>
         <div><label>최소재고 경고기준</label><input type="number" min="0" id="d-min" value="${r.minStock||0}"></div>
         <div><label>현재 재고 (입고회차 합계${expiredStock(r)>0?` / 사용가능 ${usableStock(r)}`:``})</label><input type="number" id="d-stock" value="${r.stock}"></div>
         <div><label>CAS No.</label><input type="text" id="d-cas" value="${escapeHtml(r.casNo||'')}"></div>
@@ -3159,10 +3456,14 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         ${(r.category||'reagent')==='standard' ? `
         <div><label>농도</label><input type="text" id="d-concentration" value="${escapeHtml(r.concentration||'')}"></div>
         <div><label>순도</label><input type="text" id="d-purity" value="${escapeHtml(r.purity||'')}"></div>
-        <div><label>개봉일</label><input type="date" id="d-opened" value="${escapeHtml(r.openedDate||'')}"></div>
+        <div><label>개봉일${batchNote}</label><input type="date" id="d-opened" value="${escapeHtml((oneBatch?oneBatch.openedDate:r.openedDate)||'')}" ${batchLock}></div>
         ` : ''}
         <div class="full"><label>보관방법</label><input type="text" id="d-storage" value="${escapeHtml(r.storage||'')}"></div>
         <div><label>최근 수정</label><input type="text" value="${fmtDate(r.updatedAt)}" disabled></div>
+      </div>
+      <div class="detail-actions detail-save-row">
+        <button class="primary" id="detail-save-btn">기본 정보 저장</button>
+        <span class="hint" id="detail-dirty-note" hidden>수정한 내용이 있습니다. 저장을 눌러야 반영됩니다.</span>
       </div>
       <div class="log-list" id="ghs-panel"></div>
       <div class="log-list safety-widget" id="safety-panel" hidden></div>
@@ -3176,10 +3477,16 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         ${renderTransactionHistory(r.id)}
       </div>
       <div class="detail-actions">
-        <button class="primary" id="detail-save-btn">저장</button>
         <button class="danger" id="detail-delete-btn">${r.archivedAt ? '복원' : '폐기/비활성'}</button>
       </div>
     `);
+    detailSnapshot=detailFieldValues();
+    const dirtyNote=document.getElementById('detail-dirty-note'), grid=document.querySelector('#detail-modal-box .field-grid');
+    if(grid){
+      grid.addEventListener('input',()=>{ if(dirtyNote) dirtyNote.hidden=!detailFieldsDirty(); });
+      grid.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.isComposing&&e.target.tagName==='INPUT'){ e.preventDefault(); document.getElementById('detail-save-btn').click(); } });
+    }
+    document.querySelectorAll('#detail-modal-box .batch-edit-btn').forEach(btn=>{btn.onclick=()=>editBatchRow(r.id,btn.dataset.batch);});
     window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
@@ -3195,33 +3502,45 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     };});
 
     document.getElementById('detail-save-btn').onclick = async ()=>{
+      // GHS를 편집하던 중이면 그 내용도 함께 저장할지 먼저 묻는다 (말없이 사라지지 않게).
+      const ghsApi=document.getElementById('ghs-panel')?._ghsApi; let ghsNote='';
+      if(ghsApi?.isDirty?.()){
+        if(safeConfirm('GHS 편집 중인 내용도 함께 저장할까요?\n[취소]를 누르면 기본 정보만 저장하고 GHS 편집 내용은 버립니다.')){ const g=ghsApi.getDraft(); if(g){ g.updatedAt=new Date().toISOString(); r.ghs=g; ghsNote=' (GHS 포함)'; } }
+        else ghsNote=' — GHS 편집 내용은 저장하지 않았습니다';
+        ghsApi.discard();
+      }
+      const newStockRaw=document.getElementById('d-stock').value.trim(), newStock=Number(newStockRaw);
+      if(newStockRaw!=='' && (Number.isNaN(newStock) || newStock<0)){ showToast('현재 재고는 0 이상의 숫자로 입력해주세요.', true); return; }
       r.name = document.getElementById('d-name').value.trim() || r.name;
       r.nameEn = document.getElementById('d-name-en').value.trim();
       r.spec = document.getElementById('d-spec').value.trim();
       r.unit = document.getElementById('d-unit').value.trim();
-      const newReceivedDate = document.getElementById('d-received').value;
-      if(newReceivedDate && newReceivedDate !== r.receivedDate){
-        addLog({id:r.id, name:r.name, type:'in', qty:0, before:r.stock, after:r.stock, note:`입고일 수정 (${newReceivedDate})`});
-        r.receivedDate = newReceivedDate;
+      const single=(r.batches||[]).length===1 ? r.batches[0] : null;
+      if(single){
+        const changes=[], put=(key,label,val)=>{ val=val||''; if((single[key]||'')!==val){ changes.push(`${label} ${single[key]||'없음'} → ${val||'없음'}`); single[key]=val; } };
+        put('receivedDate','입고일',document.getElementById('d-received').value || single.receivedDate);
+        put('expiryDate','유효기간',document.getElementById('d-expiry').value);
+        const op=document.getElementById('d-opened'); if(op) put('openedDate','개봉일',op.value);
+        r.expiryDate=single.expiryDate||''; if(op) r.openedDate=single.openedDate||'';
+        if(changes.length) addLog({id:r.id, name:r.name, type:'edit', qty:0, before:r.stock, after:r.stock, batchId:single.batchId, lotNo:single.lotNo||'', note:`${intakeRoundNo(single)}회차 ${changes.join(', ')}`});
       }
-      r.expiryDate = document.getElementById('d-expiry').value;
-      r.minStock = Number(document.getElementById('d-min').value) || 0;
+      r.minStock = Math.max(0, Number(document.getElementById('d-min').value) || 0);
       r.casNo = document.getElementById('d-cas').value.trim();
       if((r.category||'reagent')!=='standard') r.serialNo = document.getElementById('d-serial').value.trim();
       r.maker = document.getElementById('d-maker').value.trim();
       const dConc = document.getElementById('d-concentration');
       const dPurity = document.getElementById('d-purity');
-      const dOpened = document.getElementById('d-opened');
       if(dConc) r.concentration = dConc.value.trim();
       if(dPurity) r.purity = dPurity.value.trim();
-      if(dOpened) r.openedDate = dOpened.value;
       r.storage = document.getElementById('d-storage').value.trim();
-      const newStock = Number(document.getElementById('d-stock').value);
-      if(!Number.isNaN(newStock) && newStock !== r.stock){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정',batchSnapshotBefore}); }
+      if(newStockRaw!=='' && newStock !== r.stock){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); const usedBatches=reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정',batchSnapshotBefore,usedBatches}); }
+      else syncReagentFromBatches(r);
       r.updatedAt = new Date().toISOString();
-      await saveDB();
+      const sc=document.querySelector('#detail-modal-box .detail-modal-scroll'), y=sc?sc.scrollTop:0;
+      const ok=await saveDB();
       renderInventory(); renderDetail(); renderRecentLogs();
-      showToast('저장되었습니다.');
+      requestAnimationFrame(()=>{const n=document.querySelector('#detail-modal-box .detail-modal-scroll');if(n)n.scrollTop=y;});
+      if(ok) showToast('저장되었습니다.'+ghsNote);
     };
     document.getElementById('detail-delete-btn').onclick = async ()=>{
       if(r.archivedAt){ if(!safeConfirm(`'${r.name}'을(를) 복원할까요?`))return; r.archivedAt='';r.archiveReason='';addLog({id:r.id,name:r.name,type:'restore',qty:0,before:r.stock,after:r.stock,note:'복원'}); }
@@ -3238,7 +3557,13 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const name=document.getElementById('f-name').value.trim(); if(!name){showToast(`${catLabel()}명을 입력해주세요.`,true);return;}
     const draft={name,nameEn:document.getElementById('f-name-en').value.trim(),spec:document.getElementById('f-spec').value.trim(),unit:document.getElementById('f-unit').value.trim(),stock:Math.max(0,Number(document.getElementById('f-stock').value)||0),receivedDate:document.getElementById('f-received').value||todayStr(),expiryDate:document.getElementById('f-expiry').value||'',minStock:Math.max(0,Number(document.getElementById('f-min').value)||0),casNo:document.getElementById('f-cas').value.trim(),serialNo:document.getElementById('f-serial').value.trim(),maker:document.getElementById('f-maker').value.trim(),storage:document.getElementById('f-storage').value.trim(),concentration:document.getElementById('f-concentration').value.trim(),purity:document.getElementById('f-purity').value.trim(),openedDate:document.getElementById('f-opened').value||'',category:currentCategory};
     let reagent=findDuplicateProduct(draft), mergedIntoExisting=false, createdBatch=null;
-    if(reagent){ const ok=safeConfirm(`동일한 제품이 이미 등록되어 있습니다.\n${reagent.name} (${reagent.id})\n\n새 QR을 만들지 않고 기존 제품에 새 입고회차로 추가할까요?\n[취소]를 누르면 별도 제품으로 등록합니다.`); if(!ok) reagent=null; }
+    if(reagent){
+      const ok=safeConfirm(`같은 제품이 이미 등록되어 있습니다.\n${reagent.name} (${reagent.id}) · 현재 재고 ${reagent.stock}${reagent.unit||''}\n\n새 QR을 만들지 않고 이 제품에 새 입고회차로 추가할까요?\n[확인] 기존 제품에 입고 추가   [취소] 다른 방법 선택`);
+      if(!ok){
+        if(!safeConfirm(`그러면 '${name}'을(를) 별도 제품으로 새로 등록할까요? (새 QR 발급)\n[취소]를 누르면 아무것도 등록하지 않습니다.`)){ showToast('등록을 취소했습니다. 입력한 내용은 그대로 있습니다.'); return; }
+        reagent=null;
+      }
+    }
     const now=new Date().toISOString();
     if(reagent){ mergedIntoExisting=true; const before=reagent.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(reagent.batches||[])); const b=addBatch(reagent,{qty:draft.stock,receivedDate:draft.receivedDate,expiryDate:draft.expiryDate,lotNo:currentCategory==='standard'?draft.serialNo:'',openedDate:draft.openedDate}); createdBatch=b; reagent.minStock=draft.minStock||reagent.minStock; addLog({id:reagent.id,name:reagent.name,type:'in',qty:draft.stock,before,after:reagent.stock,batchId:b.batchId,lotNo:b.lotNo,note:'중복 제품 입고',batchSnapshotBefore}); }
     else { const id=genId(currentCategory); reagent=Object.assign({id,createdAt:now,updatedAt:now,archivedAt:'',archiveReason:'',batches:[]},draft); const q=reagent.stock; reagent.stock=0; createdBatch=addBatch(reagent,{qty:q,receivedDate:draft.receivedDate,expiryDate:draft.expiryDate,lotNo:currentCategory==='standard'?draft.serialNo:'',openedDate:draft.openedDate}); DB.reagents.push(reagent); addLog({id,name,type:'register',qty:q,before:0,after:reagent.stock,batchId:createdBatch.batchId,lotNo:createdBatch.lotNo,note:'최초 등록'}); }
@@ -3248,6 +3573,15 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     showToast(mergedIntoExisting?`${reagent.id}에 새 입고회차 추가 완료`:`${reagent.id} 발급 완료 — 라벨을 인쇄해 부착하세요.`);
     if(!mergedIntoExisting) autoFetchMsdsFor(reagent.id);
   });
+  document.getElementById('reg-form').addEventListener('keydown',e=>{
+    if(e.key!=='Enter'||e.isComposing) return;
+    const t=e.target; if(!t||t.tagName!=='INPUT'||['submit','button','checkbox'].includes(t.type)) return;
+    e.preventDefault();
+    const list=[...e.currentTarget.querySelectorAll('input:not([type=hidden]):not([disabled]),select:not([disabled]),button[type=submit],button:not([type])')].filter(el=>el.offsetParent!==null);
+    const next=list[list.indexOf(t)+1]; if(next){ next.focus(); if(next.select&&next.tagName==='INPUT') try{next.select();}catch{} }
+  });
+  // 프로그램을 켜 둔 채 날짜가 바뀌어도 입고일 기본값이 어제로 남지 않게 한다.
+  (function(){ const el=document.getElementById('f-received'); if(!el) return; let auto=el.value; const refresh=()=>{ const t=todayStr(); if((el.value===auto||!el.value)&&el.value!==t){ el.value=t; } auto=t===el.value?t:auto; }; document.getElementById('reg-form').addEventListener('focusin',refresh); })();
   // 등록 화면에서 CAS를 입력하고 칸을 벗어나면 물질명을 찾아 비어 있는 국문명·영문명을 채운다 (출처: 안전보건공단 KOSHA).
   (function(){
     const cas=document.getElementById('f-cas'),note=document.getElementById('f-cas-note');if(!cas||!note)return;
@@ -3419,6 +3753,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   document.getElementById('excel-export-btn').addEventListener('click', exportExcel);
   document.getElementById('bulk-template-btn').addEventListener('click', downloadBulkTemplate);
   document.getElementById('bulk-import-btn').addEventListener('click', ()=> document.getElementById('bulk-import-file').click());
+  document.getElementById('bulk-undo-btn').addEventListener('click', undoBulkImport);
   document.getElementById('bulk-import-file').addEventListener('change', (e)=>{
     const file = e.target.files[0];
     if(file) importBulkExcel(file);
@@ -3463,6 +3798,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
   function showScanModal(html){
     if(scanning) scanPaused=true;
+    document.getElementById('scan-modal-box').classList.remove('modal-box-import');
     document.getElementById('scan-modal-box').innerHTML =
       `<button class="modal-close-btn" id="scan-modal-close" aria-label="닫기">✕</button>` + html;
     const backdrop=document.getElementById('scan-modal-backdrop');
@@ -3494,16 +3830,27 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(document.getElementById('label-preview-modal-backdrop')?.style.display !== 'none'){ closeLabelPrintPreview(); return; }
     if(document.getElementById('batch-qr-modal-backdrop').style.display !== 'none'){ closeBatchQrModal(); return; }
     if(document.getElementById('scan-modal-backdrop').style.display !== 'none'){ closeScanModal(); return; }
-    if(document.getElementById('detail-modal-backdrop').style.display !== 'none'){ closeDetailModal(); }
+    if(document.getElementById('detail-modal-backdrop').style.display !== 'none'){ requestCloseDetail(); }
   });
 
   function showDetailModal(html){
     document.getElementById('detail-modal-box').innerHTML =
       `<button class="modal-close-btn" id="detail-modal-close" aria-label="닫기">✕</button><div class="detail-modal-scroll">${html}</div>`;
     document.getElementById('detail-modal-backdrop').style.display = 'flex';
-    document.getElementById('detail-modal-close').onclick = closeDetailModal;
+    document.getElementById('detail-modal-close').onclick = requestCloseDetail;
+  }
+  // 상세 창 기본 정보 칸의 현재 값. 처음 열었을 때 값과 비교해 '저장하지 않은 변경'을 알아낸다.
+  let detailSnapshot=null;
+  function detailFieldValues(){ return [...document.querySelectorAll('#detail-modal-box .field-grid input:not([disabled])')].map(el=>el.id+'='+el.value).join('\u0001'); }
+  function detailFieldsDirty(){ return detailSnapshot!==null && document.getElementById('detail-modal-backdrop').style.display!=='none' && detailFieldValues()!==detailSnapshot; }
+  function detailHasUnsaved(){ return detailFieldsDirty() || !!document.getElementById('ghs-panel')?._ghsApi?.isDirty?.() || !!document.querySelector('#detail-modal-box .batch-edit-row'); }
+  // 사용자가 ✕·Esc·바깥 클릭으로 닫을 때만 확인한다. (저장·폐기 뒤 프로그램이 닫는 경우는 묻지 않는다)
+  function requestCloseDetail(){
+    if(detailHasUnsaved() && !safeConfirm('저장하지 않은 변경 내용이 있습니다.\n저장하지 않고 닫을까요?')) return false;
+    closeDetailModal(); return true;
   }
   function closeDetailModal(){
+    detailSnapshot=null;
     document.getElementById('detail-modal-backdrop').style.display = 'none';
     document.getElementById('detail-modal-box').innerHTML = '';
     selectedId = null;
@@ -3512,40 +3859,125 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     restoreKeyboardFocus('search-input');
   }
   document.getElementById('detail-modal-backdrop').addEventListener('click', (e)=>{
-    if(e.target.id === 'detail-modal-backdrop') closeDetailModal();
+    if(e.target.id === 'detail-modal-backdrop') requestCloseDetail();
   });
+  // 입고회차 한 줄을 그 자리에서 고친다 (입고일·유효기간, 표준물질은 Lot No.·개봉일까지).
+  function editBatchRow(itemId, batchId){
+    const r=findReagent(itemId), b=r&&(r.batches||[]).find(x=>x.batchId===batchId), tr=document.querySelector(`#detail-modal-box .batch-table tr[data-batch="${batchId}"]`);
+    if(!r||!b||!tr||tr.classList.contains('batch-edit-row')) return;
+    const isStd=(r.category||'reagent')==='standard', keep=tr.innerHTML;
+    tr.classList.add('batch-edit-row');
+    tr.innerHTML=`<td colspan="${isStd?9:7}"><div class="batch-edit-form"><b>${escapeHtml(intakeRoundLabel(b))}회차 수정</b><label>입고일<input type="date" class="be-received" value="${escapeHtml(b.receivedDate||'')}"></label><label>유효기간<input type="date" class="be-expiry" value="${escapeHtml(b.expiryDate||'')}"></label>${isStd?`<label>Lot No.<input type="text" class="be-lot" value="${escapeHtml(b.lotNo||'')}"></label><label>개봉일<input type="date" class="be-opened" value="${escapeHtml(b.openedDate||'')}"></label>`:''}<span class="batch-edit-actions"><button class="primary be-save">저장</button><button class="ghost be-cancel">취소</button></span></div></td>`;
+    const cancel=()=>{tr.classList.remove('batch-edit-row');tr.innerHTML=keep;const eb=tr.querySelector('.batch-edit-btn'),qb=tr.querySelector('.batch-qr-btn');if(eb)eb.onclick=()=>editBatchRow(itemId,batchId);if(qb)qb.onclick=()=>showBatchQrModal(r,b);};
+    tr.querySelector('.be-cancel').onclick=cancel;
+    tr.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();cancel();}else if(e.key==='Enter'&&!e.isComposing&&e.target.tagName==='INPUT'){e.preventDefault();tr.querySelector('.be-save')?.click();}});
+    tr.querySelector('.be-save').onclick=async()=>{
+      const live=findReagent(itemId), lb=live&&(live.batches||[]).find(x=>x.batchId===batchId); if(!lb){cancel();return;}
+      const changes=[], put=(key,label,val)=>{val=val||'';if((lb[key]||'')!==val){changes.push(`${label} ${lb[key]||'없음'} → ${val||'없음'}`);lb[key]=val;}};
+      put('receivedDate','입고일',tr.querySelector('.be-received').value||lb.receivedDate);
+      put('expiryDate','유효기간',tr.querySelector('.be-expiry').value);
+      if(isStd){put('lotNo','Lot No.',tr.querySelector('.be-lot').value.trim());put('openedDate','개봉일',tr.querySelector('.be-opened').value);}
+      if(!changes.length){cancel();return;}
+      syncReagentFromBatches(live);
+      addLog({id:live.id,name:live.name,type:'edit',qty:0,before:live.stock,after:live.stock,batchId:lb.batchId,lotNo:lb.lotNo||'',note:`${intakeRoundNo(lb)}회차 ${changes.join(', ')}`});
+      const sc=document.querySelector('#detail-modal-box .detail-modal-scroll'), y=sc?sc.scrollTop:0, keepFields=detailFieldsDirty()?[...document.querySelectorAll('#detail-modal-box .field-grid input:not([disabled])')].map(el=>[el.id,el.value]):null;
+      const ok=await saveDB();
+      renderInventory(); renderDetail(); renderRecentLogs();
+      // 기본 정보 칸에 쓰던 값이 있으면 다시 넣어 준다.
+      if(keepFields){ keepFields.forEach(([id,v])=>{const el=document.getElementById(id);if(el&&!el.disabled)el.value=v;}); const note=document.getElementById('detail-dirty-note'); if(note) note.hidden=!detailFieldsDirty(); }
+      requestAnimationFrame(()=>{const n=document.querySelector('#detail-modal-box .detail-modal-scroll');if(n)n.scrollTop=y;});
+      if(ok) showToast(`${intakeRoundNo(lb)}회차 정보를 수정했습니다.`);
+    };
+    tr.querySelector('.be-expiry').focus();
+  }
 
-  function renderScanResult(code){
+  // 품목 QR(회차 지정 없음)로 출고할 때 어느 입고회차에서 얼마나 빠질지 미리 계산한다 (유효기간 빠른 순, 만료 회차 제외).
+  function planFEFO(r, qty){
+    let remain=Math.max(0,Number(qty)||0); const parts=[];
+    const bs=(r.batches||[]).filter(b=>Number(b.stock)>0 && !isBatchExpired(b)).sort((x,y)=>(x.expiryDate||'9999-12-31').localeCompare(y.expiryDate||'9999-12-31') || (x.receivedDate||'').localeCompare(y.receivedDate||''));
+    for(const b of bs){ if(remain<=0) break; const take=Math.min(Number(b.stock)||0,remain); if(take>0){ parts.push({batchId:b.batchId,lotNo:b.lotNo||'',qty:take,expiryDate:b.expiryDate||''}); remain-=take; } }
+    return parts;
+  }
+  // preset: 확인 화면에서 [뒤로]로 돌아올 때 입력하던 값(입고/출고, 수량, 날짜)을 그대로 되살린다.
+  function renderScanResult(code, preset){
     const target=findScanTarget(code), r=target&&target.r, targetBatch=target&&target.batch;
     if(!r){const regLabel=unifiedScanMode?'시약 또는 표준물질':catLabel();showScanModal(`<div class="scan-result notfound"><h3>등록되지 않은 QR/바코드</h3><div class="meta">스캔된 값: <span style="font-family:var(--mono);">${escapeHtml(code)}</span></div><div class="hint">${regLabel} 관리에서 먼저 등록해주세요.</div></div>`);return;}
     if(r.archivedAt){showScanModal(`<div class="scan-result notfound"><h3>폐기/비활성 항목</h3><div class="meta">${escapeHtml(r.name)} · ${escapeHtml(target.code)}</div><div class="hint">재고현황에서 복원한 뒤 입출고 처리할 수 있습니다.</div></div>`);return;}
-    scanTargetId=r.id; const st=statusOf(r),catTag=catLabel(r.category);
-    const batchMeta=targetBatch?` · <b>${escapeHtml(intakeRoundLabel(targetBatch))}</b>${targetBatch.lotNo?' · Lot '+escapeHtml(targetBatch.lotNo):''} · 잔량 <b>${Number(targetBatch.stock)||0}</b>`:'';
+    scanTargetId=r.id; const st=statusOf(r),catTag=catLabel(r.category),isStd=(r.category||'reagent')==='standard';
+    const batchMeta=targetBatch?` · <b>${escapeHtml(intakeRoundLabel(targetBatch))}회차</b>${targetBatch.lotNo?' · Lot '+escapeHtml(targetBatch.lotNo):''} · 잔량 <b>${Number(targetBatch.stock)||0}</b>`:'';
     const infoRows=[];
     if(r.nameEn) infoRows.push(['영문명',r.nameEn]);
     if(r.maker) infoRows.push(['제조사',r.maker]);
     if(r.spec) infoRows.push(['규격',r.spec]);
     if(r.casNo) infoRows.push(['CAS No.',r.casNo]);
     const serialValue=targetBatch?.lotNo || r.serialNo || '';
-    if(serialValue) infoRows.push([(r.category||'reagent')==='standard'?'Lot No.':'제품번호',serialValue]);
+    if(serialValue) infoRows.push([isStd?'Lot No.':'제품 시리얼번호',serialValue]);
     if(r.concentration) infoRows.push(['농도',r.concentration]);
-    if((r.category||'reagent')==='standard' && r.purity) infoRows.push(['순도',r.purity]);
-    const expValue=targetBatch?.expiryDate || r.expiryDate || '';
-    if(expValue) infoRows.push(['유효기간',expValue]);
+    if(isStd && r.purity) infoRows.push(['순도',r.purity]);
+    const expValue=targetBatch?.expiryDate || effectiveExpiry(r) || '';
+    if(expValue) infoRows.push([targetBatch?'유효기간':'유효기간 (가장 빠른 회차)',expValue]);
     if(r.storage) infoRows.push(['보관방법',r.storage]);
-    const infoHtml=infoRows.length?`<div class="confirm-box" style="margin:12px 0 14px;">${infoRows.map(([k,v])=>`<div class="confirm-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div>`:'';
-    showScanModal(`<div class="scan-result"><h3>${escapeHtml(r.name)} ${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''} <span class="badge" style="background:var(--teal-tint);color:var(--teal-dark);">${catTag}</span></h3><div class="meta">${escapeHtml(target.code)} · 총 재고 <b>${r.stock} ${escapeHtml(r.unit||'')}</b>${expiredStock(r)>0?` · 사용가능 <b>${usableStock(r)}</b>`:''}${batchMeta}</div>${infoHtml}${window.GHSUI.inlineHtml(r)}<div class="adjust-row"><div class="toggle-group"><button data-mode="in">입고 +</button><button data-mode="out" class="active">출고 -</button></div><input type="number" id="scan-qty" value="1" min="1" step="1"></div><div id="scan-batch-fields" style="display:none;margin-top:10px;"><div class="field-grid"><div><label>입고일</label><input type="date" id="scan-received" value="${todayStr()}"></div><div><label>유효기간</label><input type="date" id="scan-expiry" value="${escapeHtml(targetBatch?.expiryDate||'')}"></div>${(r.category||'reagent')==='standard'?`<div><label>Lot No.</label><input type="text" id="scan-lot" placeholder="새 Lot No." value="${escapeHtml(targetBatch?.lotNo||'')}"></div>`:''}</div><div class="hint">입고는 항상 새 입고회차로 추가되고 해당 입고회차 QR을 발급합니다.</div></div><div class="adjust-row" style="margin-top:10px;"><label style="font-size:12.5px;color:var(--ink-soft);font-weight:600;flex:none;" id="scan-handler-label">출고인</label><input type="text" id="scan-handler" placeholder="이름" value="${escapeHtml(lastHandlerName)}" style="flex:1;"><button class="primary" id="scan-apply-btn">적용</button></div><div class="hint" style="margin-top:8px;">${targetBatch?'이 QR은 해당 입고회차에서만 차감합니다.':'기존 품목 QR입니다. 신규 라벨은 입고회차별 QR로 발급됩니다.'}</div></div>`);
-    const applyMode=(mode)=>{setScanMode(mode);document.getElementById('scan-handler-label').textContent=mode==='in'?'입고인':'출고인';document.getElementById('scan-batch-fields').style.display=mode==='in'?'block':'none';}; applyMode('out');
-    document.querySelectorAll('#scan-modal-box .toggle-group button').forEach(b=>b.onclick=()=>applyMode(b.dataset.mode));
-    document.getElementById('scan-apply-btn').onclick=()=>{const qty=Math.max(1,Number(document.getElementById('scan-qty').value)||1),handler=document.getElementById('scan-handler').value.trim();if(scanMode==='out'){if(targetBatch&&isBatchExpired(targetBatch)){showToast('이 입고회차는 유효기간이 만료되어 일반 출고에서 제외됩니다.',true);return;}if(targetBatch&&Number(targetBatch.stock)<=0){showToast('이 입고회차의 재고가 없습니다.',true);return;}if(!targetBatch&&usableStock(r)<=0){showToast('출고 가능한 유효 재고가 없습니다. 만료 입고회차는 출고에서 자동 제외됩니다.',true);return;}}const extra=scanMode==='in'?{receivedDate:document.getElementById('scan-received').value||todayStr(),expiryDate:document.getElementById('scan-expiry').value||'',lotNo:document.getElementById('scan-lot')?.value.trim()||''}:{};renderScanConfirm(r,scanMode,qty,handler,extra,targetBatch);};
+    const infoHtml=infoRows.length?`<div class="confirm-box" style="margin:12px 0 0;">${infoRows.map(([k,v])=>`<div class="confirm-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('')}</div>`:'';
+    const p=preset||{}, ex=p.extra||{};
+    const available=targetBatch?(isBatchExpired(targetBatch)?0:Number(targetBatch.stock)||0):usableStock(r);
+    // 꺼낼 수 있는 재고가 없으면 입고를 기본으로 연다.
+    const startMode=p.mode||(available<=0?'in':'out');
+    showScanModal(`<div class="scan-result"><h3>${escapeHtml(r.name)} ${st.label?`<span class="badge ${st.cls}">${st.label}</span>`:''} <span class="badge" style="background:var(--teal-tint);color:var(--teal-dark);">${catTag}</span></h3><div class="meta">${escapeHtml(target.code)} · 총 재고 <b>${r.stock} ${escapeHtml(r.unit||'')}</b>${expiredStock(r)>0?` · 사용가능 <b>${usableStock(r)}</b>`:''}${batchMeta}</div>${window.GHSUI.inlineHtml(r,'head')}<div class="adjust-row"><div class="toggle-group"><button data-mode="in">입고 +</button><button data-mode="out" class="active">출고 -</button></div><input type="number" id="scan-qty" value="${escapeHtml(String(p.qty||1))}" min="0" step="any" inputmode="decimal" aria-label="수량" title="수량"></div><div id="scan-batch-fields" style="display:none;margin-top:10px;"><div class="field-grid"><div><label>입고일</label><input type="date" id="scan-received" value="${escapeHtml(ex.receivedDate||todayStr())}"></div><div><label>유효기간</label><input type="date" id="scan-expiry" value="${escapeHtml(ex.expiryDate!==undefined?ex.expiryDate:(targetBatch?.expiryDate||''))}"></div>${isStd?`<div><label>Lot No.</label><input type="text" id="scan-lot" placeholder="새 Lot No." value="${escapeHtml(ex.lotNo!==undefined?ex.lotNo:(targetBatch?.lotNo||''))}"></div>`:''}</div><div class="hint">입고는 항상 새 입고회차로 추가되고 해당 입고회차 QR을 발급합니다.</div></div><div class="adjust-row" style="margin-top:10px;"><label for="scan-handler" style="font-size:12.5px;color:var(--ink-soft);font-weight:600;flex:none;" id="scan-handler-label">출고인</label><input type="text" id="scan-handler" placeholder="이름" value="${escapeHtml(p.handler!==undefined?p.handler:lastHandlerName)}" style="flex:1;"><button class="primary" id="scan-apply-btn">적용</button></div><div class="hint" id="scan-mode-hint" style="margin-top:8px;"></div>${infoHtml}${window.GHSUI.inlineHtml(r,'detail')}</div>`);
+    const applyMode=(mode)=>{setScanMode(mode);document.getElementById('scan-handler-label').textContent=mode==='in'?'입고인':'출고인';document.getElementById('scan-batch-fields').style.display=mode==='in'?'block':'none';document.getElementById('scan-mode-hint').textContent=mode==='in'?'':(targetBatch?'이 QR은 해당 입고회차에서만 차감합니다.':'출고하면 유효기간이 가장 빠른 입고회차부터 차감합니다. (만료된 회차는 제외)');}; applyMode(startMode);
+    document.querySelectorAll('#scan-modal-box .toggle-group button').forEach(b=>b.onclick=()=>{applyMode(b.dataset.mode);document.getElementById('scan-qty').focus();});
+    const apply=()=>{
+      const qty=roundQty(Number(document.getElementById('scan-qty').value)),handler=document.getElementById('scan-handler').value.trim(),unit=r.unit||'';
+      if(!(qty>0)){showToast('수량을 0보다 큰 숫자로 입력해주세요.',true);document.getElementById('scan-qty').focus();return;}
+      if(scanMode==='out'){
+        if(targetBatch&&isBatchExpired(targetBatch)){showToast('이 입고회차는 유효기간이 지나 출고할 수 없습니다. 폐기 처리하거나 재고를 조정해 주세요.',true);return;}
+        if(targetBatch&&Number(targetBatch.stock)<=0){showToast('이 입고회차의 재고가 없습니다.',true);return;}
+        if(available<=0){showToast(Number(r.stock)>0?'남은 재고가 모두 유효기간이 지나 출고할 수 없습니다.':'재고가 없어 출고할 수 없습니다. 입고를 먼저 처리해 주세요.',true);return;}
+        if(qty>available){showToast(`출고 가능 재고(${fmtQty(available)}${unit})보다 많습니다. 수량을 확인해 주세요.`,true);const q=document.getElementById('scan-qty');q.focus();q.select();return;}
+      }else if(qty>99999){showToast('입고 수량이 너무 큽니다. 수량을 확인해 주세요.',true);return;}
+      const extra=scanMode==='in'?{receivedDate:document.getElementById('scan-received').value||todayStr(),expiryDate:document.getElementById('scan-expiry').value||'',lotNo:document.getElementById('scan-lot')?.value.trim()||''}:{};
+      renderScanConfirm(r,scanMode,qty,handler,extra,targetBatch);
+    };
+    document.getElementById('scan-apply-btn').onclick=apply;
+    // 수량·이름 칸에서 Enter로 바로 다음 단계로 넘어간다. 뒤쪽 스캔 칸으로 키가 새지 않게 막는다.
+    ['scan-qty','scan-handler','scan-received','scan-expiry','scan-lot'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();e.stopPropagation();apply();}});});
+    const q=document.getElementById('scan-qty');try{q.focus({preventScroll:true});q.select();}catch{}
   }
 
   function renderScanConfirm(r,mode,qty,handler,extra,targetBatch){
-    const before=r.stock, modeLabel=mode==='in'?'입고':'출고'; const available=targetBatch?(isBatchExpired(targetBatch)?0:Number(targetBatch.stock)||0):usableStock(r); const predicted=mode==='in'?before+qty:Math.max(0,before-Math.min(qty,available));
-    showScanModal(`<div class="scan-result"><h3>${modeLabel} 확인</h3><div class="confirm-box"><div class="confirm-row"><span>${catLabel(r.category)}</span><b>${escapeHtml(r.name)} <span style="font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--ink-soft);">${r.id}</span></b></div>${targetBatch&&mode==='out'?`<div class="confirm-row"><span>대상 입고회차</span><b>${escapeHtml(intakeRoundLabel(targetBatch))}${targetBatch.lotNo?' · '+escapeHtml(targetBatch.lotNo):''}</b></div>`:''}<div class="confirm-row"><span>구분</span><b class="${mode==='out'?'confirm-out':'confirm-in'}">${modeLabel} ${qty}${escapeHtml(r.unit||'')}</b></div><div class="confirm-row"><span>총 재고 변화</span><b>${before} → ${predicted} ${escapeHtml(r.unit||'')}</b></div>${mode==='in'?`<div class="confirm-row"><span>새 입고회차</span><b>${escapeHtml(extra.receivedDate||'')} · EXP ${escapeHtml(extra.expiryDate||'-')}${extra.lotNo?' · '+escapeHtml(extra.lotNo):''}</b></div>`:''}<div class="confirm-row"><span>${mode==='in'?'입고인':'출고인'}</span><b>${handler?escapeHtml(handler):'(입력 안 함)'}</b></div></div><div class="adjust-row" style="justify-content:flex-end;gap:8px;"><button class="ghost" id="scan-confirm-back">뒤로</button><button class="primary" id="scan-confirm-apply">확인, ${modeLabel} 처리</button></div></div>`);
-    document.getElementById('scan-confirm-back').onclick=()=>renderScanResult(targetBatch?batchQrCode(r,targetBatch):r.id);
-    document.getElementById('scan-confirm-apply').onclick=async()=>{lastHandlerName=handler;const batchSnapshot=JSON.parse(JSON.stringify(r.batches||[]));let actual=qty,noteBase='',batchId='',lotNo='',newBatch=null;if(mode==='in'){newBatch=addBatch(r,{qty,receivedDate:extra.receivedDate,expiryDate:extra.expiryDate,lotNo:extra.lotNo});batchId=newBatch.batchId;lotNo=newBatch.lotNo;noteBase='스캔 입고';}else{const result=targetBatch?consumeSpecificBatch(r,targetBatch.batchId,qty):consumeFEFO(r,qty);actual=result.actual;batchId=targetBatch?.batchId||'';lotNo=targetBatch?.lotNo||'';noteBase='스캔 출고';}addLog({id:r.id,name:r.name,type:mode,qty:actual,before,after:r.stock,handler,batchId,lotNo,note:noteBase,batchSnapshotBefore:batchSnapshot});await saveDB();renderInventory();renderRecentLogs();closeScanModal();if(newBatch){const labelItem=makeBatchLabelItem(r,newBatch);showToast(`${r.name} ${intakeRoundLabel(newBatch)}회차 입고 완료 · 재고 ${before} → ${r.stock}`);setTimeout(()=>{if(safeConfirm(`${intakeRoundLabel(newBatch)}회차 라벨을 바로 인쇄할까요?`))printLabelsBrother([labelItem]);},450);}else{showToast(`${r.name} 재고: ${before} → ${r.stock}`);}};
+    const before=r.stock, modeLabel=mode==='in'?'입고':'출고', unit=escapeHtml(r.unit||''); const predicted=roundQty(mode==='in'?before+qty:Math.max(0,before-qty));
+    const plan=mode==='out'&&!targetBatch?planFEFO(r,qty):[];
+    const planRow=plan.length?`<div class="confirm-row"><span>차감 입고회차</span><b>${plan.map(p=>`${escapeHtml(intakeRoundNo(p.batchId))}회차${p.lotNo?' ('+escapeHtml(p.lotNo)+')':''} ${fmtQty(p.qty)}${unit}${p.expiryDate?` · ~${escapeHtml(p.expiryDate)}`:''}`).join('<br>')}</b></div>`:'';
+    showScanModal(`<div class="scan-result"><h3>${modeLabel} 확인</h3><div class="confirm-box"><div class="confirm-row"><span>${catLabel(r.category)}</span><b>${escapeHtml(r.name)} <span style="font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--ink-soft);">${r.id}</span></b></div>${targetBatch&&mode==='out'?`<div class="confirm-row"><span>대상 입고회차</span><b>${escapeHtml(intakeRoundLabel(targetBatch))}회차${targetBatch.lotNo?' · '+escapeHtml(targetBatch.lotNo):''}</b></div>`:''}<div class="confirm-row"><span>구분</span><b class="${mode==='out'?'confirm-out':'confirm-in'}">${modeLabel} ${fmtQty(qty)}${unit}</b></div>${planRow}<div class="confirm-row"><span>총 재고 변화</span><b>${fmtQty(before)} → ${fmtQty(predicted)} ${unit}</b></div>${mode==='in'?`<div class="confirm-row"><span>새 입고회차</span><b>${escapeHtml(extra.receivedDate||'')} · 유효기간 ${escapeHtml(extra.expiryDate||'없음')}${extra.lotNo?' · '+escapeHtml(extra.lotNo):''}</b></div>`:''}<div class="confirm-row"><span>${mode==='in'?'입고인':'출고인'}</span><b>${handler?escapeHtml(handler):'(입력 안 함)'}</b></div></div>${mode==='in'&&!extra.expiryDate?'<div class="hint">유효기간을 입력하지 않았습니다. 유효기간이 있는 제품이면 [뒤로]를 눌러 입력해 주세요.</div>':''}<div class="adjust-row" style="justify-content:flex-end;gap:8px;"><button class="ghost" id="scan-confirm-back">뒤로</button><button class="primary" id="scan-confirm-apply">확인, ${modeLabel} 처리</button></div></div>`);
+    document.getElementById('scan-confirm-back').onclick=()=>renderScanResult(targetBatch?batchQrCode(r,targetBatch):r.id,{mode,qty,handler,extra});
+    const okBtn=document.getElementById('scan-confirm-apply');
+    okBtn.onclick=async()=>{if(okBtn.disabled)return;okBtn.disabled=true;lastHandlerName=handler;try{window.localStorage.setItem('reagent.lastHandler',handler);}catch{}const batchSnapshot=JSON.parse(JSON.stringify(r.batches||[]));let actual=qty,noteBase='',batchId='',lotNo='',newBatch=null,usedBatches;if(mode==='in'){newBatch=addBatch(r,{qty,receivedDate:extra.receivedDate,expiryDate:extra.expiryDate,lotNo:extra.lotNo});batchId=newBatch.batchId;lotNo=newBatch.lotNo;noteBase='스캔 입고';}else{const result=targetBatch?consumeSpecificBatch(r,targetBatch.batchId,qty):consumeFEFO(r,qty);actual=result.actual;usedBatches=result.parts;const one=result.parts.length===1?result.parts[0]:null;batchId=targetBatch?.batchId||(one?one.batchId:'');lotNo=targetBatch?.lotNo||(one?one.lotNo:'');noteBase='스캔 출고';if(!(actual>0)){syncReagentFromBatches(r);closeScanModal();showToast('출고할 수 있는 재고가 없어 처리하지 않았습니다.',true);return;}}addLog(Object.assign({id:r.id,name:r.name,type:mode,qty:actual,before,after:r.stock,handler,batchId,lotNo,note:noteBase,batchSnapshotBefore:batchSnapshot},usedBatches&&usedBatches.length?{usedBatches}:{}));await saveDB();renderInventory();renderRecentLogs();closeScanModal();const who=handler?` · ${handler}`:'';if(newBatch){const labelItem=makeBatchLabelItem(r,newBatch);showToast(`${r.name} ${intakeRoundLabel(newBatch)}회차 입고 ${fmtQty(qty)}${r.unit||''} 완료 · 재고 ${fmtQty(before)} → ${fmtQty(r.stock)}${who}`);setTimeout(()=>{if(safeConfirm(`${intakeRoundLabel(newBatch)}회차 라벨을 바로 인쇄할까요?`))printLabelsBrother([labelItem]);},450);}else{showToast(`${r.name} 출고 ${fmtQty(actual)}${r.unit||''}${actual<qty?` (요청 ${fmtQty(qty)} 중 가능한 만큼만)`:''} · 재고 ${fmtQty(before)} → ${fmtQty(r.stock)}${who}`,actual<qty);}};
+    try{okBtn.focus({preventScroll:true});}catch{}
   }
+
+  // 입출고 창이 열려 있을 때 바코드 스캐너가 보내는 빠른 연속 입력을 가려낸다.
+  // 스캐너 글자가 수량 칸에 들어가거나 끝의 Enter가 [확인] 버튼을 눌러 버리는 일을 막고, 스캔한 코드로 창을 새로 연다.
+  (function(){
+    let buf='', lastAt=0, keepEl=null, keepVal='';
+    const modalOpen=()=>{const bd=document.getElementById('scan-modal-backdrop'),box=document.getElementById('scan-modal-box');return bd&&bd.style.display!=='none'&&box&&!box.classList.contains('modal-box-import')&&!!box.querySelector('.scan-result');};
+    document.addEventListener('keydown',e=>{
+      if(e.isComposing||e.ctrlKey||e.altKey||e.metaKey) return;
+      const now=performance.now(), gap=now-lastAt;
+      if(e.key.length===1){
+        if(gap>50||!buf){ buf=''; const el=document.activeElement; keepEl=el&&('value' in el)&&el.tagName==='INPUT'?el:null; keepVal=keepEl?keepEl.value:''; }
+        buf+=e.key; lastAt=now; return;
+      }
+      if(e.key==='Enter'&&buf.length>=4&&gap<=80&&modalOpen()){
+        const code=buf.trim(); buf=''; lastAt=0;
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        if(keepEl&&keepEl.isConnected){ try{ keepEl.value=keepVal; }catch{} }
+        // 뒤쪽 스캔 칸에 들어간 글자도 지운다.
+        ['home-scan-input','manual-code'].forEach(id=>{const el=document.getElementById(id);if(el&&el!==keepEl&&el.value&&code.endsWith(el.value.trim()))el.value='';});
+        if(code) renderScanResult(code);
+        return;
+      }
+      if(e.key!=='Shift'){ buf=''; lastAt=0; }
+    },true);
+  })();
 
   function logCategory(log){
     const id=String(log?.id||'').trim().toUpperCase();
@@ -3978,15 +4410,18 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   });
 
   // v3.13.15 이전에 KOSHA에서 받은 그림문자는 03(산화성)과 04(고압가스)가 서로 바뀌어 저장됐다. 한 번만 바로잡는다.
+  // 보정을 했다는 표시는 데이터(DB.migrations)에 둔다. 설정에 두면 '설정 초기화'로 지워져 올바른 그림문자가 다시 뒤바뀌고,
+  // 예전 백업을 복원했을 때는 보정이 건너뛰어진다. (settings.koshaPictogramFixed는 이전 버전과의 호환용으로만 남긴다)
   async function fixKoshaPictogramNumbers(){
-    if(settings().koshaPictogramFixed) return;
+    if(!DB.migrations || typeof DB.migrations!=='object' || Array.isArray(DB.migrations)) DB.migrations={koshaPictogram:!!(DB.settings&&DB.settings.koshaPictogramFixed)};
+    if(DB.migrations.koshaPictogram){ if(!settings().koshaPictogramFixed){ settings().koshaPictogramFixed=true; } return; }
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
     for(const r of DB.reagents){
       const g=r.ghs; if(!g||g.source!=='kosha'||!g.extractedFrom||!Array.isArray(g.pictograms)) continue;
       if(!g.pictograms.some(p=>swap[p])) continue;
       g.pictograms=[...new Set(g.pictograms.map(p=>swap[p]||p))].sort(); g.updatedAt=new Date().toISOString(); fixed.push(r.id);
     }
-    settings().koshaPictogramFixed=true;
+    DB.migrations.koshaPictogram=true; settings().koshaPictogramFixed=true;
     if(fixed.length){ await saveDB(); setTimeout(()=>showToast(`받은 MSDS의 그림문자 번호를 바로잡았습니다: ${fixed.join(', ')}`),1500); }
     else await saveDB();
   }
@@ -3995,24 +4430,6 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const items=DB.reagents.filter(r=>!r.archivedAt), c=window.GHSUI.counts(items,settings());
     const top=Object.entries(c.pictograms).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${k} ${n}`).join(' · ');
     el.textContent=`활성 품목 ${c.total}개 · GHS 입력 ${c.total-c.ghsMissing}개 · 미입력 ${c.ghsMissing}개 · 신호어 위험 ${c.danger}개 · MSDS 미첨부 ${c.msdsMissing}개 · MSDS 검토 필요 ${c.msdsReview}개${top?' · 그림문자: '+top:''}`;
-  }
-  async function exportGhsExcel(){
-    if(typeof ExcelJS==='undefined'){showToast('엑셀 라이브러리를 불러오지 못했습니다.',true);return;}
-    const items=DB.reagents.filter(r=>!r.archivedAt).slice().sort((a,b)=>a.id.localeCompare(b.id));
-    if(!items.length){showToast('내보낼 품목이 없습니다.',true);return;}
-    const wb=new ExcelJS.Workbook(); wb.creator='ReagentInventory';
-    const ws=wb.addWorksheet('GHS·MSDS현황',{views:[{state:'frozen',ySplit:1}]});
-    const data=window.GHSUI.excelRows(items,settings()), widths=[12,9,22,18,13,14,8,24,28,44,44,24,9,14,10,13,13,18,26];
-    data.header.forEach((h,i)=>{ws_setColWidth(ws,i+1,widths[i]||14);ws.getCell(1,i+1).value=h;});
-    ws.getRow(1).eachCell(c=>{c.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF558022'}};c.alignment={vertical:'middle',horizontal:'center'};});
-    ws.getRow(1).height=22;
-    const thin={style:'thin',color:{argb:'FFC7CDD3'}};
-    data.rows.forEach((vals,i)=>{const row=ws.getRow(i+2);row.values=vals;row.eachCell({includeEmpty:true},c=>{c.font={name:'맑은 고딕',size:11};c.alignment={vertical:'top',wrapText:true};c.border={top:thin,left:thin,bottom:thin,right:thin};});const st=row.getCell(18);if(/경과/.test(String(st.value)))st.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFED193A'}};else if(/미첨부|미입력|D-/.test(String(st.value)))st.font={name:'맑은 고딕',size:11,bold:true,color:{argb:'FFC97A2B'}};});
-    ws.autoFilter={from:'A1',to:colLetter(data.header.length)+'1'};
-    ws.pageSetup={paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0};
-    const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`GHS_MSDS현황_${todayStr()}.xlsx`;document.body.appendChild(a);a.click();a.remove();restoreKeyboardFocus();URL.revokeObjectURL(url);
-    showToast('GHS·MSDS 현황을 엑셀로 저장했습니다.');
   }
   function renderSettings(){
     const s=settings();
@@ -4039,7 +4456,20 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   function bindSettings(){
     const onChange=(id,key,parse)=>(document.getElementById(id)||{}).onchange=async e=>updateSetting(key,parse?parse(e.target.value):e.target.value);
     onChange('settings-theme','theme'); onChange('settings-accent','accent'); onChange('settings-expiry-days','expiryWarningDays',Number);
-    onChange('settings-default-sort','defaultSort'); onChange('settings-start-tab','defaultStartTab'); onChange('settings-backup-retention','backupRetention',Number);
+    onChange('settings-default-sort','defaultSort'); onChange('settings-start-tab','defaultStartTab');
+    (document.getElementById('settings-backup-retention')||{}).onchange=async e=>{
+      const sel=e.target, next=Number(sel.value), prev=Number(settings().backupRetention)||30;
+      if(next<prev && window.inventoryStore?.listBackups){
+        try{
+          const r=await window.inventoryStore.listBackups(), files=((r&&r.files)||[]).filter(f=>f.counted), doomed=files.slice(next);
+          if(doomed.length){
+            const day=f=>String(f.modifiedAt||'').slice(0,10), range=doomed.length>1?`${day(doomed[doomed.length-1])} ~ ${day(doomed[0])}`:day(doomed[0]);
+            if(!safeConfirm(`보관 개수를 ${next}개로 줄이면 오래된 백업 ${doomed.length}개(${range})가 바로 삭제되며 되돌릴 수 없습니다.\n계속할까요?`)){ sel.value=String(prev); return; }
+          }
+        }catch(err){ console.error(err); }
+      }
+      await updateSetting('backupRetention',next);
+    };
     onChange('settings-printer','printerName'); onChange('settings-label-width','labelWidthMm',Number); onChange('settings-label-height','labelHeightMm',Number);
     const printerRefresh=document.getElementById('settings-printer-refresh'); if(printerRefresh)printerRefresh.onclick=refreshPrinterList;
     const testPrint=document.getElementById('settings-test-print'); if(testPrint)testPrint.onclick=()=>printLabelsBrother([testLabelItem()]);
@@ -4054,27 +4484,46 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
 
     document.getElementById('settings-restore-backup').onclick=chooseBackupFile;
     document.getElementById('settings-data-folder').onclick=async()=>{if(window.inventoryStore?.openFolder){try{await window.inventoryStore.openFolder();}catch(e){showToast('데이터 폴더를 열 수 없습니다.',true);}}else showToast('설치형 앱에서 사용할 수 있는 기능입니다.',true);};
-    document.getElementById('settings-reset').onclick=async()=>{if(!safeConfirm('화면 및 동작 설정을 기본값으로 되돌릴까요?\n재고 데이터는 삭제되지 않습니다.'))return;DB.settings=defaultSettings();await saveDB();applyTheme();syncDashboardDefaults();renderSettings();renderInventory();renderStats();showToast('설정을 초기화했습니다.');};
+    document.getElementById('settings-reset').onclick=async()=>{if(!safeConfirm('화면 설정을 기본값으로 되돌릴까요?\n\n기본값으로 바뀌는 것: 테마·색상, 기본 정렬, 시작 화면, 유효기간 임박 기준, MSDS 검토 주기, 자동 받기 등 동작 설정\n그대로 두는 것: 재고·이력 데이터, 사용자 서식, 프린터와 라벨 크기, 백업 설정과 백업 파일'))return;const old=settings(),keep={};['customFormTemplates','printerName','labelWidthMm','labelHeightMm','autoBackup','backupRetention','koshaPictogramFixed'].forEach(k=>{if(old[k]!==undefined)keep[k]=old[k];});DB.settings=normalizeSettings(Object.assign(defaultSettings(),keep));await saveDB();applyTheme();syncDashboardDefaults();renderSettings();renderInventory();renderStats();showToast('설정을 초기화했습니다.');};
     document.getElementById('settings-reset-all').onclick=async()=>{
-      if(!safeConfirm('모든 시약·표준물질·입출고 이력·입고회차 데이터를 삭제할까요?\n자동 백업 파일과 첨부된 MSDS PDF도 함께 삭제됩니다.'))return;
-      if(!safeConfirm('정말 전체 데이터를 초기화할까요?\n이 작업은 되돌릴 수 없습니다.'))return;
-      const keepSettings=normalizeSettings(Object.assign({},settings()));
-      const clean={schemaVersion:3,nextId:1,nextIdStd:1,reagents:[],logs:[],settings:keepSettings};
-      try{
-        if(window.inventoryStore?.resetAll){
-          const result=await window.inventoryStore.resetAll(clean);
-          if(!result||!result.ok) throw new Error(result?.error||'reset failed');
-        }else{
-          window.localStorage.removeItem(STORAGE_KEY);
-          window.localStorage.setItem(STORAGE_KEY,JSON.stringify(clean));
-        }
-        DB=clean; selectedId=null; selectedPrintIds.clear();
-        closeDetailModal();
-        renderInventory(); renderRecentLogs(); renderStats(); renderHomeDashboard(); renderSettings();
-        showToast('전체 데이터를 초기화했습니다.');
-      }catch(e){
-        console.error(e); showToast('전체 데이터 초기화 중 오류가 발생했습니다.',true);
-      }finally{ restoreKeyboardFocus(); }
+      const std=DB.reagents.filter(r=>(r.category||'reagent')==='standard').length, rg=DB.reagents.length-std;
+      const pdfs=new Set(DB.reagents.flatMap(r=>(r.msdsDocuments||[]).map(d=>d.sha256||d.id))).size;
+      let backupCount=null; try{ const l=await window.inventoryStore?.listBackups?.(); if(l&&l.ok) backupCount=(l.files||[]).length; }catch{}
+      const hasData=DB.reagents.length>0||DB.logs.length>0, installed=!!window.inventoryStore?.resetAll;
+      showScanModal(`<div class="scan-result"><h3>전체 데이터 초기화</h3>
+        <div class="confirm-box"><div class="confirm-row"><span>시약</span><b>${rg}건</b></div><div class="confirm-row"><span>표준물질</span><b>${std}건</b></div><div class="confirm-row"><span>입출고 이력</span><b>${DB.logs.length}건</b></div><div class="confirm-row"><span>첨부 MSDS PDF</span><b>${pdfs}개</b></div>${backupCount!==null?`<div class="confirm-row"><span>이 PC의 백업 파일</span><b>${backupCount}개</b></div>`:''}</div>
+        <div class="hint bulk-warn">위 자료가 모두 삭제됩니다. 자동 백업·수동 백업·복원 전 사본까지 이 PC의 백업 폴더 전체가 지워지며 되돌릴 수 없습니다.</div>
+        <div class="hint">${installed&&hasData?'초기화 직전의 자료(재고 + MSDS PDF)는 문서 폴더에 zip 파일로 자동 저장됩니다. ':''}[묶음 저장]으로 다른 곳에 저장해 둔 zip 파일은 지워지지 않습니다. 설정은 그대로 둡니다.</div>
+        <div class="field-grid" style="grid-template-columns:1fr;"><div><label for="reset-confirm-input">계속하려면 아래 칸에 <b>초기화</b>라고 입력하세요</label><input type="text" id="reset-confirm-input" autocomplete="off" placeholder="초기화"></div></div>
+        <div class="adjust-row" style="justify-content:flex-end;gap:8px;margin-top:12px;"><button class="ghost" id="reset-cancel">취소</button><button class="danger" id="reset-go" disabled>전체 데이터 초기화</button></div></div>`);
+      const input=document.getElementById('reset-confirm-input'), go=document.getElementById('reset-go');
+      input.oninput=()=>{ go.disabled=input.value.trim()!=='초기화'; };
+      input.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); } };
+      document.getElementById('reset-cancel').onclick=()=>closeScanModal();
+      document.getElementById('reset-cancel').focus();
+      go.onclick=async()=>{
+        if(go.disabled) return; go.disabled=true; go.textContent='초기화하는 중…';
+        const keepSettings=normalizeSettings(Object.assign({},settings()));
+        const clean={schemaVersion:3,nextId:1,nextIdStd:1,reagents:[],logs:[],settings:keepSettings,migrations:{koshaPictogram:true}};
+        try{
+          let safetyZip='';
+          if(installed){
+            const result=await window.inventoryStore.resetAll(clean, hasData?DB:null);
+            if(!result||!result.ok) throw new Error(result?.error||'초기화하지 못했습니다.');
+            safetyZip=result.safetyZip||'';
+          }else{
+            window.localStorage.removeItem(STORAGE_KEY);
+            window.localStorage.setItem(STORAGE_KEY,JSON.stringify(clean));
+          }
+          DB=clean; selectedId=null; selectedPrintIds.clear(); lastBulkImport=null; updateBulkUndoButton();
+          closeScanModal(); closeDetailModal();
+          renderInventory(); renderRecentLogs(); renderStats(); renderHomeDashboard(); renderSettings();
+          if(safetyZip) showToast('전체 데이터를 초기화했습니다. 초기화 전 자료: '+safetyZip, false, {label:'폴더 열기', fn:()=>window.inventoryStore.showInFolder(safetyZip)});
+          else showToast('전체 데이터를 초기화했습니다.');
+        }catch(e){
+          console.error(e); closeScanModal(); showToast('전체 데이터 초기화를 하지 못했습니다: '+String(e.message||e).replace(/^Error invoking remote method '[^']+':\s*(Error:\s*)?/,''),true);
+        }finally{ restoreKeyboardFocus(); }
+      };
     };
     document.getElementById('settings-uninstall').onclick=async(e)=>{const btn=e.currentTarget;if(btn.dataset.running==='1')return;btn.dataset.running='1';btn.disabled=true;if(window.inventoryStore?.uninstall){try{const r=await window.inventoryStore.uninstall();if(!r||!r.ok)showToast('설치형 앱에서만 제거할 수 있습니다.',true);}catch(err){showToast('제거 프로그램을 실행할 수 없습니다.',true);}}else showToast('설치형 앱에서만 제거할 수 있습니다.',true);setTimeout(()=>{btn.disabled=false;btn.dataset.running='0';},2000);};
     if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');const fn=()=>{if(settings().theme==='system')applyTheme();};if(mq.addEventListener)mq.addEventListener('change',fn);else if(mq.addListener)mq.addListener(fn);}

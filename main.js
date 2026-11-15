@@ -48,26 +48,67 @@ ipcMain.handle('inventory:open-backup-folder', async ()=> {
   catch(e) { return {ok:false,error:String(e&&e.message||e)}; }
 });
 ipcMain.handle('inventory:backup-now', async (_evt, obj)=> backups.snapshot(obj));
+// 문서 폴더를 못 찾는 PC가 있다 (폴더 리디렉션·OneDrive 등). 바탕화면 → 사용자 폴더 → 앱 데이터 폴더 순으로 대신 쓴다.
+const safeDir = name => { try { const p = app.getPath(name); return p && fs.existsSync(p) ? p : ''; } catch { return ''; } };
+const defaultSaveDir = () => safeDir('documents') || safeDir('desktop') || safeDir('home') || dataDir();
+// 엑셀·텍스트 파일 저장: 저장 창에 한글 파일명과 확장자를 제대로 넣어 준다. 마지막으로 저장한 폴더를 다음에도 먼저 보여 준다.
+let lastSaveDir = '';
+const SAVE_KINDS = {
+  xlsx: {title:'엑셀 파일 저장', filter:{name:'Excel 통합 문서', extensions:['xlsx']}},
+  txt: {title:'텍스트 파일 저장', filter:{name:'텍스트 파일', extensions:['txt']}},
+};
+ipcMain.handle('inventory:save-file', async (evt, payload)=> {
+  try{
+    const kind = SAVE_KINDS[payload && payload.kind] ? payload.kind : 'xlsx';
+    const spec = SAVE_KINDS[kind], ext = '.' + kind;
+    const bytes = payload && payload.bytes;
+    if (!(bytes instanceof Uint8Array) || !bytes.length || bytes.length > 300*1024*1024) return {ok:false, error:'저장할 내용이 올바르지 않습니다.'};
+    let name = path.basename(String(payload.defaultName || '')).replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim().slice(0, 120) || '내보내기';
+    if (!name.toLowerCase().endsWith(ext)) name += ext;
+    const win = BrowserWindow.fromWebContents(evt.sender);
+    const startDir = (lastSaveDir && fs.existsSync(lastSaveDir)) ? lastSaveDir : defaultSaveDir();
+    const result = await dialog.showSaveDialog(win, {title:spec.title, defaultPath:path.join(startDir, name), filters:[spec.filter]});
+    if (result.canceled || !result.filePath) return {ok:true, canceled:true};
+    const target = result.filePath.toLowerCase().endsWith(ext) ? result.filePath : result.filePath + ext;
+    try { fs.writeFileSync(target, Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength)); }
+    catch(e) {
+      if (e && ['EBUSY','EPERM','EACCES'].includes(e.code)) return {ok:false, error:'같은 이름의 파일이 열려 있거나 이 폴더에 저장할 수 없습니다. 엑셀에서 그 파일을 닫거나 다른 이름·다른 폴더로 저장해 주세요.'};
+      if (e && e.code === 'ENOSPC') return {ok:false, error:'디스크 공간이 부족해 저장하지 못했습니다.'};
+      throw e;
+    }
+    lastSaveDir = path.dirname(target);
+    return {ok:true, canceled:false, path:target, name:path.basename(target)};
+  }catch(e){ console.error('save file failed', e); return {ok:false, error:'파일을 저장하지 못했습니다. 다른 폴더를 골라 다시 시도해 주세요.'}; }
+});
+ipcMain.handle('inventory:show-in-folder', async (_evt, file)=> {
+  try{
+    const p = String(file || '');
+    if (!p || !path.isAbsolute(p) || !fs.existsSync(p)) return {ok:false};
+    shell.showItemInFolder(p); return {ok:true};
+  }catch{ return {ok:false}; }
+});
+// 묶음 zip에 넣을 내용: 재고 JSON + 첨부 MSDS PDF (같은 파일은 한 번만).
+function bundleEntries(obj){
+  const entries = [{name:'inventory.json', data: Buffer.from(JSON.stringify(obj, null, 2), 'utf8')}];
+  const missing = [], seen = new Set();
+  for (const item of obj.reagents || []) for (const doc of item.msdsDocuments || []) {
+    if (seen.has(doc.sha256)) continue; seen.add(doc.sha256);
+    try { const {file, bytes} = msds.openPathWithBytes(doc); entries.push({name:'msds/' + path.basename(file), data: bytes}); }
+    catch { missing.push(doc.fileName); }
+  }
+  return {entries, missing, seen};
+}
 // 재고 JSON과 첨부 MSDS PDF를 zip 한 파일로 내보낸다. 다른 PC로 옮기거나 보관할 때 쓴다.
 ipcMain.handle('inventory:export-bundle', async (evt, obj)=> {
   try{
     validateInventory(obj);
     const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
     const win = BrowserWindow.fromWebContents(evt.sender);
-    // 문서 폴더를 못 찾는 PC가 있다 (폴더 리디렉션·OneDrive 등). 바탕화면 → 사용자 폴더 → 앱 데이터 폴더 순으로 대신 쓴다.
-    const safeDir = name => { try { const p = app.getPath(name); return p && fs.existsSync(p) ? p : ''; } catch { return ''; } };
-    const startDir = safeDir('documents') || safeDir('desktop') || safeDir('home') || dataDir();
+    const startDir = defaultSaveDir();
     const result = await dialog.showSaveDialog(win, {title:'백업 묶음 저장 (재고 + MSDS PDF)', defaultPath: path.join(startDir, `시약재고_백업_${stamp}.zip`), filters:[{name:'zip 묶음', extensions:['zip']}]});
     if (result.canceled || !result.filePath) return {ok:true, canceled:true};
     const target = /\.zip$/i.test(result.filePath) ? result.filePath : result.filePath + '.zip';
-    const entries = [{name:'inventory.json', data: Buffer.from(JSON.stringify(obj, null, 2), 'utf8')}];
-    const missing = [];
-    const seen = new Set();
-    for (const item of obj.reagents || []) for (const doc of item.msdsDocuments || []) {
-      if (seen.has(doc.sha256)) continue; seen.add(doc.sha256);
-      try { const {file, bytes} = msds.openPathWithBytes(doc); entries.push({name:'msds/' + path.basename(file), data: bytes}); }
-      catch { missing.push(doc.fileName); }
-    }
+    const {entries, missing, seen} = bundleEntries(obj);
     const r = writeZip(target, entries);
     return {ok:true, canceled:false, path:target, documents: seen.size - missing.length, missing, bytes: r.bytes};
   }catch(e){ console.error('export bundle failed', e); return {ok:false, error:String(e && e.message || e)}; }
@@ -88,9 +129,22 @@ ipcMain.handle('inventory:restore', async (_evt, candidate, current, sourceToken
     return {ok:true, backup, safetyPath:safety.path, warning:safety.warning||'', msds:restoredMSDS, data:restored};
   } catch(e) { return {ok:false,error:String(e&&e.message||e)}; }
 });
-ipcMain.handle('inventory:reset-all', async (_evt, cleanDb)=> {
+ipcMain.handle('inventory:reset-all', async (_evt, cleanDb, current)=> {
   try{
     if(safetyStore.busy()) return {ok:false,error:'MSDS 자료 다운로드를 마친 뒤 초기화해주세요.'};
+    // 지우기 전에, 지금 자료(재고 + MSDS PDF)를 앱 데이터 폴더 밖(문서 폴더)에 zip으로 남긴다. 저장에 실패하면 초기화하지 않는다.
+    let safetyZip = '';
+    if (current && typeof current === 'object' && Array.isArray(current.reagents) && (current.reagents.length || (current.logs || []).length)) {
+      try {
+        validateInventory(current);
+        const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
+        safetyZip = path.join(defaultSaveDir(), `시약재고_초기화전_${stamp}.zip`);
+        writeZip(safetyZip, bundleEntries(current).entries);
+      } catch (e) {
+        console.error('reset safety copy failed', e);
+        return {ok:false, error:'초기화 전 사본을 저장하지 못해 초기화를 중단했습니다. 설정의 [묶음 저장]으로 먼저 저장한 뒤 다시 시도해 주세요.'};
+      }
+    }
     safetyStore.clear();
     for (const t of [...backupSourceTokens.keys()]) dropSourceToken(t);
     fs.rmSync(msds.directory(), {recursive:true,force:true});
@@ -105,7 +159,7 @@ ipcMain.handle('inventory:reset-all', async (_evt, cleanDb)=> {
     const safeClean=(cleanDb && typeof cleanDb==='object') ? cleanDb : {schemaVersion:3,nextId:1,nextIdStd:1,reagents:[],logs:[]};
     writeJson(dbFile(), safeClean);
     backups.clearMemoryStatus();
-    return {ok:true};
+    return {ok:true, safetyZip};
   }catch(e){
     console.error('reset all failed',e);
     return {ok:false,error:String(e && e.message || e)};
@@ -316,21 +370,6 @@ function createWindow() {
   try{ win.maximize(); }catch{}
   win.loadFile('reagent-inventory.html');
 
-  // Excel 내보내기 완료 후 저장된 파일이 있는 폴더를 자동으로 연다.
-  win.webContents.session.on('will-download', (_event, item) => {
-    const filename = String(item.getFilename() || '');
-    if(!filename.toLowerCase().endsWith('.xlsx')) return;
-    item.once('done', (_evt, state) => {
-      if(state !== 'completed') return;
-      const savedPath = item.getSavePath();
-      if(!savedPath) return;
-      setTimeout(() => {
-        try{ shell.showItemInFolder(savedPath); }catch(e){
-          try{ shell.openPath(path.dirname(savedPath)); }catch{}
-        }
-      }, 180);
-    });
-  });
 }
 
 // 한 번에 하나의 프로그램 창만 허용한다.
