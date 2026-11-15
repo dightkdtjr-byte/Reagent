@@ -1709,15 +1709,18 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const hadSettings=!!db.settings; db.schemaVersion = 3; db.nextId = db.nextId||1; db.nextIdStd = db.nextIdStd||1; db.settings=normalizeSettings(db.settings); if(!hadSettings) db.__settingsMigratedFromLegacy=true;
     db.reagents = Array.isArray(db.reagents) ? db.reagents : [];
     db.logs = Array.isArray(db.logs) ? db.logs : [];
+    const carryDates=!(db.migrations&&db.migrations.batchDates);
     db.reagents.forEach(r=>{
       r.category = r.category||'reagent'; r.archivedAt = r.archivedAt||''; r.archiveReason = r.archiveReason||'';
       if(!Array.isArray(r.batches) || r.batches.length===0){
         const q = Math.max(0, Number(r.stock)||0);
         r.batches=[normalizeBatch({batchId:'B001', receivedDate:r.receivedDate||'', expiryDate:r.expiryDate||'', lotNo:r.category==='standard'?(r.serialNo||''):'', openedDate:r.openedDate||'', initialQty:q, stock:q, createdAt:r.createdAt||new Date().toISOString()},0)];
       } else r.batches=r.batches.map(normalizeBatch);
-      if(r.batches.length===1){ const b=r.batches[0]; if(!b.expiryDate && r.expiryDate) b.expiryDate=r.expiryDate; if(r.category==='standard' && !b.openedDate && r.openedDate) b.openedDate=r.openedDate; }
+      // 품목에만 남아 있던 유효기간·개봉일을 하나뿐인 입고회차로 옮긴다. 자료마다 한 번만 한다 (저장할 때마다 하면 지운 값이 되살아난다).
+      if(carryDates && r.batches.length===1){ const b=r.batches[0]; if(!b.expiryDate && r.expiryDate) b.expiryDate=r.expiryDate; if(r.category==='standard' && !b.openedDate && r.openedDate) b.openedDate=r.openedDate; }
       syncReagentFromBatches(r, false);
     });
+    db.migrations=Object.assign({}, (db.migrations&&typeof db.migrations==='object'&&!Array.isArray(db.migrations))?db.migrations:{}, {batchDates:true});
     return db;
   }
   async function loadDB(){
@@ -1851,7 +1854,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!safeConfirm(`이 백업으로 복원할까요?\n\n시약 ${parsed.reagents.length-std}건 · 표준물질 ${std}건 · 입출고 이력 ${(parsed.logs||[]).length}건\n\n현재 재고와 이력은 백업의 내용으로 바뀝니다.\n현재 화면·프린터·백업 설정은 유지합니다.\n복원 직전 현재 데이터의 안전 사본을 먼저 저장합니다.\n\nMSDS가 연결된 백업은 JSON과 같은 위치에 msds 폴더가 필요합니다. 문서 파일이 없으면 복원을 중단합니다.`))return;
     if(!window.inventoryStore?.restoreBackup)throw new Error('안전 복원은 설치형 앱에서 사용할 수 있습니다.');
     const candidate=migrateDB({...parsed,settings:DB.settings});
-    candidate.migrations=Object.assign({koshaPictogram:!!(parsed.settings&&parsed.settings.koshaPictogramFixed)},(parsed.migrations&&typeof parsed.migrations==='object'&&!Array.isArray(parsed.migrations))?parsed.migrations:{});
+    candidate.migrations=Object.assign({koshaPictogram:!!(parsed.settings&&parsed.settings.koshaPictogramFixed)},(parsed.migrations&&typeof parsed.migrations==='object'&&!Array.isArray(parsed.migrations))?parsed.migrations:{},{batchDates:true});
     const r=await window.inventoryStore.restoreBackup(candidate,DB,sourceToken);
     if(!r||!r.ok)throw new Error(r?.error||'복원 실패');
     DB=migrateDB(r.data);selectedId=null;selectedPrintIds.clear();lastBulkImport=null;updateBulkUndoButton();
@@ -1894,22 +1897,24 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   function norm(v){ return String(v||'').trim().toLowerCase().replace(/\s+/g,' '); }
   function activeBatches(r){ return (r.batches||[]).filter(b=>Number(b.stock)>0); }
   function isBatchExpired(b){ return !!(b && b.expiryDate && b.expiryDate < todayStr()); }
-  function usableStock(r){ return activeBatches(r).filter(b=>!isBatchExpired(b)).reduce((a,b)=>a+(Number(b.stock)||0),0); }
-  function expiredStock(r){ return activeBatches(r).filter(isBatchExpired).reduce((a,b)=>a+(Number(b.stock)||0),0); }
+  function usableStock(r){ return roundQty(activeBatches(r).filter(b=>!isBatchExpired(b)).reduce((a,b)=>a+(Number(b.stock)||0),0)); }
+  function expiredStock(r){ return roundQty(activeBatches(r).filter(isBatchExpired).reduce((a,b)=>a+(Number(b.stock)||0),0)); }
   function effectiveExpiry(r){
-    const ds=activeBatches(r).map(b=>b.expiryDate).filter(Boolean).sort(); return ds[0] || r.expiryDate || '';
+    // 입고회차가 있으면 잔량 있는 회차에서만 계산한다 (다 쓴 회차의 옛 값으로 되돌아가지 않게). 회차가 없는 옛 자료만 품목 값을 쓴다.
+    const ds=activeBatches(r).map(b=>b.expiryDate).filter(Boolean).sort(); return ds[0] || ((r.batches||[]).length ? '' : (r.expiryDate || ''));
   }
   function effectiveReceived(r){
     const ds=(r.batches||[]).map(b=>b.receivedDate).filter(Boolean).sort(); return ds.length?ds[ds.length-1]:(r.receivedDate||'');
   }
   function syncReagentFromBatches(r, touch=true){
     if(!Array.isArray(r.batches)) r.batches=[];
-    r.stock=r.batches.reduce((a,b)=>a+Math.max(0,Number(b.stock)||0),0);
+    r.batches.forEach(b=>{ b.stock=roundQty(Math.max(0,Number(b.stock)||0)); });
+    r.stock=roundQty(r.batches.reduce((a,b)=>a+b.stock,0));
     r.receivedDate=effectiveReceived(r); r.expiryDate=effectiveExpiry(r);
     if(r.category==='standard'){
       const active=activeBatches(r).slice().sort((a,b)=>(a.expiryDate||'9999').localeCompare(b.expiryDate||'9999'));
       if(active[0] && active[0].lotNo) r.serialNo=active[0].lotNo;
-      if(active[0] && active[0].openedDate) r.openedDate=active[0].openedDate;
+      if(active[0]) r.openedDate=active[0].openedDate||'';
     }
     if(touch) r.updatedAt=new Date().toISOString();
   }
@@ -1925,12 +1930,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       return e || (a.receivedDate||'').localeCompare(b.receivedDate||'');
     });
     const parts=[];
-    for(const b of bs){ if(remain<=0) break; const take=Math.min(Number(b.stock)||0,remain); if(take>0){b.stock-=take; remain-=take; used.push(`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`); parts.push({batchId:b.batchId,lotNo:b.lotNo||'',qty:take});} }
-    syncReagentFromBatches(r); return {used, parts, actual:Math.max(0,Number(qty)||0)-remain};
+    for(const b of bs){ if(remain<=0) break; const take=Math.min(Number(b.stock)||0,remain); if(take>0){b.stock=roundQty(b.stock-take); remain=roundQty(remain-take); used.push(`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`); parts.push({batchId:b.batchId,lotNo:b.lotNo||'',qty:take});} }
+    syncReagentFromBatches(r); return {used, parts, actual:roundQty(Math.max(0,Number(qty)||0)-remain)};
   }
   function consumeSpecificBatch(r, batchId, qty, includeExpired=false){
     const b=(r.batches||[]).find(x=>x.batchId===batchId); if(!b || Number(b.stock)<=0 || (!includeExpired&&isBatchExpired(b))) return {used:[],parts:[],actual:0};
-    const take=Math.min(Number(b.stock)||0,Math.max(0,Number(qty)||0)); b.stock-=take; syncReagentFromBatches(r); return {used:[`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`],parts:[{batchId:b.batchId,lotNo:b.lotNo||'',qty:take}],actual:take,batch:b};
+    const take=Math.min(Number(b.stock)||0,Math.max(0,Number(qty)||0)); b.stock=roundQty(b.stock-take); syncReagentFromBatches(r); return {used:[`${b.batchId}${b.lotNo?'('+b.lotNo+')':''} ${take}`],parts:[{batchId:b.batchId,lotNo:b.lotNo||'',qty:take}],actual:take,batch:b};
   }
   function batchQrCode(r,b){ return b ? `${r.id}-${b.batchId}` : r.id; }
   function qrPayload(item){
@@ -2035,7 +2040,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   function xlDate(v){
     const s = String(v||'').trim(); if(!s) return '';
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-    if(m){ const d = new Date(+m[1], +m[2]-1, +m[3]); return (d.getFullYear()===+m[1] && d.getMonth()===+m[2]-1 && d.getDate()===+m[3]) ? d : s; }
+    if(m){ if(+m[1] < 1900) return s; const d = new Date(+m[1], +m[2]-1, +m[3]); return (d.getFullYear()===+m[1] && d.getMonth()===+m[2]-1 && d.getDate()===+m[3]) ? d : s; }
     return s;
   }
   function xlDateTime(iso, dateOnly){
@@ -2302,7 +2307,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const v = cell ? cell.value : null;
     if(v===null || v===undefined) return {value:''};
     if(v instanceof Date) return {value:'', changed:Number.isNaN(v.getTime()) ? '날짜' : ymd(v.getFullYear(), v.getMonth()+1, v.getDate()), date:v};
-    if(typeof v === 'number'){ if(cell.numFmt && /%/.test(cell.numFmt)) return {value:`${+(v*100).toPrecision(12)}%`}; return {value:String(+v.toPrecision(15))}; }
+    if(typeof v === 'number'){ if(cell.numFmt && /%/.test(cell.numFmt)){ const f=cell.numFmt.replace(/"[^"]*"/g,'').replace(/\\./g,'').replace(/\[[^\]]*\]/g,''); return {value:/%/.test(f) ? `${+(v*100).toPrecision(12)}%` : `${+v.toPrecision(15)}%`}; } return {value:String(+v.toPrecision(15))}; }
     if(typeof v === 'boolean') return {value:v ? 'TRUE' : 'FALSE'};
     return {value:String(v).replace(/[\u0000-\u001f]+/g,' ').trim()};
   }
@@ -2330,7 +2335,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       row.eachCell((cell, c)=>{ const k = bulkHeaderKey(cell.value); if(!k) return; seen.push(k); for(const [field, names] of Object.entries(BULK_ALIASES)){ if(map[field] === undefined && names.includes(k)) map[field] = c; } });
       if(map.name === undefined) continue;
       const nameHeader = bulkHeaderKey(row.getCell(map.name).value);
-      const kind = nameHeader === '표준물질명' ? 'standard' : nameHeader === '시약명' ? 'reagent' : (seen.includes('순도') || seen.includes('개봉일')) ? 'standard' : '';
+      const kind = nameHeader === '표준물질명' ? 'standard' : nameHeader === '시약명' ? 'reagent' : '';
       return {row:rno, map, kind, ledger:seen.includes('qr코드id') || seen.includes('현재재고')};
     }
     return null;
@@ -2367,7 +2372,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       const concentration = text('concentration','농도').value, storage = text('storage','보관방법').value, purity = isStd ? text('purity','순도').value : '';
       const serialNo = text('serialNo', isStd ? 'Lot No.' : '제품 시리얼번호').value;
       // 예전 양식(3행 예시가 같은 시트에 있던 것)의 예시행은 등록하지 않는다.
-      if(rowNumber === head.row + 1){
+      if(rowNumber === head.row + 1 && !wb.worksheets.some(w=>w.name === BULK_EXAMPLE_SHEET)){
         const st0 = parseQtyCell((cellOf(row,'stock')||{}).value, unit).value;
         if((!isStd && name==='아세톤' && nameEn==='Acetone' && spec==='500mL' && st0===10 && /^Sigma/i.test(maker)) || (isStd && name==='암모니아 표준용액' && spec==='100mL' && st0===5 && serialNo==='LOT-2026-001')){ exampleSkipped++; return; }
       }
@@ -2390,6 +2395,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(stock >= 10000) out.warns.push(`초기재고 ${fmtQty(stock)} — 수량을 확인해 주세요`);
       const draft = {name, nameEn, spec, unit, stock, minStock, casNo, serialNo, maker, storage, concentration, purity, openedDate:od.value, category:currentCategory, receivedDate:rd.value || today, expiryDate:ed.value};
       out.draft = draft; out.qty = stock; out.expiryDate = ed.value;
+      // 입고일을 비워 둔 줄은 올린 날짜가 입고일이 되므로, 다시 올렸을 때 날짜만 달라 중복으로 못 잡는 일이 없게 날짜를 빼고 비교한다.
+      const dateless = !rd.value, noDate = k => k.slice(k.indexOf('|'));
       const myKey = [draft.receivedDate, draft.expiryDate, isStd ? serialNo : '', stock].join('|');
       const existing = findDuplicateProduct(draft);
       if(existing){
@@ -2397,9 +2404,10 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         if(!keys){ keys = new Map(); (existing.batches||[]).forEach(b=>{ const k = batchKey(b); keys.set(k, (keys.get(k)||0) + 1); }); existKeys.set(existing.id, keys); running.set(existing.id, Number(existing.stock)||0); }
         out.target = existing.id; out.before = running.get(existing.id);
         if(stock <= 0){ out.action = 'skip'; out.reason = `이미 등록된 품목이고 수량이 0입니다 (${existing.id})`; }
-        else if(keys.get(myKey) > 0){
+        else if(keys.get(myKey) > 0 || (dateless && [...keys.entries()].some(([k,n])=>n > 0 && noDate(k) === noDate(myKey)))){
+          const hitKey = keys.get(myKey) > 0 ? myKey : [...keys.entries()].find(([k,n])=>n > 0 && noDate(k) === noDate(myKey))[0];
           // 같은 파일을 다시 올린 경우: 이미 들어 있는 입고와 같은 줄은 그 개수만큼 제외한다.
-          keys.set(myKey, keys.get(myKey) - 1); out.action = 'skip'; out.dup = true; out.alt = 'add';
+          keys.set(hitKey, keys.get(hitKey) - 1); out.action = 'skip'; out.dup = true; out.alt = 'add';
           out.reason = `이미 같은 입고(입고일·유효기간·수량 동일)가 등록되어 있습니다 (${existing.id})`;
         }
         else { out.action = 'add'; running.set(existing.id, roundQty(out.before + stock)); }
@@ -2473,7 +2481,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(inc) rows.forEach(o=>{ if(o.dup){ o.action = o.alt; o.reason = ''; } });
       await applyBulkImport(rows, {skipped:nSkip - (inc ? nDup : 0), errors:nErr});
     };
-    (todo ? applyBtn : document.getElementById('bulk-plan-cancel')).focus();
+    document.getElementById('bulk-plan-cancel').focus();
   }
   async function applyBulkImport(rows, counts){
     const isStd = currentCategory === 'standard', now = new Date().toISOString(), importId = 'IMP' + Date.now().toString(36);
@@ -2517,7 +2525,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     document.getElementById('bulk-result-close').onclick = ()=>{ closeScanModal(); showToast(`신규 ${nNew}건 등록, 기존 품목 입고 ${nAdd}건 추가 완료`); };
     document.getElementById('bulk-result-labels').onclick = ()=>{ const list = bulkLabelItems(record); record.labelsPrinted = true; closeScanModal(); if(list.length) printLabelsBrother(list); };
     document.getElementById('bulk-result-undo').onclick = ()=>{ closeScanModal(); undoBulkImport(); };
-    document.getElementById('bulk-result-labels').focus();
+    document.getElementById('bulk-result-close').focus();
   }
   function updateBulkUndoButton(){
     const btn = document.getElementById('bulk-undo-btn'); if(!btn) return;
@@ -2541,8 +2549,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       }else{ r.batches.splice(r.batches.indexOf(b), 1); syncReagentFromBatches(r); }
       DB.logs.splice(li, 1); undone++;
     }
-    // 번호를 다시 쓰는 것은 라벨을 아직 인쇄하지 않았고, 그 번호 이후의 품목이 하나도 없을 때만.
-    if(!rec.labelsPrinted){
+    // 품목 번호는 되감지 않는다. 이미 인쇄한 QR 번호가 다른 품목에 다시 쓰이면 안 되기 때문 (번호가 건너뛰는 것은 문제없다).
+    if(false){
       const maxNo = prefix => DB.reagents.reduce((m,r)=>{ const x = new RegExp('^'+prefix+'(\\d+)$').exec(r.id); return x ? Math.max(m, Number(x[1])) : m; }, 0);
       DB.nextId = Math.max(rec.nextIdBefore, maxNo('RG') + 1); DB.nextIdStd = Math.max(rec.nextIdStdBefore, maxNo('ST') + 1);
     }
@@ -2627,9 +2635,9 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       const lotText = r => {
         if(!isStd) return r.serialNo || '';
         const lots = [...new Set(activeBatches(r).slice().sort((a,b)=>(a.expiryDate||'9999').localeCompare(b.expiryDate||'9999')).map(b=>b.lotNo).filter(Boolean))];
-        return lots.length ? lots.join(', ') : (r.serialNo || '');
+        return lots.length ? lots.join(', ') : ((r.batches||[]).length ? '' : (r.serialNo || ''));
       };
-      const openedOf = r => { const bs = activeBatches(r).filter(b=>b.openedDate).map(b=>b.openedDate).sort(); return bs[0] || r.openedDate || ''; };
+      const openedOf = r => { const bs = activeBatches(r).filter(b=>b.openedDate).map(b=>b.openedDate).sort(); return bs[0] || ((r.batches||[]).length ? '' : (r.openedDate || '')); };
       const invCols = [
         {h:'순번', w:6, align:'center', v:(r,i)=>i+1},
         {h:'QR코드ID', w:11, align:'center', v:r=>r.id},
@@ -2639,10 +2647,10 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         {h:'제조사', w:13, v:r=>r.maker||''},
         {h:'규격/용량', w:11, v:r=>r.spec||''},
         {h:'단위', w:6, align:'center', v:r=>r.unit||''},
-        {h:'현재재고', w:9, align:'right', qty:true, key:'stock', v:r=>roundQty(r.stock)},
-        {h:'사용가능', w:9, align:'right', qty:true, v:r=>roundQty(usableStock(r))},
-        {h:'만료재고', w:8, align:'right', qty:true, key:'expired', v:r=>{ const e = roundQty(expiredStock(r)); return e > 0 ? e : ''; }},
-        {h:'최소재고', w:8, align:'right', qty:true, v:r=>r.minStock > 0 ? roundQty(r.minStock) : ''},
+        {h:'현재재고', w:11, align:'right', qty:true, key:'stock', v:r=>roundQty(r.stock)},
+        {h:'사용가능', w:11, align:'right', qty:true, v:r=>roundQty(usableStock(r))},
+        {h:'만료재고', w:10, align:'right', qty:true, key:'expired', v:r=>{ const e = roundQty(expiredStock(r)); return e > 0 ? e : ''; }},
+        {h:'최소재고', w:10, align:'right', qty:true, v:r=>r.minStock > 0 ? roundQty(r.minStock) : ''},
         {h:'상태', w:11, align:'center', key:'status', v:r=>statusOf(r).label || '정상'},
         {h:'유효기간\n(가장 빠른)', w:13, align:'center', date:true, key:'expiry', v:r=>xlDate(effectiveExpiry(r))},
         {h:'잔여\n회차', w:6, align:'center', v:r=>activeBatches(r).length || ''},
@@ -2772,7 +2780,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         const isReceive = (l.type==='in' || l.type==='register') && Number(l.qty) > 0;
         if(isReceive) roundCounter++;
         const parts = logBatchParts(l, rr);
-        const roundLabel = parts.length ? parts.map(p=>Number(intakeRoundNo(p.batchId)) || p.batchId).join(', ') : (isReceive ? roundCounter : '');
+        const rounds = parts.map(p=>Number(intakeRoundNo(p.batchId)) || p.batchId);
+        const roundLabel = rounds.length === 1 ? rounds[0] : rounds.length ? rounds.join(', ') : (isReceive ? roundCounter : '');
         const lotLabel = !isStd ? ((rr && rr.serialNo) || '') : (parts.length > 1 ? parts.map(p=>`${p.lotNo || '(Lot 없음)'} ${fmtQty(p.qty)}`).join(' / ') : ((parts[0] && parts[0].lotNo) || l.lotNo || ''));
         const hasQty = ['in','out','register','adjust'].includes(l.type) && !(l.type==='in' && !(Number(l.qty) > 0));
         const qty = !hasQty ? '' : l.type==='adjust' ? roundQty((Number(l.after)||0) - (Number(l.before)||0)) : roundQty(l.qty);
@@ -3449,7 +3458,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>${multi?'최근 입고일'+batchNote:'입고일'}</label><input type="date" id="d-received" value="${escapeHtml((oneBatch?oneBatch.receivedDate:r.receivedDate)||'')}" ${batchLock}></div>
         <div><label>${multi?'가장 빠른 유효기간'+batchNote:'유효기간 (EXP)'}</label><input type="date" id="d-expiry" value="${escapeHtml((oneBatch?oneBatch.expiryDate:effectiveExpiry(r))||'')}" ${batchLock}></div>
         <div><label>최소재고 경고기준</label><input type="number" min="0" id="d-min" value="${r.minStock||0}"></div>
-        <div><label>현재 재고 (입고회차 합계${expiredStock(r)>0?` / 사용가능 ${usableStock(r)}`:``})</label><input type="number" id="d-stock" value="${r.stock}"></div>
+        <div><label>현재 재고 (입고회차 합계${expiredStock(r)>0?` / 사용가능 ${usableStock(r)}`:``})</label><input type="number" id="d-stock" value="${roundQty(r.stock)}" data-initial="${roundQty(r.stock)}" min="0" step="any"></div>
         <div><label>CAS No.</label><input type="text" id="d-cas" value="${escapeHtml(r.casNo||'')}"></div>
         <div><label>${(r.category||'reagent')==='standard' ? '현재 우선 Lot No. (입고회차별 관리)' : '제품 시리얼번호'}</label><input type="text" id="d-serial" value="${escapeHtml(r.serialNo||'')}" ${(r.category||'reagent')==='standard'?'disabled':''}></div>
         <div><label>제조사</label><input type="text" id="d-maker" value="${escapeHtml(r.maker||'')}"></div>
@@ -3502,6 +3511,10 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     };});
 
     document.getElementById('detail-save-btn').onclick = async ()=>{
+      const stockEl=document.getElementById('d-stock'), newStockRaw=stockEl.value.trim(), newStock=roundQty(Number(newStockRaw));
+      // 재고 칸은 사용자가 직접 고쳤을 때만 조정한다 (창을 열어 둔 사이 스캔 입출고로 바뀐 재고를 옛 숫자로 덮어쓰지 않게).
+      const stockEdited=newStockRaw!==String(stockEl.dataset.initial||'');
+      if(stockEdited && (newStockRaw==='' || Number.isNaN(Number(newStockRaw)) || newStock<0)){ showToast('현재 재고는 0 이상의 숫자로 입력해주세요.', true); return; }
       // GHS를 편집하던 중이면 그 내용도 함께 저장할지 먼저 묻는다 (말없이 사라지지 않게).
       const ghsApi=document.getElementById('ghs-panel')?._ghsApi; let ghsNote='';
       if(ghsApi?.isDirty?.()){
@@ -3509,8 +3522,6 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         else ghsNote=' — GHS 편집 내용은 저장하지 않았습니다';
         ghsApi.discard();
       }
-      const newStockRaw=document.getElementById('d-stock').value.trim(), newStock=Number(newStockRaw);
-      if(newStockRaw!=='' && (Number.isNaN(newStock) || newStock<0)){ showToast('현재 재고는 0 이상의 숫자로 입력해주세요.', true); return; }
       r.name = document.getElementById('d-name').value.trim() || r.name;
       r.nameEn = document.getElementById('d-name-en').value.trim();
       r.spec = document.getElementById('d-spec').value.trim();
@@ -3533,7 +3544,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(dConc) r.concentration = dConc.value.trim();
       if(dPurity) r.purity = dPurity.value.trim();
       r.storage = document.getElementById('d-storage').value.trim();
-      if(newStockRaw!=='' && newStock !== r.stock){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); const usedBatches=reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정',batchSnapshotBefore,usedBatches}); }
+      if(stockEdited && newStock !== roundQty(r.stock)){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); const usedBatches=reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정',batchSnapshotBefore,usedBatches}); }
       else syncReagentFromBatches(r);
       r.updatedAt = new Date().toISOString();
       const sc=document.querySelector('#detail-modal-box .detail-modal-scroll'), y=sc?sc.scrollTop:0;
@@ -3957,16 +3968,34 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   // 입출고 창이 열려 있을 때 바코드 스캐너가 보내는 빠른 연속 입력을 가려낸다.
   // 스캐너 글자가 수량 칸에 들어가거나 끝의 Enter가 [확인] 버튼을 눌러 버리는 일을 막고, 스캔한 코드로 창을 새로 연다.
   (function(){
-    let buf='', lastAt=0, keepEl=null, keepVal='';
+    let buf='', lastAt=0, charAt=0, keepEl=null, keepVal='';
+    const anyScanModalOpen=()=>{const bd=document.getElementById('scan-modal-backdrop');return !!bd&&bd.style.display!=='none';};
     const modalOpen=()=>{const bd=document.getElementById('scan-modal-backdrop'),box=document.getElementById('scan-modal-box');return bd&&bd.style.display!=='none'&&box&&!box.classList.contains('modal-box-import')&&!!box.querySelector('.scan-result');};
     document.addEventListener('keydown',e=>{
       if(e.isComposing||e.ctrlKey||e.altKey||e.metaKey) return;
       const now=performance.now(), gap=now-lastAt;
-      if(e.key.length===1){
+      if(e.key.length===1||e.key==='Process'){
+        charAt=now; if(e.key==='Process') return;
         if(gap>50||!buf){ buf=''; const el=document.activeElement; keepEl=el&&('value' in el)&&el.tagName==='INPUT'?el:null; keepVal=keepEl?keepEl.value:''; }
         buf+=e.key; lastAt=now; return;
       }
-      if(e.key==='Enter'&&buf.length>=4&&gap<=80&&modalOpen()){
+      const burst=e.key==='Enter'&&buf.length>=4&&gap<=80;
+      // 버튼에 포커스가 있을 때(확인 화면 등): 사람은 버튼 위에서 글자를 치지 않는다. 직전에 글자가 들어왔으면 스캐너로 보고 Enter를 버린다.
+      if(e.key==='Enter'&&!burst&&anyScanModalOpen()&&document.activeElement&&document.activeElement.tagName==='BUTTON'&&now-charAt<500){
+        const code=buf.trim(); buf=''; lastAt=0; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        if(code.length>=2&&modalOpen()) renderScanResult(code); else showToast('스캐너 입력이 감지되어 처리하지 않았습니다. 진행하려면 버튼을 직접 눌러 주세요.',true);
+        return;
+      }
+      // 일괄등록 확인·결과 창: 스캔 입력으로 [등록]이 눌리지 않게 버린다.
+      if(burst&&anyScanModalOpen()&&!modalOpen()){ buf=''; lastAt=0; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); if(keepEl&&keepEl.isConnected){ try{ keepEl.value=keepVal; }catch{} } return; }
+      // 상세 창: 스캔한 글자가 품명·재고 칸에 들어간 채 저장되지 않게 한다. (시리얼번호·Lot 칸은 스캔 입력을 그대로 둔다)
+      if(burst&&!anyScanModalOpen()&&document.getElementById('detail-modal-backdrop').style.display!=='none'){
+        buf=''; lastAt=0; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        const scanField=keepEl&&(keepEl.id==='d-serial'||keepEl.classList.contains('be-lot'));
+        if(keepEl&&keepEl.isConnected&&!scanField){ try{ keepEl.value=keepVal; keepEl.dispatchEvent(new Event('input',{bubbles:true})); }catch{} showToast('상세 창이 열려 있어 스캔을 처리하지 않았습니다. 창을 닫고 다시 스캔해 주세요.',true); }
+        return;
+      }
+      if(burst&&modalOpen()){
         const code=buf.trim(); buf=''; lastAt=0;
         e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
         if(keepEl&&keepEl.isConnected){ try{ keepEl.value=keepVal; }catch{} }
@@ -4413,7 +4442,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   // 보정을 했다는 표시는 데이터(DB.migrations)에 둔다. 설정에 두면 '설정 초기화'로 지워져 올바른 그림문자가 다시 뒤바뀌고,
   // 예전 백업을 복원했을 때는 보정이 건너뛰어진다. (settings.koshaPictogramFixed는 이전 버전과의 호환용으로만 남긴다)
   async function fixKoshaPictogramNumbers(){
-    if(!DB.migrations || typeof DB.migrations!=='object' || Array.isArray(DB.migrations)) DB.migrations={koshaPictogram:!!(DB.settings&&DB.settings.koshaPictogramFixed)};
+    if(!DB.migrations || typeof DB.migrations!=='object' || Array.isArray(DB.migrations)) DB.migrations={};
+    if(DB.migrations.koshaPictogram===undefined) DB.migrations.koshaPictogram=!!(DB.settings&&DB.settings.koshaPictogramFixed);
     if(DB.migrations.koshaPictogram){ if(!settings().koshaPictogramFixed){ settings().koshaPictogramFixed=true; } return; }
     const swap={GHS03:'GHS04',GHS04:'GHS03'}, fixed=[];
     for(const r of DB.reagents){
@@ -4463,8 +4493,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         try{
           const r=await window.inventoryStore.listBackups(), files=((r&&r.files)||[]).filter(f=>f.counted), doomed=files.slice(next);
           if(doomed.length){
-            const day=f=>String(f.modifiedAt||'').slice(0,10), range=doomed.length>1?`${day(doomed[doomed.length-1])} ~ ${day(doomed[0])}`:day(doomed[0]);
-            if(!safeConfirm(`보관 개수를 ${next}개로 줄이면 오래된 백업 ${doomed.length}개(${range})가 바로 삭제되며 되돌릴 수 없습니다.\n계속할까요?`)){ sel.value=String(prev); return; }
+            const day=f=>{const d=new Date(f.modifiedAt);return Number.isNaN(d.getTime())?'':`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}, range=doomed.length>1?`${day(doomed[doomed.length-1])} ~ ${day(doomed[0])}`:day(doomed[0]);
+            if(!safeConfirm(`보관 개수를 ${next}개로 줄이면 오래된 백업 약 ${doomed.length}개(${range})가 바로 삭제되며 되돌릴 수 없습니다.\n계속할까요?`)){ sel.value=String(prev); return; }
           }
         }catch(err){ console.error(err); }
       }
@@ -4504,7 +4534,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       go.onclick=async()=>{
         if(go.disabled) return; go.disabled=true; go.textContent='초기화하는 중…';
         const keepSettings=normalizeSettings(Object.assign({},settings()));
-        const clean={schemaVersion:3,nextId:1,nextIdStd:1,reagents:[],logs:[],settings:keepSettings,migrations:{koshaPictogram:true}};
+        const clean={schemaVersion:3,nextId:1,nextIdStd:1,reagents:[],logs:[],settings:keepSettings,migrations:{koshaPictogram:true,batchDates:true}};
         try{
           let safetyZip='';
           if(installed){

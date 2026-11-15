@@ -110,7 +110,7 @@
     // 표 한 칸에 긴 문구를 다 넣으면 엑셀 행 높이 한도를 넘어 잘린다. H는 문구까지, P는 코드만 적고 뜻은 'H·P 문구' 시트에 한 번씩만 싣는다.
     const header=['QR코드ID','분류','품명','영문명','CAS No.','제조사','신호어','그림문자','유해·위험성 분류','H코드 (유해·위험 문구)','P코드\n(뜻은 H·P 문구 시트)','GHS 출처','MSDS\n첨부','MSDS 파일','MSDS\n작성·개정일','개정번호','MSDS\n검토일','다음 검토\n예정','MSDS 상태','비고'];
     const widths=[11,8,22,17,11,13,7,20,26,40,26,18,7,30,13,9,13,13,17,22];
-    const toDate=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||'').trim());if(!m)return v||'';const d=new Date(+m[1],+m[2]-1,+m[3]);return d.getFullYear()===+m[1]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[3]?d:v;};
+    const toDate=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||'').trim());if(!m)return v||'';if(+m[1]<1900)return v;const d=new Date(+m[1],+m[2]-1,+m[3]);return d.getFullYear()===+m[1]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[3]?d:v;};
     const usedH=new Set(),usedP=new Set();
     const rows=(items||[]).map(r=>{const g=r.ghs||{},st=D.msdsStatus(r,reviewMonths(settings),today());const src={supplier:'공급자 MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS 자료',other:'기타'}[g.source]||'';
       (g.hCodes||[]).forEach(c=>usedH.add(c));(g.pCodes||[]).forEach(c=>usedP.add(c));

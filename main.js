@@ -50,6 +50,8 @@ ipcMain.handle('inventory:open-backup-folder', async ()=> {
 ipcMain.handle('inventory:backup-now', async (_evt, obj)=> backups.snapshot(obj));
 // 문서 폴더를 못 찾는 PC가 있다 (폴더 리디렉션·OneDrive 등). 바탕화면 → 사용자 폴더 → 앱 데이터 폴더 순으로 대신 쓴다.
 const safeDir = name => { try { const p = app.getPath(name); return p && fs.existsSync(p) ? p : ''; } catch { return ''; } };
+// 파일 이름에 넣는 날짜·시각 (PC의 현지 시각 기준)
+const localStamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; };
 const defaultSaveDir = () => safeDir('documents') || safeDir('desktop') || safeDir('home') || dataDir();
 // 엑셀·텍스트 파일 저장: 저장 창에 한글 파일명과 확장자를 제대로 넣어 준다. 마지막으로 저장한 폴더를 다음에도 먼저 보여 준다.
 let lastSaveDir = '';
@@ -102,7 +104,7 @@ function bundleEntries(obj){
 ipcMain.handle('inventory:export-bundle', async (evt, obj)=> {
   try{
     validateInventory(obj);
-    const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
+    const stamp = localStamp();
     const win = BrowserWindow.fromWebContents(evt.sender);
     const startDir = defaultSaveDir();
     const result = await dialog.showSaveDialog(win, {title:'백업 묶음 저장 (재고 + MSDS PDF)', defaultPath: path.join(startDir, `시약재고_백업_${stamp}.zip`), filters:[{name:'zip 묶음', extensions:['zip']}]});
@@ -137,12 +139,15 @@ ipcMain.handle('inventory:reset-all', async (_evt, cleanDb, current)=> {
     if (current && typeof current === 'object' && Array.isArray(current.reagents) && (current.reagents.length || (current.logs || []).length)) {
       try {
         validateInventory(current);
-        const stamp = new Date().toISOString().slice(0,19).replace(/[-:]/g,'').replace('T','_');
-        safetyZip = path.join(defaultSaveDir(), `시약재고_초기화전_${stamp}.zip`);
-        writeZip(safetyZip, bundleEntries(current).entries);
+        const entries = bundleEntries(current).entries, name = `시약재고_초기화전_${localStamp()}.zip`;
+        // 문서 폴더에 쓸 수 없는 PC가 있다. 바탕화면 → 사용자 폴더 → 앱 데이터 폴더 순으로 처음 성공한 곳에 둔다.
+        const dirs = [...new Set([safeDir('documents'), safeDir('desktop'), safeDir('home'), dataDir()].filter(Boolean))];
+        let lastError = null;
+        for (const dir of dirs) { try { const target = path.join(dir, name); writeZip(target, entries); safetyZip = target; break; } catch (e) { lastError = e; } }
+        if (!safetyZip) throw lastError || new Error('no writable folder');
       } catch (e) {
         console.error('reset safety copy failed', e);
-        return {ok:false, error:'초기화 전 사본을 저장하지 못해 초기화를 중단했습니다. 설정의 [묶음 저장]으로 먼저 저장한 뒤 다시 시도해 주세요.'};
+        return {ok:false, error:'초기화 전 사본을 저장할 폴더를 찾지 못해 초기화를 중단했습니다. 문서·바탕화면 폴더에 저장할 수 있는지 확인해 주세요.'};
       }
     }
     safetyStore.clear();

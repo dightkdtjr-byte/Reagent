@@ -19,7 +19,7 @@ class Worksheet{constructor(name,opts){this.name=name;this.options=opts||{};this
  getColumn(c){c=typeof c==='string'?cellRC(c+'1')[1]:Number(c);if(!this.columns.has(c))this.columns.set(c,{number:c,width:null,numFmt:''});return this.columns.get(c);}
  mergeCells(){let args=[...arguments],range;if(args.length===1)range=String(args[0]);else range=colName(args[1])+args[0]+':'+colName(args[3])+args[2];this.merges.push(range);}
  addImage(imageId,range){this.images.push({imageId:Number(imageId),range:range||{}});return imageId;}
- eachRow(opts,cb){if(typeof opts==='function'){cb=opts;opts={};}opts=opts||{};let max=Math.max(0,...this.rows.keys());for(let r=1;r<=max;r++){let row=this.rows.get(r);if(!row){if(opts.includeEmpty)row=this.getRow(r);else continue;}if(!opts.includeEmpty&&row.cells.size===0)continue;cb(row,r);}}
+ eachRow(opts,cb){if(typeof opts==='function'){cb=opts;opts={};}opts=opts||{};let max=0;for(const k of this.rows.keys())if(k>max)max=k;for(let r=1;r<=max;r++){let row=this.rows.get(r);if(!row){if(opts.includeEmpty)row=this.getRow(r);else continue;}if(!opts.includeEmpty&&row.cells.size===0)continue;cb(row,r);}}
 }
 class Workbook{constructor(){this.worksheets=[];this.creator='';this.created=new Date();this.images=[];this.xlsx={writeBuffer:()=>writeWorkbook(this),load:(buf)=>loadWorkbook(this,buf)};}
  addWorksheet(name,opts){let n=String(name||'Sheet').replace(/[\\\/\?\*\[\]:]/g,' ').replace(/^'+|'+$/g,'').slice(0,31)||'Sheet';const used=new Set(this.worksheets.map(x=>x.name.toLowerCase()));let base=n,k=2;while(used.has(n.toLowerCase())){const suf=' ('+(k++)+')';n=base.slice(0,31-suf.length)+suf;}const w=new Worksheet(n,opts);this.worksheets.push(w);return w;}
@@ -35,7 +35,7 @@ function normBorder(b){b=b||{};return {left:normSide(b.left),right:normSide(b.ri
 function normAlign(a){a=a||{};const v=a.vertical==='middle'?'center':a.vertical;return {horizontal:H_ALIGN.has(a.horizontal)?a.horizontal:'',vertical:V_ALIGN.has(v)?v:'',wrapText:!!a.wrapText,indent:Math.max(0,Math.floor(Number(a.indent)||0))};}
 function dateFmtFor(d){return (d.getHours()||d.getMinutes()||d.getSeconds())?'yyyy-mm-dd hh:mm':'yyyy-mm-dd';}
 function dateSerial(d){return (Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds())-Date.UTC(1899,11,30))/86400000;}
-function validDate(v){return v instanceof Date&&!Number.isNaN(v.getTime())&&v.getFullYear()>=1900&&v.getFullYear()<=9999;}
+function validDate(v){return v instanceof Date&&!Number.isNaN(v.getTime())&&v.getFullYear()<=9999&&v.getTime()>=new Date(1900,2,1).getTime();}
 function key(o){return JSON.stringify(o);}
 function xmlFont(f){return `<font><name val="${esc(f.name)}"/>${f.bold?'<b/>':''}${f.italic?'<i/>':''}<color rgb="${f.color}"/><sz val="${f.size}"/>${f.underline?'<u/>':''}</font>`;}
 function xmlFill(f){if(f.pattern==='solid')return `<fill><patternFill patternType="solid"><fgColor rgb="${f.fg}"/><bgColor rgb="${f.bg}"/></patternFill></fill>`;return '<fill><patternFill patternType="none"/></fill>';}
@@ -59,13 +59,13 @@ function buildStyles(wb){
 function runFontPr(f){f=normFont(f);return `<rPr><rFont val="${esc(f.name)}"/>${f.bold?'<b/>':''}${f.italic?'<i/>':''}<color rgb="${f.color}"/><sz val="${f.size}"/>${f.underline?'<u/>':''}</rPr>`;}
 function inlineStrXml(v){if(v&&typeof v==='object'&&Array.isArray(v.richText)){return '<is>'+v.richText.map(x=>`<r>${runFontPr(x.font||{})}<t xml:space="preserve">${esc(x.text||'')}</t></r>`).join('')+'</is>';}return `<is><t xml:space="preserve">${esc(v)}</t></is>`;}
 function worksheetXml(ws,styleMap,drawingRid){
-  let maxRow=Math.max(1,...ws.rows.keys()), maxCol=Math.max(1,...ws.columns.keys());for(const row of ws.rows.values())for(const c of row.cells.keys())maxCol=Math.max(maxCol,c);
+  let maxRow=1;for(const k of ws.rows.keys())if(k>maxRow)maxRow=k;let maxCol=Math.max(1,...ws.columns.keys());for(const row of ws.rows.values())for(const c of row.cells.keys())maxCol=Math.max(maxCol,c);
   const tc=ws.properties&&ws.properties.tabColor&&argb(ws.properties.tabColor.argb||ws.properties.tabColor,'');
   const fit=ws.pageSetup&&ws.pageSetup.fitToPage;
   const sheetPr=(tc||fit)?`<sheetPr>${tc?`<tabColor rgb="${tc}"/>`:''}${fit?'<pageSetUpPr fitToPage="1"/>':''}</sheetPr>`:'';
   let cols='';if(ws.columns.size){let arr=[...ws.columns.entries()].filter(x=>x[1].width||styleMap.get(x[1])).sort((a,b)=>a[0]-b[0]);if(arr.length)cols='<cols>'+arr.map(([c,o])=>{const sid=styleMap.get(o);return `<col min="${c}" max="${c}" width="${Number(o.width)||9}"${sid?` style="${sid}"`:''}${o.width?' customWidth="1"':''}/>`;}).join('')+'</cols>';}
   let views='<sheetViews><sheetView workbookViewId="0"';if(ws.views&&ws.views[0]&&ws.views[0].state==='frozen'&&ws.views[0].ySplit){const y=ws.views[0].ySplit;views+=`><pane ySplit="${y}" topLeftCell="A${y+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`;}else views+='/></sheetViews>';
-  let rows='';for(let r=1;r<=maxRow;r++){const row=ws.rows.get(r);if(!row)continue;let cells='';for(const [c,cell] of [...row.cells.entries()].sort((a,b)=>a[0]-b[0])){let v=cell.value;const ref=colName(c)+r,sid=styleMap.get(cell)||0,sa=sid?` s="${sid}"`:'';if(v===null||v===undefined||v===''){if(sid)cells+=`<c r="${ref}"${sa}/>`;continue;}if(typeof v==='number'&&Number.isFinite(v))cells+=`<c r="${ref}"${sa}><v>${v}</v></c>`;else if(typeof v==='boolean')cells+=`<c r="${ref}"${sa} t="b"><v>${v?1:0}</v></c>`;else if(validDate(v))cells+=`<c r="${ref}"${sa}><v>${dateSerial(v)}</v></c>`;else{if(v instanceof Date)v='';cells+=`<c r="${ref}"${sa} t="inlineStr">${inlineStrXml(v)}</c>`;}}if(cells||row.height)rows+=`<row r="${r}"${row.height?` ht="${row.height}" customHeight="1"`:''}>${cells}</row>`;}
+  let rows='';for(let r=1;r<=maxRow;r++){const row=ws.rows.get(r);if(!row)continue;let cells='';for(const [c,cell] of [...row.cells.entries()].sort((a,b)=>a[0]-b[0])){let v=cell.value;const ref=colName(c)+r,sid=styleMap.get(cell)||0,sa=sid?` s="${sid}"`:'';if(v===null||v===undefined||v===''){if(sid)cells+=`<c r="${ref}"${sa}/>`;continue;}if(typeof v==='number'&&Number.isFinite(v))cells+=`<c r="${ref}"${sa}><v>${v}</v></c>`;else if(typeof v==='boolean')cells+=`<c r="${ref}"${sa} t="b"><v>${v?1:0}</v></c>`;else if(validDate(v))cells+=`<c r="${ref}"${sa}><v>${dateSerial(v)}</v></c>`;else{if(v instanceof Date)v=Number.isNaN(v.getTime())?'':`${String(v.getFullYear()).padStart(4,'0')}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;cells+=`<c r="${ref}"${sa} t="inlineStr">${inlineStrXml(v)}</c>`;}}if(cells||row.height)rows+=`<row r="${r}"${row.height?` ht="${row.height}" customHeight="1"`:''}>${cells}</row>`;}
   const merges=ws.merges.length?`<mergeCells count="${ws.merges.length}">${ws.merges.map(x=>`<mergeCell ref="${esc(x)}"/>`).join('')}</mergeCells>`:'';
   let af='';if(ws.autoFilter){if(typeof ws.autoFilter==='string')af=`<autoFilter ref="${esc(ws.autoFilter)}"/>`;else if(ws.autoFilter.from&&ws.autoFilter.to)af=`<autoFilter ref="${esc(ws.autoFilter.from+':'+ws.autoFilter.to)}"/>`;}
   const ps=ws.pageSetup||{};const margins=ps.margins||{left:.4,right:.4,top:.5,bottom:.5,header:.2,footer:.2};
@@ -106,7 +106,7 @@ async function inflateRaw(u){if(typeof DecompressionStream==='undefined')throw n
 async function unzip(ab){const a=new Uint8Array(ab);let e=-1;for(let i=a.length-22;i>=Math.max(0,a.length-66000);i--){if(u32(a,i)===0x06054b50){e=i;break;}}if(e<0)throw new Error('invalid xlsx zip');const count=u16(a,e+10),cd=u32(a,e+16);let p=cd,out={};for(let k=0;k<count;k++){if(u32(a,p)!==0x02014b50)break;const method=u16(a,p+10),cs=u32(a,p+20),nl=u16(a,p+28),el=u16(a,p+30),cl=u16(a,p+32),lo=u32(a,p+42),name=TD.decode(a.slice(p+46,p+46+nl));const lnl=u16(a,lo+26),lel=u16(a,lo+28),start=lo+30+lnl+lel,comp=a.slice(start,start+cs);out[name]=method===0?comp:method===8?await inflateRaw(comp):null;p+=46+nl+el+cl;}return out;}
 function xmlText(u){return u?TD.decode(u):'';}
 function tagText(s,tag){const re=new RegExp('<(?:\\w+:)?'+tag+'(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:\\w+:)?'+tag+'>','i');const m=re.exec(s);return m?unesc(m[1].replace(/<[^>]+>/g,'')):'';}
-function allText(s){let t='';const tre=/<(?:\w+:)?t(?:\s[^>]*)?>([\s\S]*?)<\/(?:\w+:)?t>/gi;for(const q of String(s||'').replace(/<(?:\w+:)?rPh\b[\s\S]*?<\/(?:\w+:)?rPh>/gi,'').matchAll(tre))t+=unesc(q[1]);return t;}
+function allText(s){let t='';const tre=/<(?:\w+:)?t(?:\s[^>]*)?>([\s\S]*?)<\/(?:\w+:)?t>/gi;for(const q of String(s||'').replace(/_x000[Dd]_/g,'').replace(/<(?:\w+:)?rPh\b[\s\S]*?<\/(?:\w+:)?rPh>/gi,'').matchAll(tre))t+=unesc(q[1]);return t;}
 function parseShared(s){const out=[], re=/<(?:\w+:)?si\b[^>]*?(?:\/>|>([\s\S]*?)<\/(?:\w+:)?si>)/gi;for(const m of s.matchAll(re))out.push(allText(m[1]||''));return out;}
 function dateStyleSet(styles){
   const builtin=new Set([14,15,16,17,18,19,20,21,22,27,28,29,30,31,32,33,34,35,36,45,46,47,50,51,52,53,54,55,56,57,58]), custom={}, out=new Set();out.fmts=[];const BUILTIN_FMT={9:'0%',10:'0.00%',49:'@'};
@@ -124,6 +124,7 @@ function dateStyleSet(styles){
 function excelDate(n){const d=new Date(Date.UTC(1899,11,30)+Math.round(Number(n)*86400)*1000);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),d.getUTCHours(),d.getUTCMinutes(),d.getUTCSeconds());}
 async function loadWorkbook(wb,ab){
   const z=await unzip(ab), w=xmlText(z['xl/workbook.xml']), rel=xmlText(z['xl/_rels/workbook.xml.rels']);
+  const d1904=/<(?:\w+:)?workbookPr\b[^>]*\bdate1904="(?:1|true|on)"/i.test(w);
   const shared=parseShared(xmlText(z['xl/sharedStrings.xml']||new Uint8Array())), dateStyles=dateStyleSet(xmlText(z['xl/styles.xml']||new Uint8Array()));
   const rels={}, rre=/<Relationship\b([^>]*)\/?>(?:<\/Relationship>)?/gi;
   for(const m of rel.matchAll(rre)){const id=/\bId="([^"]+)"/i.exec(m[1]), target=/\bTarget="([^"]+)"/i.exec(m[1]);if(id&&target)rels[id[1]]=target[1].replace(/^\//,'');}
@@ -145,7 +146,7 @@ async function loadWorkbook(wb,ab){
         if(!body)continue;
         let val='',fmt='';
         if(tt&&tt[1]==='inlineStr')val=allText(body);
-        else{const v=tagText(body,'v');if(tt&&tt[1]==='s')val=shared[Number(v)]??'';else if(tt&&tt[1]==='b')val=v==='1';else if(tt&&['str','e'].includes(tt[1]))val=v;else if(tt&&tt[1]==='d'){const d=new Date(v);val=Number.isNaN(d.getTime())?v:d;}else if(v!==''){val=Number(v);if(ss){const si=Number(ss[1]);if(dateStyles.has(si))val=excelDate(val);fmt=dateStyles.fmts[si]||'';}}}
+        else{const v=tagText(body,'v');if(tt&&tt[1]==='s')val=shared[Number(v)]??'';else if(tt&&tt[1]==='b')val=v==='1';else if(tt&&['str','e'].includes(tt[1]))val=v;else if(tt&&tt[1]==='d'){const d=new Date(v);val=Number.isNaN(d.getTime())?v:d;}else if(v!==''){val=Number(v);if(ss){const si=Number(ss[1]);if(dateStyles.has(si)&&val>=0&&val<2958466)val=excelDate(val+(d1904?1462:0));fmt=dateStyles.fmts[si]||'';}}}
         if(val===''||val==null)continue;
         const cell=row.getCell(cc);cell.value=val;if(fmt)cell.numFmt=fmt;
       }
