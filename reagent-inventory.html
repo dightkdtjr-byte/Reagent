@@ -215,6 +215,9 @@
     font-size:14px; font-weight:700; cursor:pointer; font-family:var(--sans);
   }
   button.primary:hover{background:var(--teal-dark);}
+  /* 다크 테마의 밝은 강조색 위에서는 흰 글자가 잘 안 보인다. 어두운 글자로 바꾼다. */
+  html[data-theme="dark"] button.primary, html[data-theme="dark"] .toast-undo{color:#0B1420 !important;}
+  html[data-theme="dark"] #toast .toast-undo{color:#fff !important;}
   button.ghost{
     background:none; border:1px solid var(--line); color:var(--ink); border-radius:8px;
     padding:9px 14px; font-size:13px; cursor:pointer; font-family:var(--sans); font-weight:600;
@@ -1252,7 +1255,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.5</div>
+        <div class="work-version">v4.0.6</div>
       </div>
 </aside>
   </div>
@@ -1583,7 +1586,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.5<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.0.6<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1657,7 +1660,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.5';
+  const APP_VERSION = '4.0.6';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1777,6 +1780,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         if(document.getElementById('tab-settings')?.classList.contains('active'))refreshBackupStatus();
       } else window.localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
       setSaveStatus(null);
+      scheduleMsdsAvailability();
       renderHomeDashboard();
       refreshVisibleLists();
       return true;
@@ -1859,6 +1863,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!r||!r.ok)throw new Error(r?.error||'복원 실패');
     DB=migrateDB(r.data);selectedId=null;selectedPrintIds.clear();lastBulkImport=null;updateBulkUndoButton();
     try{ await fixKoshaPictogramNumbers(); }catch(e){ console.error(e); }
+    scheduleMsdsAvailability();
     applyTheme();renderInventory();renderRecentLogs();renderStats();renderHomeDashboard();renderSettings();
     const warning=r.warning||r.backup?.warning||(r.backup?.ok===false?r.backup.error:'');
     const missing=r.msds?.missing||[];
@@ -2916,6 +2921,25 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       try{const n=String(target.value||'').length;target.setSelectionRange(n,n);}catch{}
     }
   }
+  // 확인·알림 창의 버튼이 영어(OK/Cancel)로 나오지 않게, 설치형 앱에서는 한국어 버튼의 기본 창을 쓴다.
+  (function(){
+    const nd=window.nativeDialog; if(!nd) return;
+    const pageConfirm=window.confirm.bind(window), pageAlert=window.alert.bind(window);
+    window.confirm=m=>{ const r=nd.confirm(String(m??'')); return r===null?pageConfirm(m):!!r; };
+    window.alert=m=>{ if(nd.alert(String(m??''))===null) pageAlert(m); };
+  })();
+  // 첨부된 MSDS의 원본 PDF가 실제로 있는지 확인해, 없는 문서는 목록·통계·엑셀에서 '첨부'로 세지 않게 한다.
+  let msdsAvailTimer=null, msdsMissingKey='';
+  async function refreshMsdsAvailability(){
+    if(!window.inventoryMSDS?.list||!window.GHSData?.setUnavailable) return;
+    const byId=new Map(); for(const r of DB.reagents) for(const d of r.msdsDocuments||[]) byId.set(d.id,d);
+    const docs=[...byId.values()], missing=[];
+    for(let i=0;i<docs.length;i+=20){ try{ const r=await window.inventoryMSDS.list(docs.slice(i,i+20)); if(r?.ok) for(const f of r.files) if(!f.available) missing.push(f.id); }catch{} }
+    const key=missing.slice().sort().join('|'); if(key===msdsMissingKey) return;
+    msdsMissingKey=key; window.GHSData.setUnavailable(missing);
+    try{ renderInventory(); renderStats(); if(document.getElementById('tab-msds')?.classList.contains('active')) renderMsdsManager(); }catch(e){ console.error(e); }
+  }
+  function scheduleMsdsAvailability(){ clearTimeout(msdsAvailTimer); msdsAvailTimer=setTimeout(()=>{ refreshMsdsAvailability().catch(()=>{}); },400); }
   function safeConfirm(message){
     const result=window.confirm(message);
     const scanId=window.__scanFocusReturnId||currentScanInputId();
@@ -3458,7 +3482,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>${multi?'최근 입고일'+batchNote:'입고일'}</label><input type="date" id="d-received" value="${escapeHtml((oneBatch?oneBatch.receivedDate:r.receivedDate)||'')}" ${batchLock}></div>
         <div><label>${multi?'가장 빠른 유효기간'+batchNote:'유효기간 (EXP)'}</label><input type="date" id="d-expiry" value="${escapeHtml((oneBatch?oneBatch.expiryDate:effectiveExpiry(r))||'')}" ${batchLock}></div>
         <div><label>최소재고 경고기준</label><input type="number" min="0" id="d-min" value="${r.minStock||0}"></div>
-        <div><label>현재 재고 (입고회차 합계${expiredStock(r)>0?` / 사용가능 ${usableStock(r)}`:``})</label><input type="number" id="d-stock" value="${roundQty(r.stock)}" data-initial="${roundQty(r.stock)}" min="0" step="any"></div>
+        <div><label title="숫자를 직접 고치면 입출고인 없이 '수동조정'으로 기록됩니다. 평소 입출고는 아래 [입고 +]·[출고 -] 버튼을 쓰세요.">현재 재고 (직접 고치면 '수동조정'${expiredStock(r)>0?` / 사용가능 ${usableStock(r)}`:``})</label><input type="number" id="d-stock" value="${roundQty(r.stock)}" data-initial="${roundQty(r.stock)}" min="0" step="any"></div>
         <div><label>CAS No.</label><input type="text" id="d-cas" value="${escapeHtml(r.casNo||'')}"></div>
         <div><label>${(r.category||'reagent')==='standard' ? '현재 우선 Lot No. (입고회차별 관리)' : '제품 시리얼번호'}</label><input type="text" id="d-serial" value="${escapeHtml(r.serialNo||'')}" ${(r.category||'reagent')==='standard'?'disabled':''}></div>
         <div><label>제조사</label><input type="text" id="d-maker" value="${escapeHtml(r.maker||'')}"></div>
@@ -3472,6 +3496,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </div>
       <div class="detail-actions detail-save-row">
         <button class="primary" id="detail-save-btn">기본 정보 저장</button>
+        ${r.archivedAt?'':'<button class="ghost" id="detail-in-btn">입고 +</button><button class="ghost" id="detail-out-btn">출고 -</button>'}
         <span class="hint" id="detail-dirty-note" hidden>수정한 내용이 있습니다. 저장을 눌러야 반영됩니다.</span>
       </div>
       <div class="log-list" id="ghs-panel"></div>
@@ -3496,6 +3521,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       grid.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.isComposing&&e.target.tagName==='INPUT'){ e.preventDefault(); document.getElementById('detail-save-btn').click(); } });
     }
     document.querySelectorAll('#detail-modal-box .batch-edit-btn').forEach(btn=>{btn.onclick=()=>editBatchRow(r.id,btn.dataset.batch);});
+    // 입고·출고는 스캔 때와 같은 창에서 처리한다 (입출고인·회차·유효기간이 기록에 남는다). 재고 숫자를 직접 고치면 '수동조정'으로 남는다.
+    for(const [id,mode] of [['detail-in-btn','in'],['detail-out-btn','out']]){ const b=document.getElementById(id); if(b) b.onclick=()=>{ const itemId=r.id; if(!requestCloseDetail()) return; window.__scanFocusReturnId='search-input'; setTimeout(()=>renderScanResult(itemId,{mode}),90); }; }
     window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
@@ -3624,7 +3651,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const r=findReagent(id); if(!r||!settings().autoFetchMsds||!window.inventorySafety?.koshaSearch) return;
     if(!/^\d{2,7}-\d{2}-\d$/.test(String(r.casNo||'').trim())||(r.msdsDocuments||[]).length||autoFetchQueue.has(id)) return;
     autoFetchQueue.add(id);
-    try{ const res=await window.GHSUI.fetchAndAttachKosha(r,{getItem:findReagent,getItems:()=>DB.reagents,save:saveDB}); showToast(`${r.id} ${r.name}: MSDS를 자동으로 첨부했습니다${res.filled?' · GHS 채움':''}.`); }
+    try{ const res=await window.GHSUI.fetchAndAttachKosha(r,{getItem:findReagent,getItems:()=>DB.reagents,save:saveDB}); showToast(`${r.id} ${r.name}: MSDS를 자동으로 첨부했습니다${res.filled?' · GHS 채움':res.needsReview?' · GHS는 상세 창에서 확인 후 저장해 주세요 (수용액·표준물질 등은 순물질 MSDS와 다를 수 있음)':''}.`); }
     catch(e){ showToast(`${r.id} ${r.name}: MSDS 자동 받기 실패 — ${String(e.message||e)}`,true); }
     finally{ autoFetchQueue.delete(id); }
   }
@@ -4779,6 +4806,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     DB = await loadDB();
     try{ await window.GHSUI.preload(); }catch(e){ console.error(e); }
     try{ await fixKoshaPictogramNumbers(); }catch(e){ console.error(e); }
+    scheduleMsdsAvailability();
     document.getElementById('f-received').value = todayStr();
     applyTheme();
     bindSettings();

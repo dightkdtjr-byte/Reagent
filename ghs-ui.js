@@ -115,7 +115,7 @@
     const rows=(items||[]).map(r=>{const g=r.ghs||{},st=D.msdsStatus(r,reviewMonths(settings),today());const src={supplier:'공급자 MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS 자료',other:'기타'}[g.source]||'';
       (g.hCodes||[]).forEach(c=>usedH.add(c));(g.pCodes||[]).forEach(c=>usedP.add(c));
       const docs=(r.msdsDocuments||[]).map(d=>(d.fileName||d.file||'MSDS')+(d.koshaChemId?' (KOSHA)':''));
-      return [r.id,(r.category||'reagent')==='standard'?'표준물질':'시약',r.name||'',r.nameEn||'',r.casNo||'',r.maker||'',g.signalWord?D.SIGNAL[g.signalWord]:'',(g.pictograms||[]).map(c=>c+' '+D.PICTOGRAMS[c].label).join(', '),g.hazardClasses||'',(g.hCodes||[]).map(c=>c+' '+D.hText(c)).join('\n'),(g.pCodes||[]).join(', '),[src,g.sourceNote].filter(Boolean).join(' · '),st.attached?st.attached+'개':'미첨부',docs.join('\n'),toDate(g.msdsIssuedAt),g.msdsRevision||'',toDate(g.msdsReviewedAt),toDate(st.nextReviewAt),st.label,g.note||''];});
+      return [r.id,(r.category||'reagent')==='standard'?'표준물질':'시약',r.name||'',r.nameEn||'',r.casNo||'',r.maker||'',g.signalWord?D.SIGNAL[g.signalWord]:'',(g.pictograms||[]).map(c=>c+' '+D.PICTOGRAMS[c].label).join(', '),g.hazardClasses||'',(g.hCodes||[]).map(c=>c+' '+D.hText(c)).join('\n'),(g.pCodes||[]).join(', '),[src,g.sourceNote].filter(Boolean).join(' · '),st.attached?st.attached+'개':st.fileMissing?'파일 없음':'미첨부',docs.join('\n'),toDate(g.msdsIssuedAt),g.msdsRevision||'',toDate(g.msdsReviewedAt),toDate(st.nextReviewAt),st.label,g.note||''];});
     const pKind=c=>{const n=String(c).match(/P(\d)/);return n?({1:'일반',2:'예방',3:'대응',4:'저장',5:'폐기'}[n[1]]||'예방조치'):'예방조치';};
     const split=c=>String(c).split('+');
     const byCode=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
@@ -157,6 +157,19 @@
     const cur=(live.msdsDocuments||[]).find(d=>d.id===doc.id);
     if(cur&&window.inventoryMSDS?.relabel){try{const r=await window.inventoryMSDS.relabel(cur,{itemId:live.id,name:live.name,casNo:live.casNo});if(r?.ok&&r.document&&r.document.file!==cur.file){const i=live.msdsDocuments.indexOf(cur);live.msdsDocuments[i]=r.document;try{await save();}catch{}}}catch{}}
   }
+  // KOSHA MSDS는 순물질 기준이다. 수용액·혼합물·표준물질(희석된 것)에 그대로 적용하면 분류가 달라질 수 있다
+  // (예: 염산 35% ← 염화수소 '고압가스'). 이런 품목은 읽어온 GHS를 바로 저장하지 않고 사람이 확인하게 한다.
+  function needsGhsReview(item,pick){
+    if((item?.category||'reagent')==='standard')return true;
+    const text=[item?.name,item?.nameEn,item?.spec,item?.concentration].map(v=>String(v||'')).join(' ');
+    if(/\d\s*(%|ppm|ppb|mg\/L|㎎\/L|g\/L|mol\/L|[MN](?![A-Za-z]))|수용액|용액|표준|혼합|희석|balance|in\s+(N2|air|water)/i.test(text))return true;
+    const norm=v=>String(v||'').toLowerCase().replace(/[\s\-·,()\[\]]/g,'');
+    const k=norm(pick?.name);if(!k)return false;
+    const names=[norm(item?.name),norm(item?.nameEn)].filter(Boolean);
+    const m=String(pick?.name||'').match(/^(.*?)\s*\(([^()]*)\)\s*$/);
+    const kosha=[k,...(m?[norm(m[1]),norm(m[2])]:[])];
+    return !names.some(n=>kosha.includes(n));
+  }
   async function fetchAndAttachKosha(item,{getItem,getItems,save,onStatus}={}){
     const cas=String(item.casNo||'').trim();if(!CAS_RE.test(cas))throw new Error('CAS 번호가 없거나 형식이 맞지 않습니다.');
     if(!window.inventorySafety?.koshaSearch)throw new Error('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.');
@@ -169,13 +182,13 @@
     const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
     const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
     const out=placeKoshaDoc(live,rec.document);
-    let filled=false;
-    if(!D.hasClassification(live)){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}if(pick.name&&pick.name!==live.name&&pick.name!==live.nameEn)g.sourceNote=`KOSHA 물질명 '${pick.name}'${pick.revisedAt?' · 원문 개정 '+pick.revisedAt:''} · ${g.sourceNote||''}`.slice(0,200);live.ghs=g;filled=true;}}
+    let filled=false;const needsReview=!D.hasClassification(live)&&needsGhsReview(live,pick);
+    if(!D.hasClassification(live)&&!needsReview){const g=ghsFromExtract(rec.document,rec.extract,'kosha',live.ghs);if(g){if(!g.pictograms.length&&pick.pictograms?.length){g.pictograms=pick.pictograms.slice();if(!g.signalWord&&pick.signalWord)g.signalWord=pick.signalWord;}if(pick.name&&pick.name!==live.name&&pick.name!==live.nameEn)g.sourceNote=`KOSHA 물질명 '${pick.name}'${pick.revisedAt?' · 원문 개정 '+pick.revisedAt:''} · ${g.sourceNote||''}`.slice(0,200);live.ghs=g;filled=true;}}
     live.updatedAt=new Date().toISOString();
     let ok=false;try{ok=await save();}catch{}
     if(!ok){if(beforeDocs===undefined)delete live.msdsDocuments;else live.msdsDocuments=beforeDocs;if(beforeGhs===undefined)delete live.ghs;else live.ghs=beforeGhs;live.updatedAt=beforeUpdated;throw new Error('저장하지 못해 되돌렸습니다.');}
     await finishKoshaReplace(live,rec.document,out,{getItems,save});
-    return {name:pick.name,filled,document:rec.document,extract:rec.extract,replaced:out.length};
+    return {name:pick.name,filled,needsReview,document:rec.document,extract:rec.extract,replaced:out.length};
   }
   // 원본 PDF가 사라진 KOSHA 문서를 같은 물질 ID로 다시 받아 교체한다. 저장까지 마치면 새 문서 정보를 돌려준다.
   async function refetchKoshaDoc(item,doc,{getItem,getItems,save}={}){
@@ -295,6 +308,10 @@
         const hadClassification=D.hasClassification(getItem(itemId));
         const filled=applyExtract(rec.document,rec.extract,'kosha');
         if(filled&&!draft.pictograms.length&&pick.pictograms?.length){draft.pictograms=pick.pictograms.slice();if(!draft.signalWord&&pick.signalWord)draft.signalWord=pick.signalWord;}
+        if(filled&&!hadClassification&&needsGhsReview(getItem(itemId),pick)){
+          setKoshaStatus(`'${rec.document.fileName}' 첨부 완료${replacedNote}. 받은 MSDS는 순물질('${pick.name}') 기준입니다. 이 품목이 수용액·혼합물·표준물질이면 분류가 다를 수 있으니, 아래 내용을 확인하고 맞으면 [저장]을 눌러 주세요.`,true);
+          draw();remountMsds();return;
+        }
         if(filled&&!hadClassification){
           // 분류가 비어 있던 품목은 읽어온 값을 바로 저장한다. 결과는 아래에 보이고 '편집'으로 고칠 수 있다.
           busy=false;await commit(D.normalizeGHS(draft));busy=true;
@@ -454,7 +471,7 @@
       const src={supplier:'공급자(제조사) MSDS',kosha:'받은 MSDS (KOSHA)',catalog:'검토 SDS 자료',other:'기타'}[g?.source]||'';
       const info=E('div',undefined,'ghs-msds-info');
       const bits=[`MSDS 첨부 ${st.attached}개`,g?.msdsIssuedAt?`작성·개정일 ${g.msdsIssuedAt}${g.msdsRevision?' ('+g.msdsRevision+')':''}`:'',g?.msdsReviewedAt?`검토일 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',src?`출처 ${src}${g.sourceNote?' · '+g.sourceNote:''}`:''].filter(Boolean);
-      info.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'?'warn':st.state==='none'?'':'ok'}">${esc(st.label)}</span> <span class="hint">${esc(bits.join(' · '))}</span>`;
+      info.innerHTML=`<span class="ghs-msds ${st.state==='overdue'||st.state==='file-missing'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'?'warn':st.state==='none'?'':'ok'}">${esc(st.label)}</span> <span class="hint">${esc(bits.join(' · '))}</span>`;
       return info;
     }
     async function draw(keepScroll){
@@ -513,5 +530,5 @@
       el._ghsApi.autoExtract(doc);return;
     }
   }
-  window.GHSUI={preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha,refetchKoshaDoc,isOldKosha};
+  window.GHSUI={needsGhsReview,preload,icon,iconImg,cellHtml,inlineHtml,headerHtml,reportHtml,labelHtml,FILTERS,matchesFilter,counts,searchText,excelRows,mountDetail,refreshAll,reviewMonths,onDocumentsAttached,ghsFromExtract,startKosha,fetchAndAttachKosha,refetchKoshaDoc,isOldKosha};
 })();

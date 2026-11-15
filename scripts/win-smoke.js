@@ -130,6 +130,13 @@ const fs = require('fs'), path = require('path');
     const r = JSON.parse(fs.readFileSync(path.join(dataDir, 'inventory.json'), 'utf8')).reagents.find(x => x.id === 'RG0001'); expect(Number(r.stock) === 1, '출고 후 재고가 1이 아님: ' + r.stock);
     await click('#side-reagent-btn'); return '재고 2 → ' + r.stock;
   });
+  await step('확인 창 한국어 버튼', async () => {
+    await app.evaluate(({dialog}) => { globalThis.__boxes = []; dialog.showMessageBoxSync = (w, o) => { globalThis.__boxes.push(o || w); return 0; }; });
+    const r = await win.evaluate(() => window.nativeDialog.confirm('점검용 확인 창'));
+    const box = await app.evaluate(() => globalThis.__boxes[0]);
+    expect(r === true && box && box.buttons[0] === '확인' && box.buttons[1] === '취소', '확인 창 버튼이 다름: ' + JSON.stringify(box && box.buttons) + ' / ' + r);
+    return box.buttons.join('/');
+  });
   await step('표준물질', async () => { await click('#side-standard-btn'); await win.waitForTimeout(400); await win.locator('tr[data-id="ST0001"] td.id-cell').click(); await win.waitForTimeout(600); await win.keyboard.press('Escape'); });
   await step('MSDS 관리', async () => { await click('#side-msds-btn'); await win.waitForTimeout(1000); await shot('08_msds'); const s = win.locator('#msds-manager-panel input[type=search]'); await s.fill('황'); await s.fill(''); });
   await step('화학물질 목록 인쇄 창', async () => {

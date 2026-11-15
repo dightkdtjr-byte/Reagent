@@ -53,12 +53,12 @@
         for(let i=0;i<targets.length;i++){
           if(state.stop)break;const item=getItem(targets[i].id);if(!item)continue;
           state.progress=`${i+1} / ${targets.length} · ${item.id} ${item.name||''} 받는 중…`;drawProgress();
-          try{const r=await koshaOne(item);result.ok++;if(r.filled)result.filled++;}
+          try{const r=await koshaOne(item);result.ok++;if(r.filled)result.filled++;if(r.needsReview)result.review=(result.review||0)+1;}
           catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(/서버 응답이 늦어|네트워크|인터넷|CERT|ENOTFOUND/.test(String(e.message||e))&&result.errors.length>=2){state.stop=true;}}
           drawTable();
         }
       }finally{state.busy=false;state.progress='';state.lastRun={...result,at:new Date().toLocaleString('ko-KR',{hour12:false}),stopped:state.stop,total:targets.length};draw();}
-      toast(`MSDS ${result.ok}개 첨부${result.filled?` · GHS ${result.filled}개 채움`:''}${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?' · 중단됨':''}`,result.errors.length>0);
+      toast(`MSDS ${result.ok}개 첨부${result.filled?` · GHS ${result.filled}개 채움`:''}${result.review?` · GHS 확인 필요 ${result.review}개(수용액·표준물질 등은 상세 창에서 확인 후 저장)`:''}${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?' · 중단됨':''}`,result.errors.length>0);
     }
     // 이전 방식(화면 캡처)으로 받은 KOSHA MSDS를 새 서식으로 한꺼번에 다시 받는다. 예전 문서는 새 것으로 바뀐다.
     async function bulkRefresh(){
@@ -134,7 +134,7 @@
         const c2=E('td');c2.innerHTML=window.GHSUI.cellHtml(r,s).replace(/<span class="ghs-msds[^"]*"[^>]*>[^<]*<\/span>/g,'');
         const c3=E('td');const docs=r.msdsDocuments||[];if(!docs.length)c3.append(E('span','첨부된 MSDS가 없습니다.','hint'));else for(const d of docs){const dr=docRow(r,d,st);dr.dataset.doc=d.id;c3.append(dr);}
         const g=r.ghs||{};const bits=[g.msdsIssuedAt?`작성·개정 ${g.msdsIssuedAt}`:'',g.msdsReviewedAt?`검토 ${g.msdsReviewedAt}`:'',st.nextReviewAt?`다음 검토 ${st.nextReviewAt}`:'',g.source?SOURCE[g.source]:''].filter(Boolean);
-        const c4=E('td');c4.innerHTML=`<span class="ghs-msds ${st.state==='overdue'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'||st.state==='none'?'warn':'ok'}">${esc(st.label)}</span><div class="hint">${esc(bits.join(' · '))}</div>`;
+        const c4=E('td');c4.innerHTML=`<span class="ghs-msds ${st.state==='overdue'||st.state==='file-missing'?'bad':st.state==='due-soon'||st.state==='unset'||st.state==='missing'||st.state==='none'?'warn':'ok'}">${esc(st.label)}</span><div class="hint">${esc(bits.join(' · '))}</div>`;
         const c5=E('td');const acts=E('div',undefined,'msds-mgr-acts');
         if(!docs.length){const hasCas=CAS_RE.test(String(r.casNo||'').trim());const b=button('MSDS 받기',()=>{if(state.busy)return;openItem(r.id);setTimeout(()=>{if(!window.GHSUI?.startKosha?.(r.id))toast('상세 창에서 MSDS 받기를 눌러주세요.',true);},150);},hasCas?'primary':'ghost');b.title=hasCas?'상세 창을 열고 CAS로 MSDS를 받습니다 (안전보건공단 KOSHA)':'CAS가 없어 품명으로 검색합니다. 결과가 여러 개면 상세 창에서 고릅니다.';b.dataset.busyLock='1';acts.append(b);}
         if(docs.length){const b=button('검토 완료',()=>markReviewed(r));b.title='오늘 날짜로 MSDS 검토일 기록';b.dataset.busyLock='1';acts.append(b);}

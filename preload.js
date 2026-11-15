@@ -38,6 +38,12 @@ contextBridge.exposeInMainWorld('inventoryStore', {
   uninstall: () => ipcRenderer.invoke('inventory:uninstall')
 });
 
+// 확인·알림 창을 한국어 버튼(확인/취소)의 Windows 기본 창으로 띄운다. 쓸 수 없으면 null을 돌려 기존 방식으로 넘어간다.
+contextBridge.exposeInMainWorld('nativeDialog', {
+  confirm: (message) => { try { return ipcRenderer.sendSync('dialog:confirm-sync', String(message ?? '')); } catch { return null; } },
+  alert: (message) => { try { return ipcRenderer.sendSync('dialog:alert-sync', String(message ?? '')); } catch { return null; } }
+});
+
 contextBridge.exposeInMainWorld('nativeQR', {
   matrix: (text) => qrMatrix(text)
 });

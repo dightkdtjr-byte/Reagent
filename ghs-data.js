@@ -264,10 +264,16 @@
   function hasClassification(item){const g=item&&item.ghs;return !!g&&(g.pictograms?.length>0||!!g.signalWord||g.hCodes?.length>0);}
   function addMonths(iso,months){const d=new Date(iso+'T00:00:00');if(Number.isNaN(d.getTime()))return '';d.setMonth(d.getMonth()+months);const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
   // MSDS 비치·검토 상태. reviewMonths=0이면 검토 주기 관리를 끈다.
+  let unavailable=new Set();
+  function setUnavailable(ids){unavailable=new Set(ids||[]);}
   function msdsStatus(item,reviewMonths,today){
-    const attached=(item?.msdsDocuments||[]).length,g=item?.ghs||{},months=Number(reviewMonths)||0;
+    // 원본 PDF가 없는(지워졌거나 옮겨진) 문서는 '첨부'로 세지 않는다. 목록은 화면 쪽에서 setUnavailable로 알려 준다.
+    const docs=item?.msdsDocuments||[],gone=docs.filter(d=>unavailable.has(d.id)).length;
+    const attached=docs.length-gone,g=item?.ghs||{},months=Number(reviewMonths)||0;
     const base=g.msdsReviewedAt||g.msdsIssuedAt||'';
     const result={attached,issuedAt:g.msdsIssuedAt||'',reviewedAt:g.msdsReviewedAt||'',nextReviewAt:'',state:'ok',label:'정상',days:null};
+    result.fileMissing=gone;
+    if(!attached&&gone){result.state='file-missing';result.label='MSDS 파일 없음 (다시 받기 필요)';return result;}
     if(!attached&&!hasClassification(item)){result.state='none';result.label='MSDS 미첨부';return result;}
     if(!attached){result.state='missing';result.label='MSDS 미첨부';}
     if(!months)return result;
@@ -279,5 +285,5 @@
     return result;
   }
   function summaryText(item){const g=item?.ghs;if(!hasClassification(item))return '';return [g.signalWord?SIGNAL[g.signalWord]:'',g.pictograms.map(c=>PICTOGRAMS[c].label).join('·'),g.hCodes.join(' ')].filter(Boolean).join(' / ');}
-  return {PICTOGRAMS,SIGNAL,H,P,H_ROWS,P_ROWS,parseCodes,normalizeCode,hText,pText,suggestFromH,normalizeGHS,hasClassification,msdsStatus,addMonths,summaryText};
+  return {PICTOGRAMS,SIGNAL,H,P,H_ROWS,P_ROWS,parseCodes,normalizeCode,hText,pText,suggestFromH,normalizeGHS,hasClassification,msdsStatus,setUnavailable,addMonths,summaryText};
 });

@@ -170,6 +170,18 @@ ipcMain.handle('inventory:reset-all', async (_evt, cleanDb, current)=> {
     return {ok:false,error:String(e && e.message || e)};
   }
 });
+// 확인·알림 창: 버튼을 한국어로 보여 준다 (기본 창은 OK/Cancel 영어로 나온다). 자동 시험에서는 REAGENT_PAGE_DIALOGS=1로 끈다.
+const syncBox = (evt, message, confirm) => {
+  if (process.env.REAGENT_PAGE_DIALOGS === '1') { evt.returnValue = null; return; }
+  try {
+    const win = BrowserWindow.fromWebContents(evt.sender);
+    const r = dialog.showMessageBoxSync(win, {type: confirm ? 'question' : 'info', title: '시약 재고관리', message: String(message || '').slice(0, 4000),
+      buttons: confirm ? ['확인', '취소'] : ['확인'], defaultId: 0, cancelId: confirm ? 1 : 0, noLink: true});
+    evt.returnValue = confirm ? r === 0 : true;
+  } catch (e) { console.error('dialog failed', e); evt.returnValue = null; }
+};
+ipcMain.on('dialog:confirm-sync', (evt, message) => syncBox(evt, message, true));
+ipcMain.on('dialog:alert-sync', (evt, message) => syncBox(evt, message, false));
 ipcMain.handle('inventory:path', async ()=> dbFile());
 ipcMain.handle('inventory:open-folder', async ()=> { const p=dataDir(); await shell.openPath(p); return p; });
 ipcMain.handle('inventory:select-backup', async ()=> {
