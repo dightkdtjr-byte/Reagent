@@ -119,7 +119,8 @@ ipcMain.handle('inventory:restore', async (_evt, candidate, current, sourceToken
   try {
     validateInventory(candidate); validateInventory(current);
     // Preserve the user's current screen, printer and backup settings when restoring inventory.
-    const restored={...candidate, settings:current.settings||{}};
+    // 설정은 화면 쪽에서 정해 보낸 것을 쓴다 (기본은 지금 설정 유지, 사용자가 고르면 백업의 서식·라벨 설정을 가져옴).
+    const restored={...candidate, settings:(candidate.settings&&typeof candidate.settings==='object'&&!Array.isArray(candidate.settings))?candidate.settings:(current.settings||{})};
     const externalDirectory = sourceDirectory(sourceToken);
     // Immutable copies may be restored, but the inventory stays untouched on ANY missing PDF.
     const restoredMSDS = msds.restoreFiles(restored, externalDirectory);

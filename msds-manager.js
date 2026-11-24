@@ -41,6 +41,8 @@
     async function exportDoc(doc){try{const r=await window.inventoryMSDS.export(doc);if(!r?.ok)throw new Error(r?.error||'저장 실패');if(!r.canceled)toast('PDF 사본을 저장했습니다.');}catch(e){toast('PDF 저장 실패: '+String(e.message||e),true);}}
     // 한 품목을 KOSHA에서 받아 첨부하고, GHS가 비어 있으면 읽어온 값으로 채운다.
     async function koshaOne(item){return window.GHSUI.fetchAndAttachKosha(item,{getItem,getItems,save:saveItem});}
+    // 연결 문제로 보이는 실패가 3번 이어지면 일괄 작업을 멈춘다. '해당 물질을 찾지 못함'은 그 품목만의 문제라 세지 않는다.
+    function connFail(e,result){if(/찾지 못했습니다|CAS 번호가 없거나/.test(String(e&&e.message||e))){return false;}result.streak=(result.streak||0)+1;return result.streak>=3;}
     async function bulkKosha(){
       if(state.busy)return;
       if(!window.inventorySafety?.koshaSearch){toast('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.',true);return;}
@@ -53,12 +55,12 @@
         for(let i=0;i<targets.length;i++){
           if(state.stop)break;const item=getItem(targets[i].id);if(!item)continue;
           state.progress=`${i+1} / ${targets.length} · ${item.id} ${item.name||''} 받는 중…`;drawProgress();
-          try{const r=await koshaOne(item);result.ok++;if(r.filled)result.filled++;if(r.needsReview)result.review=(result.review||0)+1;}
-          catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(/서버 응답이 늦어|네트워크|인터넷|CERT|ENOTFOUND/.test(String(e.message||e))&&result.errors.length>=2){state.stop=true;}}
+          try{const r=await koshaOne(item);result.ok++;result.streak=0;if(r.filled)result.filled++;if(r.needsReview)result.review=(result.review||0)+1;}
+          catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(connFail(e,result)){state.stop=true;result.auto=true;}}
           drawTable();
         }
       }finally{state.busy=false;state.progress='';state.lastRun={...result,at:new Date().toLocaleString('ko-KR',{hour12:false}),stopped:state.stop,total:targets.length};draw();}
-      toast(`MSDS ${result.ok}개 첨부${result.filled?` · GHS ${result.filled}개 채움`:''}${result.review?` · GHS 확인 필요 ${result.review}개(수용액·표준물질 등은 상세 창에서 확인 후 저장)`:''}${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?' · 중단됨':''}`,result.errors.length>0);
+      toast(`MSDS ${result.ok}개 첨부${result.filled?` · GHS ${result.filled}개 채움`:''}${result.review?` · GHS 확인 필요 ${result.review}개(수용액·표준물질 등은 상세 창에서 확인 후 저장)`:''}${result.errors.length?` · 실패 ${result.errors.length}개`:''}${state.lastRun.stopped?(result.auto?' · 연결 실패가 이어져 자동으로 멈췄습니다 (인터넷·기관망 차단 여부를 확인하세요)':' · 중단됨'):''}`,result.errors.length>0);
     }
     // 이전 방식(화면 캡처)으로 받은 KOSHA MSDS를 새 서식으로 한꺼번에 다시 받는다. 예전 문서는 새 것으로 바뀐다.
     async function bulkRefresh(){
@@ -71,8 +73,8 @@
         for(let i=0;i<targets.length;i++){
           if(state.stop)break;const item=getItem(targets[i].id);if(!item)continue;
           state.progress=`${i+1} / ${targets.length} · ${item.id} ${item.name||''} 새 서식으로 받는 중…`;drawProgress();
-          try{await window.GHSUI.refetchKoshaDoc(item,targets[i].doc,{getItem,getItems,save:saveItem});result.ok++;}
-          catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(/서버 응답이 늦어|네트워크|인터넷|CERT|ENOTFOUND/.test(String(e.message||e))&&result.errors.length>=2)state.stop=true;}
+          try{await window.GHSUI.refetchKoshaDoc(item,targets[i].doc,{getItem,getItems,save:saveItem});result.ok++;result.streak=0;}
+          catch(e){result.errors.push(`${item.id} ${item.name||''}: ${String(e.message||e)}`);if(connFail(e,result)){state.stop=true;result.auto=true;}}
           drawTable();
         }
       }finally{state.busy=false;state.progress='';state.lastRun={...result,at:new Date().toLocaleString('ko-KR',{hour12:false}),stopped:state.stop,total:targets.length,kind:'새 서식으로 다시 받기'};draw();}
@@ -155,7 +157,7 @@
       const stop=button('중단',()=>{state.stop=true;});stop.id='msds-mgr-stop';stop.hidden=!state.busy;
       const oldCount=items().reduce((n,r)=>n+(r.msdsDocuments||[]).filter(isOld).length,0);
       const refresh=button(`이전 방식 MSDS 새로 받기 (${oldCount})`,bulkRefresh);refresh.dataset.busyLock='1';refresh.hidden=!oldCount;refresh.title='예전 버전에서 받은 KOSHA MSDS(화면 캡처 방식)를 새 서식으로 다시 받습니다';
-      tools.append(search,sel,bulk,refresh,stop,button('목록 인쇄',async()=>{try{if(!window.inventoryMSDS?.report)throw new Error('설치형 앱에서 사용할 수 있습니다.');const html=window.GHSUI.reportHtml(items(),settings(),{org:opts.orgName||'',app:opts.appName||''});const r=await window.inventoryMSDS.report({title:'화학물질 목록 (MSDS 비치 현황)',html});if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('목록 인쇄 창 열기 실패: '+String(e.message||e),true);}}),button('현황 엑셀 저장',()=>opts.exportExcel?.()),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
+      tools.append(search,sel,bulk,refresh,stop,button('목록 인쇄',async()=>{try{if(!window.inventoryMSDS?.report)throw new Error('설치형 앱에서 사용할 수 있습니다.');const html=window.GHSUI.reportHtml(items(),settings(),{org:opts.orgName||'',app:opts.appName||''});const r=await window.inventoryMSDS.report({title:'화학물질 목록 (MSDS 비치 현황)',html});if(!r?.ok)throw new Error(r?.error||'열기 실패');}catch(e){toast('목록 인쇄 창 열기 실패: '+String(e.message||e),true);}}),button('현황 엑셀 저장',()=>{const s=settings(),q=String(state.query||'').trim(),filtered=state.filter!=='all'||!!q;const list=filtered?items().map(r=>({r,st:rowState(r,s)})).filter(x=>matches(x.r,x.st,s)).map(x=>x.r):null;opts.exportExcel?.(list?{items:list,note:[state.filter!=='all'?(FILTERS.find(f=>f[0]===state.filter)||[])[1]:'',q?`검색 '${q}'`:''].filter(Boolean).join(' · ')}:undefined);}),button('MSDS 폴더 열기',async()=>{try{const r=await window.inventoryMSDS.folder();if(!r?.ok)throw new Error(r?.error||'폴더 열기 실패');}catch(e){toast(String(e.message||e),true);}}),button('새로고침',draw));
       element.append(tools);
       const progress=E('p','','hint msds-mgr-progress');progress.id='msds-mgr-progress';progress.setAttribute('role','status');progress.hidden=!state.progress;progress.textContent=state.progress;element.append(progress);
       if(state.lastRun){const r=state.lastRun;const box=E('details',undefined,'msds-mgr-lastrun');box.open=r.errors.length>0;box.append(E('summary',`직전 ${r.kind||'일괄 받기'} (${r.at}): 대상 ${r.total}개 · 완료 ${r.ok}개${r.kind?'':` · GHS 채움 ${r.filled}개`} · 실패 ${r.errors.length}개${r.stopped?' · 중단됨':''}`));for(const e of r.errors)box.append(E('p',e,'hint safety-warning'));element.append(box);}

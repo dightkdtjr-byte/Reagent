@@ -314,6 +314,10 @@
   .field-grid input{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:13.5px; font-family:var(--sans);}
   .detail-actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
   .detail-save-row{align-items:center; margin-top:12px;}
+  .ghs-diff{margin:10px 0; padding:10px 12px; border:1px solid var(--amber); background:var(--amber-tint); border-radius:8px; font-size:12.5px;}
+  .ghs-diff p{margin:4px 0 0;}
+  /* 한글 단어 중간에서 줄이 바뀌지 않게 */
+  .msds-mgr-tbl, .scan-result, .confirm-box, .batch-table, .history-list, .setting-copy{word-break:keep-all; overflow-wrap:anywhere;}
   .detail-save-row .hint{margin:0; color:var(--red); font-weight:600;}
   .detail-save-row .hint[hidden]{display:none;}
   .batch-edit-btn{border:1px solid var(--line); background:var(--surface); border-radius:6px; width:28px; height:28px; padding:0; cursor:pointer; color:var(--ink-soft); display:inline-flex; align-items:center; justify-content:center;}
@@ -685,7 +689,7 @@ html[data-theme="dark"] .db-pill.save-failed{background:#3a1d20!important;color:
 .app-footer{display:none!important;}
 .work-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;}
 .work-head-title h1{margin:0;color:#0f3976;font-size:34px;font-weight:900;letter-spacing:-.035em;line-height:1.05}.work-head-title p{margin:8px 0 0;color:#758aa5;font-size:13px;font-weight:600}.work-head-tools{display:flex;align-items:center;gap:10px}.work-db-pill{height:40px;padding:0 14px;font-size:12px}.work-clock{font-family:var(--mono);font-size:12px;color:#607a99;text-align:right;line-height:1.45}
-header.top{margin:0 0 14px!important;padding:0!important;border:0!important}.stat-chips{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:9px!important}.chip{min-height:64px!important;border:1px solid #e1e7f0!important;border-radius:13px!important;background:#fff!important;padding:11px 13px!important;box-shadow:0 4px 12px rgba(20,56,107,.035)!important}.chip b{font-size:20px!important;color:#135ac7!important}.chip.warn b{color:#e88b1a!important}.chip.bad b{color:#e34858!important}
+header.top{margin:0 0 14px!important;padding:0!important;border:0!important}.stat-chips{grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:9px!important}@media(max-width:1279px){.stat-chips{grid-template-columns:repeat(4,minmax(0,1fr))!important}}@media(max-width:700px){.stat-chips{grid-template-columns:repeat(2,minmax(0,1fr))!important}}.chip{min-height:64px!important;border:1px solid #e1e7f0!important;border-radius:13px!important;background:#fff!important;padding:11px 13px!important;box-shadow:0 4px 12px rgba(20,56,107,.035)!important}.chip b{font-size:20px!important;color:#135ac7!important}.chip.warn b{color:#e88b1a!important}.chip.bad b{color:#e34858!important}
 nav.tabs{margin:0 0 16px!important;padding:5px!important;border:1px solid #e1e7f0!important;border-radius:12px!important;background:#f6f8fb!important;display:inline-flex!important;gap:3px!important}nav.tabs button{border:0!important;border-radius:9px!important;margin:0!important;padding:8px 14px!important;font-size:12.5px!important;color:#617895!important}nav.tabs button.active{background:#fff!important;color:#135ac7!important;box-shadow:0 2px 8px rgba(20,56,107,.08)!important;border:0!important}
 .panel,.settings-card{border:1px solid #e1e7f0!important;border-radius:16px!important;box-shadow:0 6px 18px rgba(20,56,107,.04)!important;background:#fff!important}.panel{padding:18px!important}
 html[data-theme="dark"] body{background:#0f141b}html[data-theme="dark"] #landing-screen,html[data-theme="dark"] .home-main,html[data-theme="dark"] #app{background:#111820}html[data-theme="dark"] .home-shell{background:#111820}html[data-theme="dark"] .home-sidebar,html[data-theme="dark"] .work-sidebar,html[data-theme="dark"] .brand-bar{background:linear-gradient(180deg,#151e28,#111820)!important;border-color:#263445!important}html[data-theme="dark"] .home-brand,html[data-theme="dark"] .work-brand{border-color:#263445;color:#dce8f7}html[data-theme="dark"] .home-title h1,html[data-theme="dark"] .work-head-title h1,html[data-theme="dark"] .home-module h2{color:#e9f2ff}html[data-theme="dark"] .home-title p,html[data-theme="dark"] .work-head-title p{color:#91a6c0}html[data-theme="dark"] .home-title .landing-clock{color:#91a6c0}html[data-theme="dark"] .home-module{background:#182332;border-color:#2c3c4f}html[data-theme="dark"] .home-module-shade{background:linear-gradient(90deg,#17212e 0%,rgba(23,33,46,.97) 39%,rgba(23,33,46,.70) 56%,rgba(23,33,46,.12) 82%,rgba(23,33,46,0) 100%)}html[data-theme="dark"] .home-module p{color:#a5b7cc}html[data-theme="dark"] .home-summary,html[data-theme="dark"] .home-stat,html[data-theme="dark"] .db-pill,html[data-theme="dark"] .home-theme-actions{background:#17212d;border-color:#29394b}html[data-theme="dark"] .home-stat-label{color:#a4b5ca}html[data-theme="dark"] .home-cat-name{color:#9bc4ff}html[data-theme="dark"] .home-cat-summary.standard .home-cat-name{color:#77d4c7}html[data-theme="dark"] .panel,html[data-theme="dark"] .settings-card,html[data-theme="dark"] .chip{background:#17212d!important;border-color:#29394b!important}
@@ -1261,7 +1265,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.9</div>
+        <div class="work-version">v4.0.10</div>
       </div>
 </aside>
   </div>
@@ -1333,7 +1337,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       <table id="inventory-table">
         <thead>
           <tr>
-            <th style="width:24px;"><input type="checkbox" id="select-all-checkbox"></th><th style="width:70px;">QR코드ID</th><th style="width:80px;">최근입고일</th><th style="width:92px;">유효기간</th><th id="th-name" style="width:19%;">시약명</th><th style="width:13%;">규격</th><th style="width:13%;">제조사</th><th style="width:122px;">GHS · MSDS</th><th style="width:74px;">재고</th><th style="width:78px;">상태</th><th style="width:28px;"></th>
+            <th style="width:24px;"><input type="checkbox" id="select-all-checkbox"></th><th style="width:70px;">QR코드ID</th><th style="width:80px;">최근입고일</th><th style="width:128px;">유효기간</th><th id="th-name" style="width:19%;">시약명</th><th style="width:13%;">규격</th><th style="width:13%;">제조사</th><th style="width:122px;">GHS · MSDS</th><th style="width:74px;">재고</th><th style="width:104px;">상태</th><th style="width:34px;"></th>
           </tr>
         </thead>
         <tbody id="inventory-tbody"></tbody>
@@ -1592,7 +1596,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.9<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.0.10<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1666,7 +1670,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.9';
+  const APP_VERSION = '4.0.10';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -1861,9 +1865,18 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const parsed=JSON.parse(text);
     if(!parsed||!Array.isArray(parsed.reagents)||(parsed.logs!==undefined&&!Array.isArray(parsed.logs))||Number(parsed.schemaVersion)>3)throw new Error('지원하지 않는 백업 형식입니다.');
     const std=parsed.reagents.filter(r=>r?.category==='standard').length;
-    if(!safeConfirm(`이 백업으로 복원할까요?\n\n시약 ${parsed.reagents.length-std}건 · 표준물질 ${std}건 · 입출고 이력 ${(parsed.logs||[]).length}건\n\n현재 재고와 이력은 백업의 내용으로 바뀝니다.\n현재 화면·프린터·백업 설정은 유지합니다.\n복원 직전 현재 데이터의 안전 사본을 먼저 저장합니다.\n\nMSDS가 연결된 백업은 JSON과 같은 위치에 msds 폴더가 필요합니다. 문서 파일이 없으면 복원을 중단합니다.`))return;
+    if(!safeConfirm(`이 백업으로 복원할까요?\n\n시약 ${parsed.reagents.length-std}건 · 표준물질 ${std}건 · 입출고 이력 ${(parsed.logs||[]).length}건\n\n현재 재고와 이력은 백업의 내용으로 바뀝니다.\n현재 화면·프린터·백업 설정은 유지합니다 (서식·라벨 크기 등은 다음 창에서 선택).\n복원 직전 현재 데이터의 안전 사본을 먼저 저장합니다.\n\nMSDS가 연결된 백업은 JSON과 같은 위치에 msds 폴더가 필요합니다. 문서 파일이 없으면 복원을 중단합니다.`))return;
     if(!window.inventoryStore?.restoreBackup)throw new Error('안전 복원은 설치형 앱에서 사용할 수 있습니다.');
-    const candidate=migrateDB({...parsed,settings:DB.settings});
+    // 다른 PC에서 가져온 백업이면 서식·라벨 크기·검토 주기 같은 '업무 설정'도 함께 가져올지 묻는다. 화면·프린터·백업 설정은 이 PC 것을 유지한다.
+    const WORK_KEYS=['customFormTemplates','labelWidthMm','labelHeightMm','msdsReviewMonths','expiryWarningDays','labelShowGhs'];
+    let nextSettings=DB.settings; const ps=(parsed.settings&&typeof parsed.settings==='object'&&!Array.isArray(parsed.settings))?parsed.settings:null;
+    if(ps){
+      const cur=settings(), differs=WORK_KEYS.filter(k=>ps[k]!==undefined&&JSON.stringify(ps[k])!==JSON.stringify(cur[k]));
+      if(differs.length&&safeConfirm(`백업에 들어 있는 업무 설정이 지금과 다릅니다.\n(사용자 서식 ${(ps.customFormTemplates||[]).length}개 · 라벨 ${ps.labelWidthMm||'-'}×${ps.labelHeightMm||'-'}mm · MSDS 검토 주기 ${ps.msdsReviewMonths??'-'}개월 · 유효기간 임박 ${ps.expiryWarningDays??'-'}일)\n\n이 설정도 백업의 것으로 바꿀까요?\n[확인] 백업의 설정으로 바꾸기   [취소] 지금 설정 그대로\n화면·프린터·백업 설정은 어느 쪽이든 그대로입니다.`)){
+        const picked={}; WORK_KEYS.forEach(k=>{ if(ps[k]!==undefined) picked[k]=ps[k]; }); nextSettings=normalizeSettings(Object.assign({},cur,picked));
+      }
+    }
+    const candidate=migrateDB({...parsed,settings:nextSettings});
     candidate.migrations=Object.assign({koshaPictogram:!!(parsed.settings&&parsed.settings.koshaPictogramFixed)},(parsed.migrations&&typeof parsed.migrations==='object'&&!Array.isArray(parsed.migrations))?parsed.migrations:{},{batchDates:true});
     const r=await window.inventoryStore.restoreBackup(candidate,DB,sourceToken);
     if(!r||!r.ok)throw new Error(r?.error||'복원 실패');
@@ -2583,12 +2596,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   }
 
   // GHS·MSDS 현황 시트 (대장의 한 시트, 단독 파일 모두 이 함수로 만든다)
-  function xlBuildGhsSheets(wb, items, imageId, title, footer){
+  function xlBuildGhsSheets(wb, items, imageId, title, footer, scopeNote){
     const data = window.GHSUI.excelRows(items, settings());
     const n = data.header.length;
     const ws = wb.addWorksheet('GHS·MSDS현황', { views:[{state:'frozen', ySplit:XL.HEADER_ROW}], properties:{ tabColor:{argb:XL.AMBER} } });
     data.widths.forEach((w,i)=>ws_setColWidth(ws, i+1, w));
-    xlTitleBar(ws, imageId, title, n, '폐기 품목 제외');
+    xlTitleBar(ws, imageId, title, n, scopeNote || '폐기 품목 제외');
     const gc = window.GHSUI.counts(items, settings());
     xlKpiRow(ws, n, [
       { label:'대상 품목', value:`${items.length}종`, color:XL.NAVY, tint:XL.NAVY_TINT },
@@ -2840,13 +2853,15 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   }
 
   // GHS·MSDS 현황만 따로 저장 (시약·표준물질 모두). MSDS 관리 화면과 설정에서 쓴다.
-  async function exportGhsExcel(){
+  // only: MSDS 관리 화면에서 필터·검색이 걸려 있을 때 넘어오는 {items, note}. 없으면 전체.
+  async function exportGhsExcel(only){
     if(!excelLibraryReady()) return;
-    const items = DB.reagents.filter(r=>!r.archivedAt).slice().sort((a,b)=>a.id.localeCompare(b.id));
+    const scoped = only && Array.isArray(only.items) ? only : null;
+    const items = (scoped ? scoped.items : DB.reagents).filter(r=>!r.archivedAt).slice().sort((a,b)=>a.id.localeCompare(b.id));
     if(!items.length){ showToast('내보낼 품목이 없습니다.', true); return; }
     await withExcelBusy(async ()=>{
       const wb = new ExcelJS.Workbook(); wb.creator = '시약 재고관리'; wb.created = new Date();
-      xlBuildGhsSheets(wb, items, xlLogoImage(wb), '시약 · 표준물질 — GHS 분류 · MSDS 비치 현황', 'GHS·MSDS 현황');
+      xlBuildGhsSheets(wb, items, xlLogoImage(wb), '시약 · 표준물질 — GHS 분류 · MSDS 비치 현황', 'GHS·MSDS 현황', scoped ? `화면에서 고른 ${items.length}건만 (${scoped.note||'필터 적용'})` : '');
       const buf = await wb.xlsx.writeBuffer();
       const saved = await saveBytesAs(buf, `GHS_MSDS현황_${todayStr()}.xlsx`);
       toastSaved(saved, `시약·표준물질 ${items.length}종`);
@@ -3497,6 +3512,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>순도</label><input type="text" id="d-purity" value="${escapeHtml(r.purity||'')}"></div>
         <div><label>개봉일${batchNote}</label><input type="date" id="d-opened" value="${escapeHtml((oneBatch?oneBatch.openedDate:r.openedDate)||'')}" ${batchLock}></div>
         ` : ''}
+        <div class="full" id="d-stock-reason-wrap" hidden><label>재고 조정 사유 (재고 숫자를 직접 고칠 때 기록에 남습니다)</label><input type="text" id="d-stock-reason" placeholder="예: 실사 결과 반영, 파손, 입력 실수 정정" maxlength="60"></div>
         <div class="full"><label>보관방법</label><input type="text" id="d-storage" value="${escapeHtml(r.storage||'')}"></div>
         <div><label>최근 수정</label><input type="text" value="${fmtDate(r.updatedAt)}" disabled></div>
       </div>
@@ -3523,13 +3539,13 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     detailSnapshot=detailFieldValues();
     const dirtyNote=document.getElementById('detail-dirty-note'), grid=document.querySelector('#detail-modal-box .field-grid');
     if(grid){
-      grid.addEventListener('input',()=>{ if(dirtyNote) dirtyNote.hidden=!detailFieldsDirty(); });
+      grid.addEventListener('input',()=>{ if(dirtyNote) dirtyNote.hidden=!detailFieldsDirty(); const se=document.getElementById('d-stock'), rw=document.getElementById('d-stock-reason-wrap'); if(se&&rw) rw.hidden=se.value.trim()===String(se.dataset.initial||''); });
       grid.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.isComposing&&e.target.tagName==='INPUT'){ e.preventDefault(); document.getElementById('detail-save-btn').click(); } });
     }
     document.querySelectorAll('#detail-modal-box .batch-edit-btn').forEach(btn=>{btn.onclick=()=>editBatchRow(r.id,btn.dataset.batch);});
     // 입고·출고는 스캔 때와 같은 창에서 처리한다 (입출고인·회차·유효기간이 기록에 남는다). 재고 숫자를 직접 고치면 '수동조정'으로 남는다.
     for(const [id,mode] of [['detail-in-btn','in'],['detail-out-btn','out']]){ const b=document.getElementById(id); if(b) b.onclick=()=>{ const itemId=r.id; if(!requestCloseDetail()) return; window.__scanFocusReturnId='search-input'; setTimeout(()=>renderScanResult(itemId,{mode}),90); }; }
-    window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm, settings, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
+    window.GHSUI.mountDetail({element:document.getElementById('ghs-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm, settings, getFormCas:()=>{const el=document.getElementById('d-cas');return el?normalizeCas(el.value):undefined;}, onCasSaved:v=>{const el=document.getElementById('d-cas');if(el)el.value=v;detailSnapshot=detailFieldValues();const n=document.getElementById('detail-dirty-note');if(n)n.hidden=!detailFieldsDirty();renderInventory();}, onSaved:()=>{renderInventory();const live=findReagent(r.id),strip=document.querySelector('#detail-modal-box .ghs-head-strip');if(live&&strip)strip.outerHTML=window.GHSUI.headerHtml(live,settings());}});
     window.MSDSUI.mount({element:document.getElementById('msds-panel'), itemId:r.id, getItem:findReagent, getItems:()=>DB.reagents, save:saveDB, toast:showToast, confirm:safeConfirm});
     document.querySelectorAll('#detail-modal-box .batch-qr-btn').forEach(btn=>{btn.onclick=()=>{const b=(r.batches||[]).find(x=>x.batchId===btn.dataset.batch);if(b)showBatchQrModal(r,b);};});
     document.querySelectorAll('#detail-modal-box .history-delete-btn').forEach(btn=>{btn.onclick=async()=>{
@@ -3548,6 +3564,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       // 재고 칸은 사용자가 직접 고쳤을 때만 조정한다 (창을 열어 둔 사이 스캔 입출고로 바뀐 재고를 옛 숫자로 덮어쓰지 않게).
       const stockEdited=newStockRaw!==String(stockEl.dataset.initial||'');
       if(stockEdited && (newStockRaw==='' || Number.isNaN(Number(newStockRaw)) || newStock<0)){ showToast('현재 재고는 0 이상의 숫자로 입력해주세요.', true); return; }
+      const stockReason=(document.getElementById('d-stock-reason')?.value||'').trim();
+      if(stockEdited && newStock!==roundQty(r.stock) && !safeConfirm(`현재 재고를 ${fmtQty(r.stock)} → ${fmtQty(newStock)} ${r.unit||''}(으)로 직접 조정할까요?\n입출고인 없이 '수동조정'으로 기록됩니다${stockReason?` (사유: ${stockReason})`:''}.\n평소 입출고는 [입고 +]·[출고 -] 버튼을 쓰세요.`)) return;
       // GHS를 편집하던 중이면 그 내용도 함께 저장할지 먼저 묻는다 (말없이 사라지지 않게).
       const ghsApi=document.getElementById('ghs-panel')?._ghsApi; let ghsNote='';
       if(ghsApi?.isDirty?.()){
@@ -3577,7 +3595,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       if(dConc) r.concentration = dConc.value.trim();
       if(dPurity) r.purity = dPurity.value.trim();
       r.storage = document.getElementById('d-storage').value.trim();
-      if(stockEdited && newStock !== roundQty(r.stock)){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); const usedBatches=reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정',batchSnapshotBefore,usedBatches}); }
+      if(stockEdited && newStock !== roundQty(r.stock)){ const before=r.stock, batchSnapshotBefore=JSON.parse(JSON.stringify(r.batches||[])); const usedBatches=reconcileTotalStock(r,newStock); addLog({id:r.id,name:r.name,type:'adjust',qty:r.stock-before,before,after:r.stock,note:'수동 재고조정'+(stockReason?' · '+stockReason:''),handler:lastHandlerName||'',batchSnapshotBefore,usedBatches}); }
       else syncReagentFromBatches(r);
       r.updatedAt = new Date().toISOString();
       const sc=document.querySelector('#detail-modal-box .detail-modal-scroll'), y=sc?sc.scrollTop:0;
@@ -4539,7 +4557,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     const onCheck=(id,key)=>{const el=document.getElementById(id);if(el)el.onchange=async e=>updateSetting(key,!!e.target.checked);};
     onCheck('settings-hide-expired','hideExpiredOrOutDefault'); onCheck('settings-show-archived','showArchivedDefault'); onCheck('settings-auto-backup','autoBackup');
     onChange('settings-msds-review','msdsReviewMonths',Number); onCheck('settings-label-ghs','labelShowGhs'); onCheck('settings-auto-msds','autoFetchMsds');
-    const ghsExport=document.getElementById('settings-ghs-export'); if(ghsExport)ghsExport.onclick=exportGhsExcel;
+    const ghsExport=document.getElementById('settings-ghs-export'); if(ghsExport)ghsExport.onclick=()=>exportGhsExcel();
     document.getElementById('settings-backup-now').onclick=exportBackup;
     const bundleBtn=document.getElementById('settings-export-bundle');if(bundleBtn)bundleBtn.onclick=exportBundle;
     document.getElementById('settings-backup-refresh').onclick=()=>refreshBackupStatus();

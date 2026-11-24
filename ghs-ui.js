@@ -180,6 +180,10 @@
     onStatus?.('PDF 저장 중');
     const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!rec?.ok)throw new Error(String(rec?.error||'받기 실패')+(rec?.diagnostic?.hint?' — '+rec.diagnostic.hint:''));
     const live=(getItem?getItem(item.id):item);if(!live)throw new Error('품목이 삭제되었습니다.');
+    return attachReceived(live,pick,rec,{getItems,save});
+  }
+  // 받은 KOSHA 문서를 품목에 붙이고 저장한다 (예전 문서 교체, GHS 채우기 포함). 일괄 받기·자동 받기·창을 닫은 뒤의 받기가 함께 쓴다.
+  async function attachReceived(live,pick,rec,{getItems,save}={}){
     const beforeDocs=live.msdsDocuments,beforeGhs=live.ghs,beforeUpdated=live.updatedAt;
     const out=placeKoshaDoc(live,rec.document);
     let filled=false;const needsReview=!D.hasClassification(live)&&needsGhsReview(live,pick);
@@ -284,7 +288,19 @@
     // KOSHA 화학물질정보에서 CAS로 MSDS를 찾아 PDF로 받고, 첨부한 뒤 GHS 항목까지 채운다.
     async function koshaAuto(choice){
       if(busy||!alive())return;
-      const item=getItem(itemId),cas=String(item.casNo||'').trim(),query=cas||String(item.name||item.nameEn||'').trim();
+      const item=getItem(itemId);
+      // 상세 창의 CAS 칸에 입력만 하고 아직 저장하지 않았으면, 그 값을 먼저 저장하고 그 번호로 찾는다.
+      if(!choice){
+        const typed=opts.getFormCas?.();
+        if(typed!==undefined&&typed!==String(item.casNo||'').trim()){
+          if(typed&&!CAS_RE.test(typed)){setKoshaStatus('CAS 번호 형식을 확인해주세요 (예: 7664-93-9).',true);return;}
+          const before=item.casNo,beforeU=item.updatedAt;item.casNo=typed;item.updatedAt=new Date().toISOString();
+          let ok=false;busy=true;try{ok=await save();}catch{}finally{busy=false;}
+          if(!ok){item.casNo=before;item.updatedAt=beforeU;setKoshaStatus('CAS 번호를 저장하지 못해 중단했습니다.',true);return;}
+          opts.onCasSaved?.(typed);
+        }
+      }
+      const cas=String(item.casNo||'').trim(),query=cas||String(item.name||item.nameEn||'').trim();
       if(!query){toast('CAS 번호나 품명을 먼저 입력하고 저장해주세요.',true);return;}
       if(!window.inventorySafety?.koshaSearch){toast('MSDS 받기는 설치형 앱에서 사용할 수 있습니다.',true);return;}
       busy=true;
@@ -301,7 +317,14 @@
         }
         koshaChoices=null;
         setKoshaStatus(`'${pick.name}' MSDS를 PDF로 저장하는 중입니다… (10~30초)`);
-        const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});if(!alive())return;
+        const rec=await window.inventorySafety.koshaReceive(pick.chemId,{name:pick.name,casNo:pick.casNo,revisedAt:pick.revisedAt});
+        if(!alive()){
+          // 기다리는 동안 창이 닫혔다. 받은 PDF를 버리지 않고 품목에 첨부해 둔다 (GHS는 비어 있고 확인이 필요 없는 품목만 채운다).
+          const live=getItem(itemId);
+          if(rec?.ok&&live){try{const res=await attachReceived(live,pick,rec,{getItems:opts.getItems,save});toast(`${live.id} ${live.name||''}: 받은 MSDS를 첨부했습니다${res.filled?' · GHS 채움':res.needsReview?' · GHS는 상세 창에서 확인 후 저장해 주세요':''}.`);opts.onSaved?.();}catch(e){toast(`${live.id} MSDS 첨부 실패: ${String(e.message||e)}`,true);}}
+          else if(live&&!rec?.ok)toast(`${live.id} MSDS 받기 실패: ${failText(rec,'받기 실패')}`,true);
+          return;
+        }
         if(!rec?.ok)throw new Error(failText(rec,'MSDS 받기 실패'));
         const placed=await attachDocument(rec.document);const replacedNote=placed.replaced?' (예전에 받은 MSDS는 새 것으로 바꿨습니다)':'';
         pickedDocId=rec.document.id;
@@ -381,6 +404,16 @@
       info.append(E('strong',`'${lastExtract.doc.fileName}'에서 읽어온 내용입니다. 맞으면 저장을 누르세요.`));
       info.append(E('p',r.summary||'','hint'));
       box.append(info);
+      if(D.hasClassification(item)){
+        const old=item.ghs||{},lines=[];
+        const diff=(label,a,b)=>{a=a||[];b=b||[];const add=b.filter(x=>!a.includes(x)),del=a.filter(x=>!b.includes(x));if(add.length||del.length)lines.push(`${label}: ${[add.length?'추가 '+add.join(', '):'',del.length?'삭제 '+del.join(', '):''].filter(Boolean).join(' / ')}`);};
+        const sig=v=>v?D.SIGNAL[v]:'없음';
+        if((old.signalWord||'')!==(draft.signalWord||''))lines.push(`신호어: ${sig(old.signalWord)} → ${sig(draft.signalWord)}`);
+        diff('그림문자',old.pictograms,draft.pictograms);diff('H코드',old.hCodes,draft.hCodes);diff('P코드',old.pCodes,draft.pCodes);
+        if((old.hazardClasses||'')!==(draft.hazardClasses||''))lines.push('유해·위험성 분류 문구가 바뀝니다');
+        const d=E('div',undefined,'ghs-diff');d.append(E('strong',lines.length?'저장하면 기존 분류에서 바뀌는 내용':'기존 분류와 같습니다. 저장해도 분류는 바뀌지 않습니다.'));for(const l of lines)d.append(E('p',l));
+        box.append(d);
+      }
       const head=E('div',undefined,'ghs-view-head'),sym=E('div',undefined,'safety-symbols ghs-symbols');
       for(const code of draft.pictograms){const tile=E('div',undefined,'safety-symbol');tile.innerHTML=iconImg(code,60)+`<small>${esc(code)} ${esc(D.PICTOGRAMS[code].label)}</small>`;sym.append(tile);}
       if(!draft.pictograms.length)sym.append(E('span','그림문자 없음','hint'));
