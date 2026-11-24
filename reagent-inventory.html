@@ -1268,7 +1268,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.11</div>
+        <div class="work-version">v4.1.0</div>
       </div>
 </aside>
   </div>
@@ -1599,7 +1599,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.11<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.1.0<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1673,7 +1673,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.11';
+  const APP_VERSION = '4.1.0';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -5014,4 +5014,22 @@ html[data-theme="dark"] #scan-modal-backdrop{background:rgba(0,0,0,.14)!importan
 </html>
 
 <style id="v352-camera-fallback-fix">.camera-fallback{background:#fff!important}.camera-fallback-icon{background:#fff!important}#tab-scan .scan-log-main{text-align:left!important;justify-self:start!important}
+
+/* ---------- 형태 정리: 색과 사진은 그대로 두고 모양만 다듬는다 (알약형 버튼, 둥근 흰 카드, 제목 아래 가는 색 줄) ---------- */
+button.primary,button.ghost,button.danger{border-radius:999px!important;}
+.msds-actions button,.batch-edit-actions button,.home-camera-toggle,#home-scan-submit,#manual-code-submit,#home-scan-open,.quick-search-trigger,.db-pill{border-radius:999px!important;}
+#home-scan-input,#manual-code,.inventory-toolbar .search-wrap input,#search-input{border-radius:999px!important;}
+.work-sidebar button.active{border-radius:999px!important;background:var(--teal)!important;border-color:var(--teal)!important;color:#fff!important;}
+.work-sidebar button.active svg{color:#fff!important;stroke:#fff!important;}
+html[data-theme="dark"] .work-sidebar button.active,html[data-theme="dark"] .work-sidebar button.active svg{color:#0B1420!important;stroke:#0B1420!important;}
+nav.tabs{border-radius:999px!important;}
+nav.tabs button{border-radius:999px!important;}
+.badge,.chip .badge{border-radius:999px!important;}
+.panel,.settings-card,.home-scan-panel,.home-module,.scan-log-card{border-radius:18px!important;box-shadow:0 8px 22px rgba(24,58,104,.08)!important;}
+.chip{border-radius:14px!important;}
+.modal-box{border-radius:18px!important;}
+/* 카드 제목 아래 가는 색 줄 */
+.settings-card h3::after,.msds-mgr-head h3::after,.home-camera-head h2::after{content:"";display:block;height:3px;width:44px;margin-top:8px;border-radius:3px;background:var(--teal);}
+.home-module h2::after{content:"";display:block;height:3px;width:min(220px,60%);margin-top:12px;border-radius:3px;background:var(--teal);}
+.home-module.standard h2::after{background:#22b7a3;}
 </style>
