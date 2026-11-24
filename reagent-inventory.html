@@ -314,6 +314,9 @@
   .field-grid input{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:13.5px; font-family:var(--sans);}
   .detail-actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
   .detail-save-row{align-items:center; margin-top:12px;}
+  /* MSDS 관리 요약 칩은 6개라 6칸으로 꽉 채운다 */
+  #msds-manager-panel .stat-chips{grid-template-columns:repeat(6,minmax(0,1fr))!important;}
+  @media(max-width:1279px){#msds-manager-panel .stat-chips{grid-template-columns:repeat(3,minmax(0,1fr))!important;}}
   .ghs-diff{margin:10px 0; padding:10px 12px; border:1px solid var(--amber); background:var(--amber-tint); border-radius:8px; font-size:12.5px;}
   .ghs-diff p{margin:4px 0 0;}
   /* 한글 단어 중간에서 줄이 바뀌지 않게 */
@@ -1113,7 +1116,7 @@ kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-border);bor
 <style id="ghs-styles">
 .ghs-cell{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .ghs-head-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}.ghs-head-strip .ghs-icons img{width:30px;height:30px}.ghs-head-strip .hint{font-family:var(--mono);font-size:11px}
-.reg-cas-note{font-size:12px;color:var(--teal-dark);margin-top:4px;min-height:16px}.reg-cas-note.err{color:var(--red)}
+.reg-cas-note{font-size:12px;color:var(--teal-dark);margin-top:4px}.reg-cas-note:empty{display:none}.reg-cas-note.err{color:var(--red)}
 .ghs-icons{display:inline-flex;gap:2px;align-items:center}
 .ghs-ico{display:inline-block;vertical-align:middle;border-radius:3px}
 .ghs-ico-code{font-size:10px;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:1px 4px}
@@ -1265,7 +1268,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
       </nav>
       <div class="work-side-foot">
         <img class="work-agency-logo" src="assets/agency_logo.png" alt="기후에너지환경부 수도권대기환경청">
-        <div class="work-version">v4.0.10</div>
+        <div class="work-version">v4.0.11</div>
       </div>
 </aside>
   </div>
@@ -1531,16 +1534,16 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="backup-directory"><span>저장 위치</span><code id="backup-directory">확인 중</code></div>
         <div class="settings-actions backup-actions">
           <button class="primary" id="settings-backup-now">지금 백업 저장</button>
-          <button class="ghost" id="settings-export-bundle" title="재고 JSON과 첨부 MSDS PDF를 zip 한 파일로 저장합니다. 다른 PC로 옮길 때 이 파일만 가져가면 됩니다.">묶음 저장 (JSON+PDF zip)</button>
+          <button class="ghost" id="settings-export-bundle" title="재고 JSON과 첨부 MSDS PDF를 zip 한 파일로 저장합니다. 다른 PC로 옮길 때 이 파일만 가져가면 됩니다.">묶음 저장 (재고 + MSDS)</button>
           <button class="ghost" id="settings-backup-folder">백업 폴더 열기</button>
           <button class="ghost" id="settings-backup-refresh">목록 새로고침</button>
           <button class="ghost" id="settings-restore-backup">백업 불러오기</button>
         </div>
         <div id="backup-health-message" class="backup-notice" role="status" hidden></div>
-        <div class="backup-table-wrap"><table class="backup-table" aria-label="백업 파일 목록"><thead><tr><th>백업 파일</th><th>종류</th><th>파일 저장 시각</th><th>크기</th><th>구조 검사</th></tr></thead><tbody id="backup-file-list"><tr><td colspan="5">백업 목록을 확인하는 중입니다.</td></tr></tbody></table></div>
-        <p class="hint" id="msds-backup-note">MSDS PDF는 backups/msds 폴더에 '품목코드_물질명_CAS.pdf' 이름으로 별도 보관합니다. 백업 JSON 파일만 복사하면 PDF는 따라가지 않으니, 다른 PC로 옮기거나 보관할 때는 「묶음 저장」으로 만든 zip 한 파일을 쓰세요. 「백업 불러오기」는 JSON과 zip 묶음 모두 받습니다. 보관 개수는 재고 백업 기준이며, MSDS는 남아 있는 백업에서 사용하는 파일만 유지합니다.</p>
+        <div class="backup-table-wrap"><table class="backup-table" aria-label="백업 파일 목록"><thead><tr><th>백업 파일</th><th>종류</th><th>파일 저장 시각</th><th>크기</th><th>파일 검사</th></tr></thead><tbody id="backup-file-list"><tr><td colspan="5">백업 목록을 확인하는 중입니다.</td></tr></tbody></table></div>
+        <p class="hint" id="msds-backup-note">다른 PC로 옮기거나 따로 보관할 때는 [묶음 저장]으로 만든 zip 한 파일을 쓰세요 (재고와 MSDS PDF가 함께 들어갑니다). [백업 불러오기]는 이 zip과 백업 파일을 모두 받습니다.</p>
         <div id="backup-inspection-result" class="backup-inspection" role="status" hidden></div>
-        <div class="backup-help">검사는 파일 읽기·JSON 형식·필수 데이터 구조를 확인합니다. 프로그램이 꺼져 있을 때는 자동 백업이 실행되지 않습니다.</div>
+        <div class="backup-help">[검사]는 백업 파일이 손상 없이 읽히는지 확인합니다. 자동 백업은 프로그램이 켜져 있을 때만 됩니다.</div>
       </div>
 
       <div class="settings-card full" id="printer-settings-card">
@@ -1596,7 +1599,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div class="settings-desc">백업 파일과 프로그램 정보를 관리합니다.</div>
         <div class="setting-row">
           <div class="setting-copy"><div class="setting-title">ReagentInventory</div><div class="setting-sub">시약·표준물질 재고관리 · MSDS·GHS 관리</div></div>
-          <div class="setting-control settings-version">v4.0.10<span class="settings-version-author">제작 이상석</span></div>
+          <div class="setting-control settings-version">v4.0.11<span class="settings-version-author">제작 이상석</span></div>
         </div>
         <div class="settings-actions">
           <button class="ghost" id="settings-data-folder">데이터 폴더 열기</button>
@@ -1670,7 +1673,7 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
   let scanning = false;
   let scanMode = 'in'; // 'in' | 'out'
   let scanTargetId = null;
-  const APP_VERSION = '4.0.10';
+  const APP_VERSION = '4.0.11';
 
   // ---------- storage (Electron 파일 저장소 + 자동 백업 / 기존 localStorage 자동 마이그레이션) ----------
   function defaultSettings(){
@@ -3160,6 +3163,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!section) return;
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('section.tab').forEach(x=>x.classList.remove('active'));
+    // 등록 화면에서는 통계 칩을 숨겨 입력 칸이 바로 보이게 한다.
+    { const chips=document.getElementById('stat-chips'); if(chips) chips.style.display=tab==='register'?'none':''; }
     if(btn) btn.classList.add('active');
     section.classList.add('active');
     if(tab!=='scan') stopScan();
@@ -3485,12 +3490,12 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
     if(!r){ closeDetailModal(); return; }
     // 입고일·유효기간·개봉일은 입고회차마다 따로 관리한다. 회차가 하나뿐이면 여기서 바로 고치고, 여러 개면 아래 입고회차 표에서 고친다.
     const oneBatch=(r.batches||[]).length===1 ? r.batches[0] : null, multi=(r.batches||[]).length>1;
-    const batchNote=multi?' — 아래 입고회차 표에서 수정':'', batchLock=multi?'disabled':'';
+    const batchNote=multi?' (입고회차 표에서 수정)':'', batchLock=multi?'disabled':'';
     showDetailModal(`
       <div class="top-row">
         <div>
           <h3>${escapeHtml(r.name)}${r.nameEn ? ` <span style="font-weight:400; color:var(--ink-soft); font-size:14px;">(${escapeHtml(r.nameEn)})</span>` : ''}</h3>
-          <div class="subid">${r.id}</div>
+          <div class="subid">${r.id}<span style="font-family:var(--sans);color:var(--ink-soft);font-weight:400;"> · 최근 수정 ${fmtDate(r.updatedAt)}</span></div>
           ${window.GHSUI.headerHtml(r,settings())}
         </div>
       </div>
@@ -3512,9 +3517,8 @@ html[data-theme="dark"] .safety-download-dialog textarea { background:#0f1821; c
         <div><label>순도</label><input type="text" id="d-purity" value="${escapeHtml(r.purity||'')}"></div>
         <div><label>개봉일${batchNote}</label><input type="date" id="d-opened" value="${escapeHtml((oneBatch?oneBatch.openedDate:r.openedDate)||'')}" ${batchLock}></div>
         ` : ''}
+        <div class="${(r.category||'reagent')==='standard'?'full':''}"><label>보관방법</label><input type="text" id="d-storage" value="${escapeHtml(r.storage||'')}"></div>
         <div class="full" id="d-stock-reason-wrap" hidden><label>재고 조정 사유 (재고 숫자를 직접 고칠 때 기록에 남습니다)</label><input type="text" id="d-stock-reason" placeholder="예: 실사 결과 반영, 파손, 입력 실수 정정" maxlength="60"></div>
-        <div class="full"><label>보관방법</label><input type="text" id="d-storage" value="${escapeHtml(r.storage||'')}"></div>
-        <div><label>최근 수정</label><input type="text" value="${fmtDate(r.updatedAt)}" disabled></div>
       </div>
       <div class="detail-actions detail-save-row">
         <button class="primary" id="detail-save-btn">기본 정보 저장</button>
@@ -5009,4 +5013,5 @@ html[data-theme="dark"] #scan-modal-backdrop{background:rgba(0,0,0,.14)!importan
 </body>
 </html>
 
-<style id="v352-camera-fallback-fix">.camera-fallback{background:#fff!important}.camera-fallback-icon{background:#fff!important}</style>
+<style id="v352-camera-fallback-fix">.camera-fallback{background:#fff!important}.camera-fallback-icon{background:#fff!important}#tab-scan .scan-log-main{text-align:left!important;justify-self:start!important}
+</style>

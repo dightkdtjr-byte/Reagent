@@ -128,7 +128,7 @@
       const wrap=element.querySelector('#msds-mgr-table');if(!wrap)return;wrap.replaceChildren();
       const s=settings(),rows=items().map(r=>({r,st:rowState(r,s)})).filter(x=>matches(x.r,x.st,s)).sort((a,b)=>severity(a.r,a.st)-severity(b.r,b.st)||a.r.id.localeCompare(b.r.id));
       if(!rows.length){wrap.append(E('p','해당하는 품목이 없습니다.','hint'));return;}
-      const table=E('table',undefined,'msds-mgr-tbl');table.innerHTML='<thead><tr><th style="width:24%">품목</th><th style="width:15%">GHS</th><th>MSDS 문서</th><th style="width:160px">상태</th><th style="width:196px">작업</th></tr></thead>';
+      const table=E('table',undefined,'msds-mgr-tbl');table.innerHTML='<thead><tr><th style="width:24%">품목</th><th style="width:15%">GHS</th><th>MSDS 문서</th><th style="width:210px">상태</th><th style="width:196px">작업</th></tr></thead>';
       const body=E('tbody');
       for(const {r,st} of rows){
         const tr=E('tr');
